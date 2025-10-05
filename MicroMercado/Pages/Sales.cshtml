@@ -1,0 +1,164 @@
+@page
+@model MicroMercado.Pages.Sales
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Privacy Policy";
+}
+
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Ventas MicroMercado</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
+                    <li class="breadcrumb-item active">Sales</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row mb-3">
+            <div class="col-md-9">
+                <div class="row">
+                    
+                    <div class="col-md-12 mb-3">
+                        <div class="form-group mb-2">
+                            <label class="col-form-label" for="iptCodigoVenta">
+                                <i class="fas fa-barcode fs-6"></i>
+                                <span class="small">Productos</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   id="product_id"
+                                   placeholder="Ingrese el código o el nombre del producto">
+                        </div>
+                    </div>
+                    
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-6">
+                            <h3 class="mb-0">Total venta: <span id="totalVenta">0.00</span></h3>
+                        </div>
+
+                        <div class="col-md-6 text-md-end text-start mt-2 mt-md-0">
+                            <button class="btn btn-primary me-2" id="btnIniciarVenta">
+                                <i class="fas fa-shopping-cart"></i> Confirmar Venta
+                            </button>
+                            <button class="btn btn-danger" id="btnVaciarListado">
+                                <i class="far fa-trash-alt"></i> Vaciar Listado
+                            </button>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="col-md-12">
+                        <table id="lstProductosVenta" class="display nowrap table-striped w-100 shadow ">
+                            <thead class="bg-info text-left fs-6">
+                            <tr>
+                                <th>Codigo</th>
+                                <th>Producto</th>
+                                <th>Categoria</th>
+                                <th>Cantidad</th>
+                                <th>Precio</th>
+                                <th>Total</th>
+                                <th class="text-center">Opciones</th>
+                                <th>Aplica Peso</th>
+                            </tr>
+                            </thead>
+                            <tbody class="small text-left fs-6">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card shadow">
+                    <h5 class="card-header py-1 bg-primary text-white text-center">
+                        Total Venta: Bs. <span id="totalVentaRegistrar">0.00</span>
+                    </h5>
+                    <div class="card-body p-2">
+                        <!-- SELECCIONAR TIPO DE DOCUMENTO -->
+                        <div class="form-group mb-2">
+                            <label class="col-form-label" for="selCategoriaReg">
+                                <i class="fas fa-file-alt fs-6"></i>
+                                <span class="small">Documento</span><span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select form-select-sm" aria-label=".form-select-sm example"
+                                    id="selDocumentoVenta">
+                                <option value="®">Seleccione Documento</option>
+                                <option value="1" selected="true">Recibo</option>
+                                <option value="2">Factura</option>
+                            </select>
+                            <span id="validate_categoria" class="text-danger small fst-italic" style="display: none">
+                                Debe Seleccionar documento
+                            </span>
+                        </div>
+                        
+                        <div class="form-group mb-2">
+                            <label class="col-form-label" for="selCategoriaReg">
+                                <i class="fas fa-money-bill-alt fs-6"></i>
+                                <span class="small">Tipo Pago</span><span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select form-select-sm" aria-label=".form-select-sm example"
+                                id="selTipoPago">
+                                <option value="0">Seleccione Tipo Pago</option>
+                                <option value="1" selected="true">Efectivo</option>
+                                <option value="2">QR</option>
+                                <option value="3">Tarjeta</option>
+                            </select>
+                            <span id="validate_categoria" class="text-danger small fst-italic" style="display: none">
+                                Debe Ingresar tipo de pago
+                            </span>
+                        </div>
+                            
+                        
+                        <!-- EFECTIVO RECIBIDO -->
+                        <div class="form-group">
+                            <label for="iptEfectivoRecibido">Efectivo recibido</label>
+                            <input type="number" min="0" id="iptEfectivoRecibido"
+                                   class="form-control form-control-sm"
+                                   placeholder="Cantidad de efectivo recibida">
+                        </div>
+
+                        <!-- CHECK -->
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="chkEfectivoExacto">
+                            <label class="form-check-label" for="chkEfectivoExacto">Efectivo Exacto</label>
+                        </div>
+
+                        <!-- EFECTIVO Y VUELTO -->
+                        <div class="mt-2">
+                            <h6 class="fw-bold">Monto Efectivo: Bs. <span id="EfectivoEntregado">0.00</span></h6>
+                            <h6 class="text-danger fw-bold">Vuelto: Bs. <span id="Vuelto">0.00</span></h6>
+                        </div>
+
+                        <!-- SUBTOTAL Y TOTAL -->
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between">
+                            <span>SUBTOTAL</span>
+                            <span>Bs. <span id="subtotal">0.00</span></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>TOTAL</span>
+                            <span>Bs. <span id="boleta_total">0.00</span></span>
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+            
+    </div>
+</div>
