@@ -86,22 +86,47 @@
                         Total Venta: Bs. <span id="totalVentaRegistrar">0.00</span>
                     </h5>
                     <div class="card-body p-2">
-                        <!-- SELECCIONAR TIPO DE DOCUMENTO -->
+                        <!-- DOCUMENTO -->
                         <div class="form-group mb-2">
                             <label class="col-form-label" for="selCategoriaReg">
                                 <i class="fas fa-file-alt fs-6"></i>
-                                <span class="small">Documento</span><span class="text-danger">*</span>
+                                <span class="small">NIT/CI</span><span class="text-danger">*</span>
                             </label>
-                            <select class="form-select form-select-sm" aria-label=".form-select-sm example"
-                                    id="selDocumentoVenta">
-                                <option value="®">Seleccione Documento</option>
-                                <option value="1" selected="true">Recibo</option>
-                                <option value="2">Factura</option>
-                            </select>
+                            
+                            <div class="row">
+                                <div class="col-md-7 col-8">
+                                    <input type="number"
+                                           min="0"
+                                           id="idDocumentoRecibido"
+                                           class="form-control form-control-sm"
+                                           placeholder="NIT/CI">
+                                </div>
+                                <div class="col-md-5 col-4">
+                                    <button class="btn btn-info btn-sm w-100" type="button" id="btnBuscarCliente">
+                                        <i class="fas fa-search"></i> Buscar
+                                    </button>
+                                </div>
+                            </div>
+             
                             <span id="validate_categoria" class="text-danger small fst-italic" style="display: none">
-                                Debe Seleccionar documento
+                            Debe Seleccionar documento
                             </span>
                         </div>
+                        
+                        
+                        
+                        
+                        <!-- NOMBRE RECUPERADO -->
+                        <div class="form-group mb-2">
+                            <label class="col-form-label">Nombre Cliente</label>
+                            <div class="input-group input-group-sm">
+                                <input type="text" name="nombreCliente" id="nombreCliente" class="form-control form-control-sm" placeholder="Cliente" readonly>
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalNuevoCliente" title="Agregar cliente">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
                         
                         <div class="form-group mb-2">
                             <label class="col-form-label" for="selCategoriaReg">
