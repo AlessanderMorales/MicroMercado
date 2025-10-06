@@ -11,7 +11,9 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.ToTable("products");
         
         builder.HasKey(p => p.Id);
-        builder.Property(p => p.Id).HasColumnName("id");
+        builder.Property(p => p.Id)
+            .HasColumnName("id")
+            .UseIdentityColumn();
         
         builder.Property(p => p.Name)
             .HasColumnName("name")
