@@ -21,7 +21,7 @@ dotnet restore
 
 ### 3. Configurar la cadena de conexión
 ```bash
-dotnet user-secrets set " "
+dotnet user-secrets set ' '
 ```
 
 ### 4. Crear la base de datos con migraciones
