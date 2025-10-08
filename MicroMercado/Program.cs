@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MicroMercado.Data;
 using MicroMercado.Services;
+using MicroMercado.Services.sales;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ISaleService, SaleService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

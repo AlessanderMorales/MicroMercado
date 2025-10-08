@@ -289,6 +289,11 @@ class SalesManager {
                 e.preventDefault();
             }
         });
+        
+        // Confirmar venta
+        $('#btnIniciarVenta').on('click', () => {
+            this.confirmSale();
+        });
     }
 
     // Mostrar notificaciones
