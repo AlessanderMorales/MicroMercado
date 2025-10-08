@@ -118,13 +118,29 @@ class SalesManager {
                 { data: 'appliesWeight', visible: false }
             ],
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json',
+                emptyTable: '',
+                zeroRecords: ''
             },
             paging: false,
             searching: false,
             info: false,
-            order: []
+            order: [],
+            drawCallback: function() {
+            if (this.api().data().count() === 0) {
+                $(this).find('tbody').html(`
+                    <tr class="empty-cart-message">
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="fas fa-shopping-basket fa-3x mb-3 d-block"></i>
+                            <p class="mb-0">No hay productos</p>
+                            <small>Busque y agregue productos usando el buscador de arriba</small>
+                        </td>
+                    </tr>
+                `);
+            }
+        }
         });
+        this.cartTable.draw();
     }
 
     // Agregar producto al carrito
@@ -165,14 +181,29 @@ class SalesManager {
         }
 
         this.updateCartDisplay();
-        this.showNotification('success', `${product.name} agregado al carrito`);
+        this.showNotification('success', `${product.name} agregado a la venta`);
     }
 
     // Actualizar visualización del carrito
     updateCartDisplay() {
         this.cartTable.clear();
+        if (this.cart.length === 0) {
+        this.cartTable.draw();
+        $('#lstProductosVenta tbody').html(`
+            <tr class="empty-cart-message">
+                <td colspan="7" class="text-center text-muted py-4">
+                    <i class="fas fa-shopping-basket fa-3x mb-3 d-block"></i>
+                    <p class="mb-0">No hay productos</p>
+                    <small>Busque y agregue productos usando el buscador de arriba</small>
+                </td>
+            </tr>
+        `);
+    } else {
+        // Mostrar productos
         this.cartTable.rows.add(this.cart);
         this.cartTable.draw();
+    }
+    
         this.updateTotals();
     }
 
@@ -207,7 +238,7 @@ class SalesManager {
             const productName = this.cart[index].productName;
             this.cart.splice(index, 1);
             this.updateCartDisplay();
-            this.showNotification('info', `${productName} eliminado del carrito`);
+            this.showNotification('info', `${productName} eliminado de la lista`);
         }
     }
 
@@ -236,16 +267,16 @@ class SalesManager {
     // Vaciar carrito
     clearCart() {
         if (this.cart.length === 0) {
-            this.showNotification('info', 'El carrito ya está vacío');
+            this.showNotification('info', 'El detalle de venta está vacío');
             return;
         }
 
-        if (confirm('¿Está seguro de vaciar el carrito?')) {
+        if (confirm('¿Está seguro de vaciar la lista?')) {
             this.cart = [];
             this.updateCartDisplay();
             $('#product_id').val('');
             $('#iptEfectivoRecibido').val('');
-            this.showNotification('info', 'Carrito vaciado');
+            this.showNotification('info', 'Lista vaciada');
         }
     }
 
