@@ -14,7 +14,7 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
         
         builder.Property(s => s.Id)
             .HasColumnName("id")
-            .ValueGeneratedOnAdd();
+            .UseIdentityColumn();
         
         builder.Property(s => s.UserId)
             .HasColumnName("user_id")

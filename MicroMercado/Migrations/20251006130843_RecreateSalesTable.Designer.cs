@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MicroMercado.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251004033747_Add_Tables_SaleItems_Sale_Client")]
-    partial class Add_Tables_SaleItems_Sale_Client
+    [Migration("20251006130843_RecreateSalesTable")]
+    partial class RecreateSalesTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,8 +28,11 @@ namespace MicroMercado.Migrations
             modelBuilder.Entity("MicroMercado.Models.Category", b =>
                 {
                     b.Property<byte>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("smallint")
                         .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<byte>("Id"));
 
                     b.Property<DateTime>("LastUpdate")
                         .ValueGeneratedOnAdd()

@@ -14,7 +14,7 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
 
         builder.Property(c => c.Id)
             .HasColumnName("id")
-            .ValueGeneratedOnAdd();
+            .UseIdentityColumn();
 
         builder.Property(c => c.Name)
             .HasColumnName("name")
