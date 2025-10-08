@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MicroMercado.Models;
+using MicroMercado.Data.Configurations;
 
 namespace MicroMercado.Data;
 public class ApplicationDbContext : DbContext
@@ -21,6 +22,12 @@ public class ApplicationDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        
+        modelBuilder.ApplyConfiguration(new SaleConfiguration());
+        modelBuilder.ApplyConfiguration(new SaleItemConfiguration());
+        
+        modelBuilder.Entity<SaleItem>()
+            .HasKey(si => new { si.SaleId, si.ProductId });
     }
     
     public override int SaveChanges()

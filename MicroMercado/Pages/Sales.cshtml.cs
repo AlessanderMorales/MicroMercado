@@ -1,18 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MicroMercado.Services;
-using MicroMercado.DTOs;
 using System.Text.Json;
+using MicroMercado.DTOs.Sales;
 
 namespace MicroMercado.Pages
 {
     public class SalesModel : PageModel
     {
         private readonly IProductService _productService;
+        private readonly ISaleService _saleService; 
         private readonly ILogger<SalesModel> _logger;
 
         public SalesModel(
             IProductService productService,
+            ISaleService saleService,
             ILogger<SalesModel> logger)
         {
             _productService = productService;
@@ -129,6 +131,77 @@ namespace MicroMercado.Pages
                 { 
                     success = false, 
                     message = "Error al verificar stock" 
+                });
+            }
+        }
+        
+        
+        [HttpPost]
+        public async Task<IActionResult> OnPostConfirmSaleAsync([FromBody] SaleDTO.CreateSaleDTO saleDTO)
+        {
+            try
+            {
+                if (saleDTO == null || saleDTO.Items == null || !saleDTO.Items.Any())
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "No hay productos para vender"
+                    });
+                }
+
+                // Validar que el total sea correcto
+                var calculatedTotal = saleDTO.Items.Sum(i => i.Total);
+                if (Math.Abs(calculatedTotal - saleDTO.TotalAmount) > 0.01m)
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "El total de la venta no coincide"
+                    });
+                }
+
+                // Crear la venta
+                var result = await _saleService.CreateSaleAsync(saleDTO);
+
+                if (result.Success)
+                {
+                    _logger.LogInformation(
+                        "Venta #{SaleId} creada exitosamente por usuario en página Sales",
+                        result.Data?.SaleId);
+
+                    return new JsonResult(new
+                    {
+                        success = true,
+                        message = result.Message,
+                        data = new
+                        {
+                            saleId = result.Data?.SaleId,
+                            saleDate = result.Data?.SaleDate,
+                            totalAmount = result.Data?.TotalAmount,
+                            cashReceived = result.Data?.CashReceived,
+                            change = result.Data?.Change,
+                            itemsCount = result.Data?.ItemsCount
+                        }
+                    });
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = result.Message,
+                        errors = result.Errors
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al confirmar venta");
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Error al procesar la venta"
                 });
             }
         }
