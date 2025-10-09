@@ -24,7 +24,7 @@ namespace MicroMercado.Pages
 
         public void OnGet()
         {
-            // Inicialización de la página
+            
         }
         
         public async Task<IActionResult> OnGetSearchProductsAsync(string term)
@@ -147,25 +147,23 @@ namespace MicroMercado.Pages
                 _logger.LogInformation("Content-Type: {ContentType}", Request.ContentType);
                 _logger.LogInformation("Content-Length: {ContentLength}", Request.ContentLength);
                 
-                // 🔍 PASO 1: Leer el body RAW para ver qué llega
                 string rawBody = "";
                 using (var reader = new StreamReader(Request.Body))
                 {
                     rawBody = await reader.ReadToEndAsync();
                 }
-                _logger.LogInformation("📦 Body RAW recibido: {RawBody}", rawBody);
+                _logger.LogInformation("recibido: {RawBody}", rawBody);
                 
                 if (string.IsNullOrWhiteSpace(rawBody))
                 {
-                    _logger.LogWarning("❌ Body está vacío");
+                    _logger.LogWarning("Body está vacío");
                     return new JsonResult(new
                     {
                         success = false,
                         message = "No se recibió ningún dato en el body"
                     });
                 }
-
-                // 🔍 PASO 2: Intentar deserializar manualmente
+                
                 SaleDTO.CreateSaleDTO? saleDTO = null;
                 try
                 {
@@ -179,7 +177,7 @@ namespace MicroMercado.Pages
                 }
                 catch (JsonException jsonEx)
                 {
-                    _logger.LogError(jsonEx, "❌ Error al deserializar JSON");
+                    _logger.LogError(jsonEx, "Error al deserializar JSON");
                     return new JsonResult(new
                     {
                         success = false,
@@ -189,15 +187,14 @@ namespace MicroMercado.Pages
 
                 if (saleDTO == null)
                 {
-                    _logger.LogWarning("❌ saleDTO es null después de deserializar");
+                    _logger.LogWarning("saleDTO es null después de deserializar");
                     return new JsonResult(new
                     {
                         success = false,
                         message = "No se pudo procesar el JSON recibido"
                     });
                 }
-
-                // 🔍 PASO 3: Validar datos recibidos
+                
                 _logger.LogInformation("✅ saleDTO deserializado correctamente");
                 _logger.LogInformation("ClientId: {ClientId} (Type: {Type})", 
                     saleDTO.ClientId, 
@@ -219,15 +216,14 @@ namespace MicroMercado.Pages
 
                 if (saleDTO.Items == null || !saleDTO.Items.Any())
                 {
-                    _logger.LogWarning("❌ No hay items en la venta");
+                    _logger.LogWarning("No hay items en la venta");
                     return new JsonResult(new
                     {
                         success = false,
                         message = "No hay productos para vender"
                     });
                 }
-
-                // 🔍 PASO 4: Validar total
+                
                 var calculatedTotal = saleDTO.Items.Sum(i => i.Total);
                 _logger.LogInformation("Total calculado: {Calculated}, Total recibido: {Received}", 
                     calculatedTotal, saleDTO.TotalAmount);
@@ -236,8 +232,7 @@ namespace MicroMercado.Pages
                 {
                     _logger.LogWarning("⚠️ Total no coincide exactamente pero continúa");
                 }
-
-                // 🔍 PASO 5: Intentar crear la venta
+                
                 _logger.LogInformation("Llamando a _saleService.CreateSaleAsync...");
                 var result = await _saleService.CreateSaleAsync(saleDTO);
                 _logger.LogInformation("Respuesta del servicio: Success={Success}, Message={Message}", 
@@ -255,7 +250,7 @@ namespace MicroMercado.Pages
                     });
                 }
 
-                _logger.LogWarning("❌ Error al crear venta: {Message}", result.Message);
+                _logger.LogWarning("Error al crear venta: {Message}", result.Message);
                 return new JsonResult(new
                 {
                     success = false,

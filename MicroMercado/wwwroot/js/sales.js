@@ -131,7 +131,7 @@ class SalesManager {
                         <tr class="empty-cart-message">
                             <td colspan="7" class="text-center text-muted py-4">
                                 <i class="fas fa-shopping-basket fa-3x mb-3 d-block"></i>
-                                <p class="mb-0">No hay productos en el carrito</p>
+                                <p class="mb-0">No hay productos para venta</p>
                                 <small>Busque y agregue productos usando el buscador de arriba</small>
                             </td>
                         </tr>
@@ -175,7 +175,7 @@ class SalesManager {
         }
 
         this.updateCartDisplay();
-        this.showNotification('success', `${product.name} agregado al carrito`);
+        this.showNotification('success', `${product.name} agregado a la venta`);
     }
 
     updateCartDisplay() {
@@ -212,7 +212,7 @@ class SalesManager {
             const productName = this.cart[index].productName;
             this.cart.splice(index, 1);
             this.updateCartDisplay();
-            this.showNotification('info', `${productName} eliminado del carrito`);
+            this.showNotification('info', `${productName} eliminado de la venta`);
         }
     }
 
@@ -239,17 +239,17 @@ class SalesManager {
 
     clearCart() {
         if (this.cart.length === 0) {
-            this.showNotification('info', 'El carrito ya está vacío');
+            this.showNotification('info', 'La lista está vacía');
             return;
         }
 
-        if (confirm('¿Está seguro de vaciar el carrito?')) {
+        if (confirm('¿Está seguro de vaciar el detalle de venta?')) {
             this.cart = [];
             this.updateCartDisplay();
             $('#product_id').val('');
             $('#iptEfectivoRecibido').val('');
             $('#chkEfectivoExacto').prop('checked', false);
-            this.showNotification('info', 'Carrito vaciado');
+            this.showNotification('info', 'Lista vaciada');
         }
     }
 
@@ -257,7 +257,7 @@ class SalesManager {
         console.log('Método confirmSale ejecutándose...');
     
         if (this.cart.length === 0) {
-            this.showNotification('warning', 'No hay productos en el carrito');
+            this.showNotification('warning', 'No hay productos en la lista de venta');
             return;
         }
     
@@ -295,8 +295,7 @@ class SalesManager {
             const clienteId = clienteDocInput && clienteDocInput.trim() !== ''
                 ? parseInt(clienteDocInput)
                 : null;
-    
-            // 🟢 Construir JSON para enviar al backend
+            
             const saleData = {
                 clientId: clienteId,                  // int o null
                 paymentType: tipoPago,                // byte
@@ -312,8 +311,7 @@ class SalesManager {
             };
     
             console.log('Datos de venta a enviar:', saleData);
-    
-            // ⚡ Enviar JSON al endpoint
+            
             const response = await fetch('/Sales?handler=ConfirmSale', {
                 method: 'POST',
                 headers: {
@@ -342,8 +340,8 @@ class SalesManager {
                 };
                 this.showNotification('success', 
                     `¡Venta registrada exitosamente!`);
-    
-                // 🧹 Limpiar carrito y formulario
+                
+                
                 this.cart = [];
                 this.updateCartDisplay();
                 $('#idDocumentoRecibido').val('');
@@ -469,7 +467,7 @@ class SalesManager {
     }
 }
 
-// Inicializar cuando el DOM esté listo
+
 $(document).ready(function() {
     console.log('Inicializando SalesManager...');
     window.salesManager = new SalesManager();

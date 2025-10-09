@@ -24,7 +24,7 @@ public class SaleService : ISaleService
 
         try
         {
-            // 1. Validar que haya items
+            //Validar que haya items
             if (saleDTO.Items == null || !saleDTO.Items.Any())
             {
                 return new SaleDTO.OperationResultDTO<SaleDTO.SaleResponseDTO>
@@ -34,7 +34,7 @@ public class SaleService : ISaleService
                 };
             }
 
-            // 2. Validar stock
+            //Validar stock
             var stockValidation = await ValidateStockAsync(saleDTO.Items);
             if (!stockValidation.Success)
             {
@@ -46,7 +46,7 @@ public class SaleService : ISaleService
                 };
             }
 
-            // 3. Crear la venta
+            //Crear la venta
             var sale = new Sale
             {
                 UserId = 0,
@@ -58,7 +58,7 @@ public class SaleService : ISaleService
             _context.Sales.Add(sale);
             await _context.SaveChangesAsync();
 
-            // 4. Crear los items de venta
+            //Crear los items de venta
             foreach (var itemDTO in saleDTO.Items)
             {
                 var saleItem = new SaleItem
@@ -74,7 +74,7 @@ public class SaleService : ISaleService
 
             await _context.SaveChangesAsync();
 
-            // 5. Actualizar stock de productos
+            //Actualizar stock de productos
             var stockUpdated = await UpdateProductStockAsync(saleDTO.Items);
             if (!stockUpdated)
             {
@@ -86,14 +86,14 @@ public class SaleService : ISaleService
                 };
             }
 
-            // 6. Confirmar transacción
+            //Confirmar transacción
             await transaction.CommitAsync();
 
             _logger.LogInformation(
                 "Venta creada exitosamente. ID: {SaleId}, Total: {Total}, Items: {ItemCount}",
                 sale.Id, sale.TotalAmount, saleDTO.Items.Count);
 
-            // 7. Retornar respuesta
+
             return new SaleDTO.OperationResultDTO<SaleDTO.SaleResponseDTO>
             {
                 Success = true,
