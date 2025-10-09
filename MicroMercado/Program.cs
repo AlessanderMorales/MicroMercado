@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using MicroMercado.Data;
 using MicroMercado.Services;
-
+using MicroMercado.DTOs; 
+using MicroMercado.Validators.Client; 
+using FluentValidation; 
+using FluentValidation.AspNetCore; 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -17,6 +20,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.EnableDetailedErrors();
     }
 });
+
+
+builder.Services.AddFluentValidationAutoValidation(); 
+builder.Services.AddFluentValidationClientsideAdapters();
+
+
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IValidator<CreateClientDTO>, CreateClientValidator>();
+builder.Services.AddScoped<IValidator<UpdateClientDTO>, UpdateClientValidator>();
+
+
 
 builder.Services.AddScoped<IProductService, ProductService>();
 
