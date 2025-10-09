@@ -1,0 +1,182 @@
+.ui-autocomplete {
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1050 !important;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    font-size: 0.9rem;
+}
+
+.ui-menu-item {
+    padding: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.ui-menu-item:last-child {
+    border-bottom: none;
+}
+
+.ui-menu-item:hover {
+    background-color: #f8f9fa;
+}
+
+.ui-state-active,
+.ui-widget-content .ui-state-active {
+    background-color: #b4e0e3 !important;
+    color: white !important;
+    border: none !important;
+}
+
+.autocomplete-item {
+    padding: 5px 0;
+}
+
+.autocomplete-item .fw-bold {
+    color: #212529;
+    margin-bottom: 3px;
+}
+
+.autocomplete-item .small {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+
+#product_id {
+    font-size: 1rem;
+    padding: 0.5rem;
+}
+
+#product_id:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+
+#lstProductosVenta {
+    font-size: 0.9rem;
+}
+
+#lstProductosVenta thead th {
+    background-color: #17a2b8 !important;
+    color: white !important;
+    font-weight: 600;
+    padding: 0.75rem;
+    border: none;
+}
+
+#lstProductosVenta tbody td {
+    padding: 0.6rem;
+    vertical-align: middle;
+}
+
+.quantity-input {
+    width: 80px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.quantity-input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+}
+
+
+.remove-product {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.remove-product:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s;
+}
+
+
+.card-header {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.card-body label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+
+.content h3 {
+    font-weight: 700;
+    color: #212529;
+}
+
+#totalVenta,
+#totalVentaRegistrar,
+#subtotal,
+#boleta_total {
+    font-weight: 700;
+    color: #198754;
+}
+
+#EfectivoEntregado {
+    color: #0d6efd;
+}
+
+#Vuelto {
+    color: #dc3545;
+}
+
+
+#iptEfectivoRecibido {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .quantity-input {
+        width: 60px;
+    }
+    
+    #lstProductosVenta {
+        font-size: 0.8rem;
+    }
+    
+    .content h3 {
+        font-size: 1.2rem;
+    }
+}
+
+/* Loading indicator para autocomplete */
+.ui-autocomplete-loading {
+    background: white url('data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==') right center no-repeat;
+}
+
+/* Validación de errores */
+.text-danger {
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.3s ease-in-out;
+}

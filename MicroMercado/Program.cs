@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MicroMercado.Data;
-using FluentValidation;
-using FluentValidation.AspNetCore;
+using MicroMercado.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,8 +18,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     }
 });
 
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddScoped<IProductService, ProductService>();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
 
 var app = builder.Build();
 
