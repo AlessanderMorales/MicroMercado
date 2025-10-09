@@ -52,7 +52,7 @@ public class ApplicationDbContext : DbContext
             var lastUpdateProperty = entry.Entity.GetType().GetProperty("LastUpdate");
             if (lastUpdateProperty != null && lastUpdateProperty.PropertyType == typeof(DateTime))
             {
-                lastUpdateProperty.SetValue(entry.Entity, DateTime.UtcNow);
+                lastUpdateProperty.SetValue(entry.Entity, DateTime.Now);
             }
         }
     }

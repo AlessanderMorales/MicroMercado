@@ -2,11 +2,23 @@ using Microsoft.EntityFrameworkCore;
 using MicroMercado.Data;
 using MicroMercado.Services;
 using MicroMercado.Services.sales;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddRazorPages();
+    // Add services - RAZOR PAGES CON JSON OPTIONS
+    builder.Services.AddRazorPages(options =>
+    {
+    options.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute());
+    })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true; // ← IMPORTANTE
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
+
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -26,20 +38,11 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.PropertyNamingPolicy = null;
-        options.JsonSerializerOptions.WriteIndented = true;
-    });
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

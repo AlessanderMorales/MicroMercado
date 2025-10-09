@@ -4,7 +4,7 @@ public class SaleDTO
 {
     public class CreateSaleDTO
     {
-        public int ClientId { get; set; }
+        public int? ClientId { get; set; }
         public byte PaymentType { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal CashReceived { get; set; }

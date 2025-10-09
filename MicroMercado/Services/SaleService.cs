@@ -50,7 +50,7 @@ public class SaleService : ISaleService
             var sale = new Sale
             {
                 UserId = 0,
-                SaleDate = DateTime.UtcNow,
+                SaleDate = DateTime.Now,
                 TotalAmount = saleDTO.TotalAmount,
                 ClientId = saleDTO.ClientId
             };
@@ -188,7 +188,6 @@ public class SaleService : ISaleService
                 if (product != null)
                 {
                     product.Stock -= item.Quantity;
-                    product.LastUpdate = DateTime.UtcNow;
                     _context.Products.Update(product);
                 }
             }
@@ -198,7 +197,7 @@ public class SaleService : ISaleService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error al actualizar stock de productos");
+            _logger.LogError(ex, "Error al actualizar stock de productos: {Message}", ex.InnerException?.Message ?? ex.Message);
             return false;
         }
     }

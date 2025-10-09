@@ -12,17 +12,23 @@ class SalesManager {
         this.bindEvents();
     }
 
-    // Inicializar autocomplete con jQuery UI
+    async searchProducts(term) {
+        const response = await fetch(`/Sales?handler=SearchProducts&term=${encodeURIComponent(term)}`);
+        return await response.json();
+    }
+
     initializeAutocomplete() {
+        const self = this;
+        
         $('#product_id').autocomplete({
             minLength: 2,
             delay: 300,
-            source: (request, response) => {
-                clearTimeout(this.searchTimeout);
+            source: function(request, response) {
+                clearTimeout(self.searchTimeout);
                 
-                this.searchTimeout = setTimeout(async () => {
+                self.searchTimeout = setTimeout(async () => {
                     try {
-                        const result = await this.searchProducts(request.term);
+                        const result = await self.searchProducts(request.term);
                         
                         if (result.success) {
                             const items = result.data.map(product => ({
@@ -33,29 +39,28 @@ class SalesManager {
                             response(items);
                         } else {
                             response([]);
-                            this.showNotification('error', 'Error al buscar productos');
+                            self.showNotification('error', 'Error al buscar productos');
                         }
                     } catch (error) {
                         console.error('Error en búsqueda:', error);
                         response([]);
-                        this.showNotification('error', 'Error de conexión');
+                        self.showNotification('error', 'Error de conexión');
                     }
                 }, 300);
             },
-            select: (event, ui) => {
+            select: function(event, ui) {
                 event.preventDefault();
-                this.addProductToCart(ui.item.product);
+                self.addProductToCart(ui.item.product);
                 $('#product_id').val('');
                 return false;
             },
-            focus: (event, ui) => {
+            focus: function(event, ui) {
                 event.preventDefault();
                 $('#product_id').val(ui.item.product.name);
                 return false;
             }
         }).autocomplete("instance")._renderItem = function(ul, item) {
             const stockClass = item.product.stock > 0 ? 'text-success' : 'text-danger';
-            const stockText = item.product.stock > 0 ? 'Disponible' : 'Sin stock';
             
             return $("<li>")
                 .append(`<div class="autocomplete-item">
@@ -70,13 +75,6 @@ class SalesManager {
         };
     }
 
-    // Buscar productos en el backend
-    async searchProducts(term) {
-        const response = await fetch(`/Sales?handler=SearchProducts&term=${encodeURIComponent(term)}`);
-        return await response.json();
-    }
-
-    // Inicializar DataTable
     initializeDataTable() {
         this.cartTable = $('#lstProductosVenta').DataTable({
             data: [],
@@ -86,7 +84,7 @@ class SalesManager {
                 { data: 'categoryName' },
                 { 
                     data: 'quantity',
-                    render: (data, type, row) => {
+                    render: function(data, type, row) {
                         return `<input type="number" 
                                 class="form-control form-control-sm quantity-input" 
                                 value="${data}" 
@@ -97,25 +95,26 @@ class SalesManager {
                 },
                 { 
                     data: 'price',
-                    render: (data) => `Bs. ${data.toFixed(2)}`
+                    render: function(data) {
+                        return `Bs. ${data.toFixed(2)}`;
+                    }
                 },
                 { 
                     data: null,
-                    render: (data, type, row) => {
+                    render: function(data, type, row) {
                         return `Bs. ${row.total.toFixed(2)}`;
                     }
                 },
                 { 
                     data: null,
-                    render: (data, type, row) => {
+                    render: function(data, type, row) {
                         return `<button class="btn btn-danger btn-sm remove-product" 
                                 data-product-id="${row.productId}">
                                 <i class="fas fa-trash"></i>
                             </button>`;
                     },
                     className: 'text-center'
-                },
-                { data: 'appliesWeight', visible: false }
+                }
             ],
             language: {
                 url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json',
@@ -127,35 +126,31 @@ class SalesManager {
             info: false,
             order: [],
             drawCallback: function() {
-            if (this.api().data().count() === 0) {
-                $(this).find('tbody').html(`
-                    <tr class="empty-cart-message">
-                        <td colspan="7" class="text-center text-muted py-4">
-                            <i class="fas fa-shopping-basket fa-3x mb-3 d-block"></i>
-                            <p class="mb-0">No hay productos</p>
-                            <small>Busque y agregue productos usando el buscador de arriba</small>
-                        </td>
-                    </tr>
-                `);
+                if (this.api().data().count() === 0) {
+                    $(this).find('tbody').html(`
+                        <tr class="empty-cart-message">
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="fas fa-shopping-basket fa-3x mb-3 d-block"></i>
+                                <p class="mb-0">No hay productos en el carrito</p>
+                                <small>Busque y agregue productos usando el buscador de arriba</small>
+                            </td>
+                        </tr>
+                    `);
+                }
             }
-        }
         });
         this.cartTable.draw();
     }
-
-    // Agregar producto al carrito
-    async addProductToCart(product) {
-        // Verificar stock
+    
+    addProductToCart(product) {
         if (product.stock <= 0) {
             this.showNotification('warning', 'Producto sin stock disponible');
             return;
         }
 
-        // Verificar si el producto ya está en el carrito
         const existingIndex = this.cart.findIndex(item => item.productId === product.id);
 
         if (existingIndex !== -1) {
-            // Incrementar cantidad
             const newQuantity = this.cart[existingIndex].quantity + 1;
             
             if (newQuantity > product.stock) {
@@ -166,7 +161,6 @@ class SalesManager {
             this.cart[existingIndex].quantity = newQuantity;
             this.cart[existingIndex].total = newQuantity * this.cart[existingIndex].price;
         } else {
-            // Agregar nuevo producto
             this.cart.push({
                 productId: product.id,
                 productCode: product.id.toString().padStart(5, '0'),
@@ -181,33 +175,16 @@ class SalesManager {
         }
 
         this.updateCartDisplay();
-        this.showNotification('success', `${product.name} agregado a la venta`);
+        this.showNotification('success', `${product.name} agregado al carrito`);
     }
 
-    // Actualizar visualización del carrito
     updateCartDisplay() {
         this.cartTable.clear();
-        if (this.cart.length === 0) {
-        this.cartTable.draw();
-        $('#lstProductosVenta tbody').html(`
-            <tr class="empty-cart-message">
-                <td colspan="7" class="text-center text-muted py-4">
-                    <i class="fas fa-shopping-basket fa-3x mb-3 d-block"></i>
-                    <p class="mb-0">No hay productos</p>
-                    <small>Busque y agregue productos usando el buscador de arriba</small>
-                </td>
-            </tr>
-        `);
-    } else {
-        // Mostrar productos
         this.cartTable.rows.add(this.cart);
         this.cartTable.draw();
-    }
-    
         this.updateTotals();
     }
 
-    // Actualizar totales
     updateTotals() {
         const total = this.cart.reduce((sum, item) => sum + item.total, 0);
         
@@ -219,18 +196,15 @@ class SalesManager {
         this.updateChange();
     }
 
-    // Actualizar vuelto
     updateChange() {
-        const total = parseFloat($('#totalVentaRegistrar').text());
+        const total = parseFloat($('#totalVentaRegistrar').text()) || 0;
         const efectivoRecibido = parseFloat($('#iptEfectivoRecibido').val()) || 0;
-        
         const vuelto = efectivoRecibido - total;
         
         $('#EfectivoEntregado').text(efectivoRecibido.toFixed(2));
         $('#Vuelto').text(vuelto >= 0 ? vuelto.toFixed(2) : '0.00');
     }
 
-    // Remover producto del carrito
     removeProduct(productId) {
         const index = this.cart.findIndex(item => item.productId === productId);
         
@@ -238,11 +212,10 @@ class SalesManager {
             const productName = this.cart[index].productName;
             this.cart.splice(index, 1);
             this.updateCartDisplay();
-            this.showNotification('info', `${productName} eliminado de la lista`);
+            this.showNotification('info', `${productName} eliminado del carrito`);
         }
     }
 
-    // Actualizar cantidad de producto
     updateQuantity(productId, newQuantity) {
         const index = this.cart.findIndex(item => item.productId === productId);
         
@@ -264,82 +237,242 @@ class SalesManager {
         }
     }
 
-    // Vaciar carrito
     clearCart() {
         if (this.cart.length === 0) {
-            this.showNotification('info', 'El detalle de venta está vacío');
+            this.showNotification('info', 'El carrito ya está vacío');
             return;
         }
 
-        if (confirm('¿Está seguro de vaciar la lista?')) {
+        if (confirm('¿Está seguro de vaciar el carrito?')) {
             this.cart = [];
             this.updateCartDisplay();
             $('#product_id').val('');
             $('#iptEfectivoRecibido').val('');
-            this.showNotification('info', 'Lista vaciada');
+            $('#chkEfectivoExacto').prop('checked', false);
+            this.showNotification('info', 'Carrito vaciado');
         }
     }
 
-    // Vincular eventos
+    async confirmSale() {
+        console.log('Método confirmSale ejecutándose...');
+    
+        if (this.cart.length === 0) {
+            this.showNotification('warning', 'No hay productos en el carrito');
+            return;
+        }
+    
+        const total = this.cart.reduce((sum, item) => sum + item.total, 0);
+        const tipoPago = parseInt($('#selTipoPago').val());
+    
+        if (tipoPago === 0) {
+            this.showNotification('warning', 'Debe seleccionar un tipo de pago');
+            return;
+        }
+    
+        let efectivoRecibido = 0;
+        if (tipoPago === 1) {
+            const efectivoInput = $('#iptEfectivoRecibido').val();
+            efectivoRecibido = efectivoInput ? parseFloat(efectivoInput) : 0;
+    
+            if (efectivoRecibido < total) {
+                this.showNotification('warning', 'El efectivo recibido es menor al total de la venta');
+                return;
+            }
+        } else {
+            efectivoRecibido = total;
+        }
+    
+        if (!confirm(`¿Confirmar venta por Bs. ${total.toFixed(2)}?`)) {
+            return;
+        }
+    
+        try {
+            $('#btnIniciarVenta').prop('disabled', true)
+                .html('<i class="fas fa-spinner fa-spin"></i> Procesando...');
+    
+            const vuelto = efectivoRecibido - total;
+            const clienteDocInput = $('#idDocumentoRecibido').val();
+            const clienteId = clienteDocInput && clienteDocInput.trim() !== ''
+                ? parseInt(clienteDocInput)
+                : null;
+    
+            // 🟢 Construir JSON para enviar al backend
+            const saleData = {
+                clientId: clienteId,                  // int o null
+                paymentType: tipoPago,                // byte
+                totalAmount: parseFloat(total.toFixed(2)),
+                cashReceived: parseFloat(efectivoRecibido.toFixed(2)),
+                change: parseFloat((vuelto >= 0 ? vuelto : 0).toFixed(2)),
+                items: this.cart.map(item => ({
+                    productId: item.productId,
+                    quantity: item.quantity,
+                    price: parseFloat(item.price.toFixed(2)),
+                    total: parseFloat(item.total.toFixed(2))
+                }))
+            };
+    
+            console.log('Datos de venta a enviar:', saleData);
+    
+            // ⚡ Enviar JSON al endpoint
+            const response = await fetch('/Sales?handler=ConfirmSale', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(saleData)
+            });
+    
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Error del servidor:', response.status, errorText);
+                throw new Error(`Error del servidor: ${response.status}`);
+            }
+    
+            const result = await response.json();
+            console.log('Respuesta del servidor:', result);
+    
+            if (result.success) {
+                const saleResponse = {
+                    saleId: result.data.SaleId,
+                    saleDate: result.data.SaleDate,
+                    totalAmount: result.data.TotalAmount,
+                    cashReceived: result.data.CashReceived,
+                    change: result.data.Change,
+                    itemsCount: result.data.ItemsCount
+                };
+                this.showNotification('success', 
+                    `¡Venta registrada exitosamente!`);
+    
+                // 🧹 Limpiar carrito y formulario
+                this.cart = [];
+                this.updateCartDisplay();
+                $('#idDocumentoRecibido').val('');
+                $('#nombreCliente').val('');
+                $('#iptEfectivoRecibido').val('');
+                $('#chkEfectivoExacto').prop('checked', false);
+                $('#selTipoPago').val('1');
+                $('#product_id').val('');
+    
+                this.showSaleSummary(saleResponse);
+            } else {
+                this.showNotification('error', result.message || 'Error al procesar la venta');
+                if (result.errors && result.errors.length > 0) {
+                    console.error('Errores:', result.errors);
+                }
+            }
+    
+        } catch (error) {
+            console.error('❌ Excepción en la venta:', error);
+            this.showNotification('error', 'Error al procesar la venta: ' + error.message);
+        } finally {
+            $('#btnIniciarVenta').prop('disabled', false)
+                .html('<i class="fas fa-cash-register"></i> Confirmar Venta');
+        }
+    }
+
+    
+    showSaleSummary(saleData) {
+        if (!saleData) {
+            console.error('saleData es undefined');
+            return;
+        }
+        const fechaFormateada = new Date(saleData.saleDate).toLocaleString('es-BO', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        const summary = `
+            <div style="text-align: left;">
+                <p><strong>Número de Venta:</strong> #${saleData.saleId}</p>
+                <p><strong>Fecha:</strong> ${fechaFormateada}</p>
+                <p><strong>Total:</strong> Bs. ${saleData.totalAmount.toFixed(2)}</p>
+                <p><strong>Efectivo Recibido:</strong> Bs. ${saleData.cashReceived.toFixed(2)}</p>
+                <p><strong>Vuelto:</strong> Bs. ${saleData.change.toFixed(2)}</p>
+                <p><strong>Productos:</strong> ${saleData.itemsCount} items</p>
+            </div>
+        `;
+        
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Venta Confirmada!',
+                html: summary,
+                confirmButtonText: 'Aceptar'
+            });
+        } else {
+            alert('Venta #' + saleData.saleId + ' confirmada exitosamente\n\n' + 
+                  'Total: Bs. ' + saleData.totalAmount.toFixed(2) + '\n' +
+                  'Vuelto: Bs. ' + saleData.change.toFixed(2));
+        }
+    }
+
+    showNotification(type, message) {
+        if (typeof toastr !== 'undefined') {
+            toastr[type](message);
+        } else {
+            const icons = {
+                success: '✓',
+                error: '✗',
+                warning: '⚠',
+                info: 'ℹ'
+            };
+            alert(`${icons[type] || ''} ${message}`);
+        }
+    }
+
     bindEvents() {
-        // Evento para remover productos
-        $('#lstProductosVenta').on('click', '.remove-product', (e) => {
-            const productId = parseInt($(e.currentTarget).data('product-id'));
-            this.removeProduct(productId);
+        const self = this;
+        
+        $('#lstProductosVenta').on('click', '.remove-product', function() {
+            const productId = parseInt($(this).data('product-id'));
+            self.removeProduct(productId);
         });
 
-        // Evento para actualizar cantidad
-        $('#lstProductosVenta').on('change', '.quantity-input', (e) => {
-            const productId = parseInt($(e.target).data('product-id'));
-            const newQuantity = parseInt($(e.target).val());
-            this.updateQuantity(productId, newQuantity);
+        $('#lstProductosVenta').on('change', '.quantity-input', function() {
+            const productId = parseInt($(this).data('product-id'));
+            const newQuantity = parseInt($(this).val());
+            self.updateQuantity(productId, newQuantity);
         });
 
-        // Botón vaciar carrito
-        $('#btnVaciarListado').on('click', () => {
-            this.clearCart();
+        $('#btnVaciarListado').on('click', function() {
+            self.clearCart();
         });
 
-        // Efectivo recibido
-        $('#iptEfectivoRecibido').on('input', () => {
-            this.updateChange();
+        $('#iptEfectivoRecibido').on('input', function() {
+            self.updateChange();
         });
 
-        // Checkbox efectivo exacto
-        $('#chkEfectivoExacto').on('change', (e) => {
+        $('#chkEfectivoExacto').on('change', function(e) {
             if (e.target.checked) {
                 const total = parseFloat($('#totalVentaRegistrar').text());
                 $('#iptEfectivoRecibido').val(total.toFixed(2));
-                this.updateChange();
+                self.updateChange();
             }
         });
 
-        // Búsqueda por Enter
-        $('#product_id').on('keypress', (e) => {
+        $('#product_id').on('keypress', function(e) {
             if (e.which === 13) {
                 e.preventDefault();
             }
         });
-        
-        // Confirmar venta
-        $('#btnIniciarVenta').on('click', () => {
-            this.confirmSale();
-        });
-    }
 
-    // Mostrar notificaciones
-    showNotification(type, message) {
-        // Usar Toast de Bootstrap o Toastr si está disponible
-        if (typeof Toastr !== 'undefined') {
-            Toastr[type](message);
-        } else {
-            // Fallback a alert
-            alert(message);
-        }
+        $('#btnIniciarVenta').on('click', function() {
+            console.log('Botón clickeado');
+            console.log('self:', self);
+            console.log('self.confirmSale:', self.confirmSale);
+            console.log('typeof self.confirmSale:', typeof self.confirmSale);
+            self.confirmSale();
+        });
     }
 }
 
 // Inicializar cuando el DOM esté listo
-$(document).ready(() => {
+$(document).ready(function() {
+    console.log('Inicializando SalesManager...');
     window.salesManager = new SalesManager();
+    console.log('SalesManager inicializado');
+    console.log('confirmSale disponible:', typeof window.salesManager.confirmSale);
 });
