@@ -4,7 +4,26 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container vh-100 d-flex justify-content-center align-items-center">
+    <div class="row w-100 justify-content-center align-items-center text-center">
+        
+        <!-- Imagen -->
+        <div class="col-md-6 mb-4 mb-md-0">
+            <img src="https://images.pexels.com/photos/3423860/pexels-photo-3423860.jpeg"
+                 class="img-fluid rounded"
+                 alt="Supermercado"
+                 style="max-width: 100%; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+        </div>
+
+        <!-- Texto y botón -->
+        <div class="col-md-6 text-center text-md-start">
+            <h1 class="display-4 fw-bold text-primary">Bienvenido a MicroMercado</h1>
+            <p class="lead text-secondary mt-3">
+                Explora nuestros productos y realiza tus compras de manera rápida y segura.
+            </p>
+            <!-- Botón que dirige a la página de Punto de Venta -->
+            <a asp-page="/Sales" class="btn btn-primary btn-lg mt-3">Ir al Punto de Venta</a>
+        </div>
+
+    </div>
 </div>
