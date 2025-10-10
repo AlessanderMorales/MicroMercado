@@ -19,7 +19,6 @@ namespace MicroMercado.Services
             _logger = logger;
         }
 
-        // --- Projection expression ---
         private static readonly Expression<Func<Product, ProductSearchDTO>> ProjectToDto = p => new ProductSearchDTO
         {
             Id = p.Id,
@@ -31,10 +30,6 @@ namespace MicroMercado.Services
             CategoryId = p.CategoryId,
             CategoryName = p.Category!.Name
         };
-
-        // =========================
-        // Public Methods
-        // =========================
 
         public async Task<IEnumerable<ProductSearchDTO>> SearchProductsAsync(string searchTerm)
         {
@@ -109,10 +104,6 @@ namespace MicroMercado.Services
                 throw;
             }
         }
-
-        // =========================
-        // Private Helpers
-        // =========================
 
         private static Expression<Func<Product, bool>> BuildSimplifiedPredicate(string term)
         {

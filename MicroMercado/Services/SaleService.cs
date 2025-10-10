@@ -18,7 +18,6 @@ public class SaleService : ISaleService
         _logger = logger;
     }
 
-    // COMPLEXITY: 3 (was 6)
     public async Task<SaleDTO.OperationResultDTO<SaleDTO.SaleResponseDTO>> CreateSaleAsync(SaleDTO.CreateSaleDTO saleDTO)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
@@ -49,15 +48,14 @@ public class SaleService : ISaleService
         }
     }
 
-    // COMPLEXITY: 2 (new method)
+
     private async Task<SaleDTO.OperationResultDTO<SaleDTO.SaleResponseDTO>> ValidateSaleRequestAsync(SaleDTO.CreateSaleDTO saleDTO)
     {
         var itemsValidation = ValidateItems(saleDTO.Items);
         if (!itemsValidation.Success)
             return itemsValidation;
 
-        // Validate client existence: if a client id is provided but the client does not exist or is inactive,
-        // throw an exception so that CreateSaleAsync will treat it as a processing error (matches test expectations).
+
         if (saleDTO.ClientId.HasValue)
         {
             var clientExists = await _context.Clients
@@ -65,7 +63,6 @@ public class SaleService : ISaleService
 
             if (!clientExists)
             {
-                // Throwing here will be caught by CreateSaleAsync and result in the generic error message.
                 throw new InvalidOperationException($"Cliente con ID {saleDTO.ClientId.Value} no encontrado o inactivo");
             }
         }
@@ -84,7 +81,6 @@ public class SaleService : ISaleService
         return new SaleDTO.OperationResultDTO<SaleDTO.SaleResponseDTO> { Success = true };
     }
 
-    // COMPLEXITY: 1 (new method)
     private SaleDTO.OperationResultDTO<SaleDTO.SaleResponseDTO> ValidateItems(List<SaleDTO.SaleItemDTO> items)
     {
         if (items == null || !items.Any())
@@ -99,7 +95,6 @@ public class SaleService : ISaleService
         return new SaleDTO.OperationResultDTO<SaleDTO.SaleResponseDTO> { Success = true };
     }
 
-    // COMPLEXITY: 2 (new method)
     private async Task<Sale> ProcessSaleAsync(SaleDTO.CreateSaleDTO saleDTO)
     {
         var sale = CreateSaleEntity(saleDTO);
@@ -114,7 +109,6 @@ public class SaleService : ISaleService
         return sale;
     }
 
-    // COMPLEXITY: 1 (new method)
     private Sale CreateSaleEntity(SaleDTO.CreateSaleDTO saleDTO)
     {
         return new Sale
@@ -126,7 +120,6 @@ public class SaleService : ISaleService
         };
     }
 
-    // COMPLEXITY: 1 (new method)
     private async Task CreateSaleItemsAsync(int saleId, List<SaleDTO.SaleItemDTO> items)
     {
         var saleItems = items.Select(itemDTO => new SaleItem
@@ -141,7 +134,6 @@ public class SaleService : ISaleService
         await _context.SaveChangesAsync();
     }
 
-    // COMPLEXITY: 1 (new method)
     private SaleDTO.OperationResultDTO<SaleDTO.SaleResponseDTO> CreateSuccessResponse(Sale sale, SaleDTO.CreateSaleDTO saleDTO)
     {
         return new SaleDTO.OperationResultDTO<SaleDTO.SaleResponseDTO>
@@ -160,7 +152,6 @@ public class SaleService : ISaleService
         };
     }
 
-    // COMPLEXITY: 1 (new method)
     private void LogSaleCreation(Sale sale, int itemCount)
     {
         _logger.LogInformation(
@@ -168,7 +159,6 @@ public class SaleService : ISaleService
             sale.Id, sale.TotalAmount, itemCount);
     }
 
-    // COMPLEXITY: 3 (was 6)
     public async Task<SaleDTO.OperationResultDTO<bool>> ValidateStockAsync(List<SaleDTO.SaleItemDTO> items)
     {
         try
@@ -203,7 +193,6 @@ public class SaleService : ISaleService
         }
     }
 
-    // COMPLEXITY: 2 (new method)
     private async Task<List<string>> CollectStockValidationErrorsAsync(List<SaleDTO.SaleItemDTO> items)
     {
         var errors = new List<string>();
@@ -218,7 +207,6 @@ public class SaleService : ISaleService
         return errors;
     }
 
-    // COMPLEXITY: 2 (new method)
     private async Task<string> ValidateSingleItemStockAsync(SaleDTO.SaleItemDTO item)
     {
         var product = await _context.Products
@@ -235,7 +223,6 @@ public class SaleService : ISaleService
         return null;
     }
 
-    // COMPLEXITY: 2 (was 3)
     public async Task<bool> UpdateProductStockAsync(List<SaleDTO.SaleItemDTO> items)
     {
         try
@@ -251,7 +238,6 @@ public class SaleService : ISaleService
         }
     }
 
-    // COMPLEXITY: 1 (new method)
     private async Task UpdateStockForItemsAsync(List<SaleDTO.SaleItemDTO> items)
     {
         foreach (var item in items)
