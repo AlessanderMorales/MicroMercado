@@ -9,6 +9,7 @@ $(document).ready(function () {
             this.selectedClientId = 0;
             this.selectedClientName = "";
             this.selectedClientTaxDocument = "";
+            this.isProcessingSale = false; 
 
             this.init();
         }
@@ -197,7 +198,7 @@ $(document).ready(function () {
 
                 if (response.success) {
                     this.updateClientInfo(response.client); 
-                    this.showNotification('success', 'Cliente encontrado exitosamente.');
+                    //this.showNotification('success', 'Cliente encontrado exitosamente.');
                 } else {
                     this.updateClientInfo(null); 
                     this.showNotification('info', response.message || 'Cliente no encontrado.');
@@ -266,7 +267,8 @@ $(document).ready(function () {
         }
 
         updateChange() {
-            const total = parseFloat($('#totalVentaRegistrar').text()) || 0;
+            const totalText = $('#boleta_total').text().trim();
+            const total = parseFloat(totalText) || 0;
             const efectivoRecibido = parseFloat($('#iptEfectivoRecibido').val()) || 0;
 
             const vuelto = efectivoRecibido - total;
@@ -347,6 +349,13 @@ $(document).ready(function () {
         async confirmSale() {
             console.log('Método confirmSale ejecutándose...');
 
+            
+            if (this.isProcessingSale) {
+                console.warn('Ya hay una venta en proceso. Ignorando click adicional.');
+                this.showNotification('warning', 'Ya hay una venta en proceso, por favor espere...');
+                return;
+            }
+            
             if (this.cart.length === 0) {
                 this.showNotification('warning', 'No hay productos en la lista de venta');
                 return;
@@ -380,11 +389,19 @@ $(document).ready(function () {
             if (!confirm(`¿Confirmar venta por Bs. ${total.toFixed(2)}?`)) {
                 return;
             }
+            
+            this.isProcessingSale = true;
 
             try {
+                
+                const $btnConfirmar = $('#btnIniciarVenta');
+                const $btnVaciar = $('#btnVaciarListado');
+                
                 $('#btnIniciarVenta').prop('disabled', true)
                     .html('<i class="fas fa-spinner fa-spin"></i> Procesando...');
 
+                $btnVaciar.prop('disabled', true);
+                
                 const vuelto = efectivoRecibido - total;
                 const saleData = {
                     clientId: this.selectedClientId,
@@ -454,8 +471,15 @@ $(document).ready(function () {
                 console.error('❌ Excepción en la venta:', error);
                 this.showNotification('error', 'Error al procesar la venta: ' + error.message);
             } finally {
-                $('#btnIniciarVenta').prop('disabled', false)
+                this.isProcessingSale = false;
+        
+                const $btnConfirmar = $('#btnIniciarVenta');
+                const $btnVaciar = $('#btnVaciarListado');
+                
+                $btnConfirmar.prop('disabled', false)
                     .html('<i class="fas fa-check-circle"></i> Confirmar Venta');
+                
+                $btnVaciar.prop('disabled', false);
             }
         }
 
