@@ -1,9 +1,9 @@
 using FluentValidation;
 using FluentValidation.Results;
-using MicroMercado.Data;
-using MicroMercado.DTOs;
-using MicroMercado.Models;
-using MicroMercado.Services;
+using MicroMercado.Application.Services;
+using MicroMercado.Application.DTOs.Client;
+using MicroMercado.Domain.Models;
+using MicroMercado.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
@@ -259,6 +259,7 @@ namespace PruebasMicroMercado
             };
             context.Clients.Add(client);
             await context.SaveChangesAsync();
+
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
             var result = await service.DeleteClientAsync(1);
             Assert.True(result);

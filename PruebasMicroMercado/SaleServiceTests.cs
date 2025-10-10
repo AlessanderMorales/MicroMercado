@@ -1,7 +1,7 @@
-﻿using MicroMercado.Data;
-using MicroMercado.DTOs.Sales;
-using MicroMercado.Models;
-using MicroMercado.Services.sales;
+﻿using MicroMercado.Application.Services;
+using MicroMercado.Application.DTOs.Sales;
+using MicroMercado.Domain.Models;
+using MicroMercado.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;

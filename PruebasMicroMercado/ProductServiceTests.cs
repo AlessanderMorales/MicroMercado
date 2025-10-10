@@ -1,13 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using MicroMercado.Application.Services;
+using MicroMercado.Application.DTOs.Sales;
+using MicroMercado.Domain.Models;
+using MicroMercado.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using MicroMercado.Data;
-using MicroMercado.Models;
-using MicroMercado.Services;
-using MicroMercado.DTOs.Sales;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PruebasMicroMercado
@@ -91,7 +91,7 @@ namespace PruebasMicroMercado
             await context.SaveChangesAsync();
         }
 
-        // Test 1: SearchProductsAsync - Complexity 2 - Path 1 (Empty search term)
+        // Test 1: SearchProductsAsync - Complexity 3 - Path 1 (Empty search term)
         [Fact]
         public async Task SearchProductsAsync_ShouldReturnEmpty_WhenSearchTermIsEmpty()
         {
@@ -103,7 +103,7 @@ namespace PruebasMicroMercado
             Assert.Empty(result);
         }
 
-        // Test 2: SearchProductsAsync - Complexity 2 - Path 2 (Valid search term)
+        // Test 2: SearchProductsAsync - Complexity 3 - Path 2 (Valid search term)
         [Fact]
         public async Task SearchProductsAsync_ShouldReturnProducts_WhenSearchTermIsValid()
         {
@@ -119,7 +119,25 @@ namespace PruebasMicroMercado
             Assert.Equal("Electrónicos", products[0].CategoryName);
         }
 
-        // Test 3: GetProductByIdAsync - Complexity 1
+        // Test 3: SearchProductsAsync - Complexity 3 - Path 3 (Exception occurs)
+        [Fact]
+        public async Task SearchProductsAsync_ShouldThrowException_WhenDatabaseErrorOccurs()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            var context = new ApplicationDbContext(options);
+            await context.DisposeAsync();
+
+            var logger = GetMockLogger();
+            var service = new ProductService(context, logger.Object);
+            await Assert.ThrowsAsync<ObjectDisposedException>(async () =>
+            {
+                await service.SearchProductsAsync("laptop");
+            });
+        }
+
+        // Test 4: GetProductByIdAsync - Complexity 2 - Path 1 (Product exists)
         [Fact]
         public async Task GetProductByIdAsync_ShouldReturnProduct_WhenProductExists()
         {
@@ -135,7 +153,25 @@ namespace PruebasMicroMercado
             Assert.Equal("Electrónicos", result.CategoryName);
         }
 
-        // Test 4: HasStockAsync - Complexity 2 - Path 1 (Has sufficient stock)
+        // Test 5: GetProductByIdAsync - Complexity 2 - Path 2 (Exception occurs)
+        [Fact]
+        public async Task GetProductByIdAsync_ShouldThrowException_WhenDatabaseErrorOccurs()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            var context = new ApplicationDbContext(options);
+            await context.DisposeAsync();
+
+            var logger = GetMockLogger();
+            var service = new ProductService(context, logger.Object);
+            await Assert.ThrowsAsync<ObjectDisposedException>(async () =>
+            {
+                await service.GetProductByIdAsync(1);
+            });
+        }
+
+        // Test 6: HasStockAsync - Complexity 3 - Path 1 (Has sufficient stock)
         [Fact]
         public async Task HasStockAsync_ShouldReturnTrue_WhenStockIsSufficient()
         {
@@ -147,7 +183,7 @@ namespace PruebasMicroMercado
             Assert.True(result);
         }
 
-        // Test 5: HasStockAsync - Complexity 2 - Path 2 (Insufficient stock)
+        // Test 7: HasStockAsync - Complexity 3 - Path 2 (Insufficient stock)
         [Fact]
         public async Task HasStockAsync_ShouldReturnFalse_WhenStockIsInsufficient()
         {
@@ -157,6 +193,24 @@ namespace PruebasMicroMercado
             var service = new ProductService(context, logger.Object);
             var result = await service.HasStockAsync(1, 20);
             Assert.False(result);
+        }
+
+        // Test 8: HasStockAsync - Complexity 3 - Path 3 (Exception occurs)
+        [Fact]
+        public async Task HasStockAsync_ShouldThrowException_WhenDatabaseErrorOccurs()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            var context = new ApplicationDbContext(options);
+            await context.DisposeAsync();
+
+            var logger = GetMockLogger();
+            var service = new ProductService(context, logger.Object);
+            await Assert.ThrowsAsync<ObjectDisposedException>(async () =>
+            {
+                await service.HasStockAsync(1, 5);
+            });
         }
     }
 }
