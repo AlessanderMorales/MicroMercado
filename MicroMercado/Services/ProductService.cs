@@ -39,15 +39,32 @@ namespace MicroMercado.Services
             try
             {
                 var normalizedSearch = searchTerm.Trim().ToLower();
-                var predicate = BuildSimplifiedPredicate(normalizedSearch);
+                //var predicate = BuildSimplifiedPredicate(normalizedSearch);
 
                 var products = await _context.Products
                     .Include(p => p.Category)
-                    .Where(predicate)
-                    .Select(ProjectToDto)
+                    .Where(p => p.Status == 1 && 
+                                p.Category != null && 
+                                p.Category.Status == 1 &&
+                                (p.Name.ToLower().Contains(normalizedSearch) ||
+                                 p.Description.ToLower().Contains(normalizedSearch) ||
+                                 p.Brand.ToLower().Contains(normalizedSearch) ||
+                                 p.Category.Name.ToLower().Contains(normalizedSearch)))
+                    .Select(p => new ProductSearchDTO
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Description = p.Description,
+                        Brand = p.Brand,
+                        Price = p.Price,
+                        Stock = p.Stock,
+                        CategoryId = p.CategoryId,
+                        CategoryName = p.Category!.Name
+                    })
                     .OrderBy(p => p.Name)
                     .Take(20)
                     .ToListAsync();
+
 
                 _logger.LogInformation(
                     "Búsqueda de productos con término '{SearchTerm}' retornó {Count} resultados",
