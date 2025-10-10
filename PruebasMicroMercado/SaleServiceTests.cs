@@ -100,7 +100,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task CreateSaleAsync_ShouldCreateSale_WhenDataIsValid()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             await SeedTestData(context);
             var logger = GetMockLogger();
@@ -118,11 +117,7 @@ namespace PruebasMicroMercado
                     new SaleDTO.SaleItemDTO { ProductId = 2, Quantity = 1, Price = 25.00m }
                 }
             };
-
-            // Act
             var result = await service.CreateSaleAsync(saleDTO);
-
-            // Assert
             Assert.True(result.Success);
             Assert.Equal("Venta registrada exitosamente", result.Message);
             Assert.NotNull(result.Data);
@@ -133,7 +128,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task CreateSaleAsync_ShouldReturnError_WhenValidationFails()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             await SeedTestData(context);
             var logger = GetMockLogger();
@@ -145,13 +139,9 @@ namespace PruebasMicroMercado
                 TotalAmount = 100.00m,
                 CashReceived = 100.00m,
                 Change = 0m,
-                Items = new List<SaleDTO.SaleItemDTO>() // Empty items
+                Items = new List<SaleDTO.SaleItemDTO>()
             };
-
-            // Act
             var result = await service.CreateSaleAsync(saleDTO);
-
-            // Assert
             Assert.False(result.Success);
             Assert.Equal("No hay productos en la venta", result.Message);
         }
@@ -160,14 +150,13 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task CreateSaleAsync_ShouldReturnError_WhenExceptionOccurs()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             var logger = GetMockLogger();
             var service = new SaleService(context, logger.Object);
 
             var saleDTO = new SaleDTO.CreateSaleDTO
             {
-                ClientId = 999, // Non-existent client
+                ClientId = 999,
                 TotalAmount = 100.00m,
                 CashReceived = 100.00m,
                 Change = 0m,
@@ -176,11 +165,7 @@ namespace PruebasMicroMercado
                     new SaleDTO.SaleItemDTO { ProductId = 999, Quantity = 1, Price = 100.00m }
                 }
             };
-
-            // Act
             var result = await service.CreateSaleAsync(saleDTO);
-
-            // Assert
             Assert.False(result.Success);
             Assert.Equal("Error al procesar la venta", result.Message);
         }
@@ -189,7 +174,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task ValidateStockAsync_ShouldReturnSuccess_WhenStockIsSufficient()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             await SeedTestData(context);
             var logger = GetMockLogger();
@@ -200,11 +184,7 @@ namespace PruebasMicroMercado
                 new SaleDTO.SaleItemDTO { ProductId = 1, Quantity = 2, Price = 1500.00m },
                 new SaleDTO.SaleItemDTO { ProductId = 2, Quantity = 1, Price = 25.00m }
             };
-
-            // Act
             var result = await service.ValidateStockAsync(items);
-
-            // Assert
             Assert.True(result.Success);
             Assert.True(result.Data);
         }
@@ -213,7 +193,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task ValidateStockAsync_ShouldReturnError_WhenStockIsInsufficient()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             await SeedTestData(context);
             var logger = GetMockLogger();
@@ -223,11 +202,7 @@ namespace PruebasMicroMercado
             {
                 new SaleDTO.SaleItemDTO { ProductId = 3, Quantity = 1, Price = 100.00m } // Product with 0 stock
             };
-
-            // Act
             var result = await service.ValidateStockAsync(items);
-
-            // Assert
             Assert.False(result.Success);
             Assert.Equal("Validación de stock fallida", result.Message);
             Assert.NotEmpty(result.Errors);
@@ -237,13 +212,10 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task ValidateStockAsync_ShouldReturnError_WhenExceptionOccurs()
         {
-            // Arrange
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
             var context = new ApplicationDbContext(options);
-
-            // Dispose context to force an exception
             await context.DisposeAsync();
 
             var logger = GetMockLogger();
@@ -253,11 +225,7 @@ namespace PruebasMicroMercado
             {
                 new SaleDTO.SaleItemDTO { ProductId = 1, Quantity = 1, Price = 100.00m }
             };
-
-            // Act
             var result = await service.ValidateStockAsync(items);
-
-            // Assert
             Assert.False(result.Success);
             Assert.Equal("Error al validar stock", result.Message);
         }
@@ -266,7 +234,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task UpdateProductStockAsync_ShouldReturnTrue_WhenUpdateSucceeds()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             await SeedTestData(context);
             var logger = GetMockLogger();
@@ -276,21 +243,16 @@ namespace PruebasMicroMercado
             {
                 new SaleDTO.SaleItemDTO { ProductId = 1, Quantity = 2, Price = 1500.00m }
             };
-
-            // Act
             var result = await service.UpdateProductStockAsync(items);
-
-            // Assert
             Assert.True(result);
             var product = await context.Products.FindAsync((short)1);
-            Assert.Equal(8, product.Stock); // 10 - 2 = 8
+            Assert.Equal(8, product.Stock);
         }
 
         // Test 8: UpdateProductStockAsync - Complexity 2 - Path 2 (Exception occurs)
         [Fact]
         public async Task UpdateProductStockAsync_ShouldReturnFalse_WhenExceptionOccurs()
         {
-            // Arrange
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
@@ -306,11 +268,7 @@ namespace PruebasMicroMercado
             {
                 new SaleDTO.SaleItemDTO { ProductId = 1, Quantity = 1, Price = 100.00m }
             };
-
-            // Act
             var result = await service.UpdateProductStockAsync(items);
-
-            // Assert
             Assert.False(result);
         }
     }

@@ -35,6 +35,6 @@ public class CreateClientValidator : AbstractValidator<CreateClientDTO>
         
         var cleanDocument = taxDocument.Replace("-", "");
 
-        return cleanDocument.Length >= 7 && cleanDocument.Length <= 15;
+        return cleanDocument.Length >= 6 && cleanDocument.Length <= 15;
     }
 }

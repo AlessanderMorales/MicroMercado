@@ -95,15 +95,10 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task SearchProductsAsync_ShouldReturnEmpty_WhenSearchTermIsEmpty()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             var logger = GetMockLogger();
             var service = new ProductService(context, logger.Object);
-
-            // Act
             var result = await service.SearchProductsAsync("");
-
-            // Assert
             Assert.NotNull(result);
             Assert.Empty(result);
         }
@@ -112,16 +107,11 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task SearchProductsAsync_ShouldReturnProducts_WhenSearchTermIsValid()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             await SeedTestData(context);
             var logger = GetMockLogger();
             var service = new ProductService(context, logger.Object);
-
-            // Act
             var result = await service.SearchProductsAsync("laptop");
-
-            // Assert
             Assert.NotNull(result);
             var products = result.ToList();
             Assert.Single(products);
@@ -133,16 +123,11 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task GetProductByIdAsync_ShouldReturnProduct_WhenProductExists()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             await SeedTestData(context);
             var logger = GetMockLogger();
             var service = new ProductService(context, logger.Object);
-
-            // Act
             var result = await service.GetProductByIdAsync(1);
-
-            // Assert
             Assert.NotNull(result);
             Assert.Equal("Laptop Dell", result.Name);
             Assert.Equal(1500.00m, result.Price);
@@ -154,16 +139,11 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task HasStockAsync_ShouldReturnTrue_WhenStockIsSufficient()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             await SeedTestData(context);
             var logger = GetMockLogger();
             var service = new ProductService(context, logger.Object);
-
-            // Act
             var result = await service.HasStockAsync(1, 5);
-
-            // Assert
             Assert.True(result);
         }
 
@@ -171,16 +151,11 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task HasStockAsync_ShouldReturnFalse_WhenStockIsInsufficient()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             await SeedTestData(context);
             var logger = GetMockLogger();
             var service = new ProductService(context, logger.Object);
-
-            // Act
             var result = await service.HasStockAsync(1, 20);
-
-            // Assert
             Assert.False(result);
         }
     }

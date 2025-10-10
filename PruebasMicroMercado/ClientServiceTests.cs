@@ -28,7 +28,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task GetClientByIdAsync_ShouldReturnClient_WhenClientExists()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
@@ -45,11 +44,7 @@ namespace PruebasMicroMercado
             };
             context.Clients.Add(client);
             await context.SaveChangesAsync();
-
-            // Act
             var result = await service.GetClientByIdAsync(1);
-
-            // Assert
             Assert.NotNull(result);
             Assert.Equal("Juan", result.Name);
             Assert.Equal("Pérez", result.LastName);
@@ -59,7 +54,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task GetClientByTaxDocumentAsync_ShouldReturnClient_WhenTaxDocumentExists()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
@@ -76,11 +70,7 @@ namespace PruebasMicroMercado
             };
             context.Clients.Add(client);
             await context.SaveChangesAsync();
-
-            // Act
             var result = await service.GetClientByTaxDocumentAsync("87654321");
-
-            // Assert
             Assert.NotNull(result);
             Assert.Equal("María", result.Name);
             Assert.Equal("87654321", result.TaxDocument);
@@ -90,7 +80,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task GetAllClientsAsync_ShouldReturnAllClients()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
@@ -101,11 +90,7 @@ namespace PruebasMicroMercado
                 new Client { Id = 2, Name = "María", LastName = "González", TaxDocument = "222", Status = 1, LastUpdate = DateTime.Now }
             );
             await context.SaveChangesAsync();
-
-            // Act
             var result = await service.GetAllClientsAsync();
-
-            // Assert
             Assert.NotNull(result);
             Assert.Equal(2, result.Count());
         }
@@ -114,7 +99,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task CreateClientAsync_ShouldCreateClient_WhenDataIsValid()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
@@ -130,11 +114,7 @@ namespace PruebasMicroMercado
                 .ReturnsAsync(new ValidationResult());
 
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
-
-            // Act
             var result = await service.CreateClientAsync(clientDto);
-
-            // Assert
             Assert.NotNull(result);
             Assert.Equal("Pedro", result.Name);
             Assert.Equal("Ramírez", result.LastName);
@@ -145,7 +125,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task CreateClientAsync_ShouldReturnNull_WhenValidationFails()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
@@ -165,11 +144,7 @@ namespace PruebasMicroMercado
                 .ReturnsAsync(new ValidationResult(validationFailures));
 
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
-
-            // Act
             var result = await service.CreateClientAsync(clientDto);
-
-            // Assert
             Assert.Null(result);
         }
 
@@ -177,7 +152,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task UpdateClientAsync_ShouldUpdateClient_WhenDataIsValid()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
@@ -207,11 +181,7 @@ namespace PruebasMicroMercado
                 .ReturnsAsync(new ValidationResult());
 
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
-
-            // Act
             var result = await service.UpdateClientAsync(updateDto);
-
-            // Assert
             Assert.NotNull(result);
             Assert.Equal("Carlos Actualizado", result.Name);
         }
@@ -220,7 +190,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task UpdateClientAsync_ShouldReturnNull_WhenValidationFails()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
@@ -242,11 +211,7 @@ namespace PruebasMicroMercado
                 .ReturnsAsync(new ValidationResult(validationFailures));
 
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
-
-            // Act
             var result = await service.UpdateClientAsync(updateDto);
-
-            // Assert
             Assert.Null(result);
         }
 
@@ -254,7 +219,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task UpdateClientAsync_ShouldReturnNull_WhenClientNotFound()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
@@ -272,11 +236,7 @@ namespace PruebasMicroMercado
                 .ReturnsAsync(new ValidationResult());
 
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
-
-            // Act
             var result = await service.UpdateClientAsync(updateDto);
-
-            // Assert
             Assert.Null(result);
         }
 
@@ -284,7 +244,6 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task DeleteClientAsync_ShouldReturnTrue_WhenClientExists()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
@@ -300,13 +259,8 @@ namespace PruebasMicroMercado
             };
             context.Clients.Add(client);
             await context.SaveChangesAsync();
-
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
-
-            // Act
             var result = await service.DeleteClientAsync(1);
-
-            // Assert
             Assert.True(result);
             Assert.Null(await context.Clients.FindAsync(1));
         }
@@ -315,16 +269,11 @@ namespace PruebasMicroMercado
         [Fact]
         public async Task DeleteClientAsync_ShouldReturnFalse_WhenClientNotFound()
         {
-            // Arrange
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
-
-            // Act
             var result = await service.DeleteClientAsync(999);
-
-            // Assert
             Assert.False(result);
         }
     }
