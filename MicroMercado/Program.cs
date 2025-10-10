@@ -1,18 +1,23 @@
 using Microsoft.EntityFrameworkCore;
-using MicroMercado.Data;
-using MicroMercado.Services; // Este incluye IClientService, IProductService
-using MicroMercado.Services.sales; // <--- ¡¡¡AÑADIDO ESTE USING PARA TU SaleService!!!
-using MicroMercado.DTOs; // Para ClientDTO
-using MicroMercado.DTOs.Sales; // Para SaleDTO, etc.
-using MicroMercado.Validators.Client;
+// Este incluye IClientService, IProductService
+// <--- ¡¡¡AÑADIDO ESTE USING PARA TU SaleService!!!
+// Para ClientDTO
+// Para SaleDTO, etc.
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using System.Text.Json;
+using MicroMercado.Application.DTOs.Client;
+using MicroMercado.Application.Services;
+using MicroMercado.Application.Validators.Client;
+using MicroMercado.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configuración de Razor Pages
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(options =>
+{
+    options.RootDirectory = "/Presentation/Pages";
+});
 
 // Configuración de la base de datos PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

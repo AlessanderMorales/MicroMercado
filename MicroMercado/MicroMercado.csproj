@@ -17,4 +17,22 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Application\" />
+    <Folder Include="Domain\" />
+    <Folder Include="Infrastructure\" />
+    <Folder Include="Presentation\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Presentation\Pages\Error.cshtml" />
+    <AdditionalFiles Include="Presentation\Pages\Index.cshtml" />
+    <AdditionalFiles Include="Presentation\Pages\Privacy.cshtml" />
+    <AdditionalFiles Include="Presentation\Pages\Sales.cshtml" />
+    <AdditionalFiles Include="Presentation\Pages\Shared\_Layout.cshtml" />
+    <AdditionalFiles Include="Presentation\Pages\Shared\_ValidationScriptsPartial.cshtml" />
+    <AdditionalFiles Include="Presentation\Pages\_ViewImports.cshtml" />
+    <AdditionalFiles Include="Presentation\Pages\_ViewStart.cshtml" />
+  </ItemGroup>
+
 </Project>
