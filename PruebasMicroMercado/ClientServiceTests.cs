@@ -24,59 +24,66 @@ namespace PruebasMicroMercado
             return new ApplicationDbContext(options);
         }
 
-        // Test 1: GetClientByIdAsync - Complexity 1
-        [Fact]
-        public async Task GetClientByIdAsync_ShouldReturnClient_WhenClientExists()
+        // Test 1: GetClientByIdAsync - Parameterized
+        // Complexity: 1
+        [Theory]
+        [InlineData(1, "Juan", "Pérez", "12345678")]
+        [InlineData(2, "María", "González", "87654321")]
+        [InlineData(3, "Pedro", "Ramírez", "11111111")]
+        public async Task GetClientByIdAsync_ShouldReturnClient_WhenClientExists(
+            int clientId,
+            string expectedName,
+            string expectedLastName,
+            string expectedTaxDocument)
         {
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
 
-            var client = new Client
-            {
-                Id = 1,
-                Name = "Juan",
-                LastName = "Pérez",
-                TaxDocument = "12345678",
-                Status = 1,
-                LastUpdate = DateTime.Now
-            };
-            context.Clients.Add(client);
+            context.Clients.AddRange(
+                new Client { Id = 1, Name = "Juan", LastName = "Pérez", TaxDocument = "12345678", Status = 1, LastUpdate = DateTime.Now },
+                new Client { Id = 2, Name = "María", LastName = "González", TaxDocument = "87654321", Status = 1, LastUpdate = DateTime.Now },
+                new Client { Id = 3, Name = "Pedro", LastName = "Ramírez", TaxDocument = "11111111", Status = 1, LastUpdate = DateTime.Now }
+            );
             await context.SaveChangesAsync();
-            var result = await service.GetClientByIdAsync(1);
+            var result = await service.GetClientByIdAsync(clientId);
             Assert.NotNull(result);
-            Assert.Equal("Juan", result.Name);
-            Assert.Equal("Pérez", result.LastName);
+            Assert.Equal(expectedName, result.Name);
+            Assert.Equal(expectedLastName, result.LastName);
+            Assert.Equal(expectedTaxDocument, result.TaxDocument);
         }
 
-        // Test 2: GetClientByTaxDocumentAsync - Complexity 1
-        [Fact]
-        public async Task GetClientByTaxDocumentAsync_ShouldReturnClient_WhenTaxDocumentExists()
+        // Test 2: GetClientByTaxDocumentAsync - Parameterized
+        // Complexity: 1
+        [Theory]
+        [InlineData("12345678", "Juan", "Pérez")]
+        [InlineData("87654321", "María", "González")]
+        [InlineData("11111111", "Pedro", "Ramírez")]
+        public async Task GetClientByTaxDocumentAsync_ShouldReturnClient_WhenTaxDocumentExists(
+            string taxDocument,
+            string expectedName,
+            string expectedLastName)
         {
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
 
-            var client = new Client
-            {
-                Id = 1,
-                Name = "María",
-                LastName = "González",
-                TaxDocument = "87654321",
-                Status = 1,
-                LastUpdate = DateTime.Now
-            };
-            context.Clients.Add(client);
+            context.Clients.AddRange(
+                new Client { Id = 1, Name = "Juan", LastName = "Pérez", TaxDocument = "12345678", Status = 1, LastUpdate = DateTime.Now },
+                new Client { Id = 2, Name = "María", LastName = "González", TaxDocument = "87654321", Status = 1, LastUpdate = DateTime.Now },
+                new Client { Id = 3, Name = "Pedro", LastName = "Ramírez", TaxDocument = "11111111", Status = 1, LastUpdate = DateTime.Now }
+            );
             await context.SaveChangesAsync();
-            var result = await service.GetClientByTaxDocumentAsync("87654321");
+            var result = await service.GetClientByTaxDocumentAsync(taxDocument);
             Assert.NotNull(result);
-            Assert.Equal("María", result.Name);
-            Assert.Equal("87654321", result.TaxDocument);
+            Assert.Equal(expectedName, result.Name);
+            Assert.Equal(expectedLastName, result.LastName);
         }
 
-        // Test 3: GetAllClientsAsync - Complexity 1
+        // Test 3: GetAllClientsAsync
+        // Complexity: 1
         [Fact]
         public async Task GetAllClientsAsync_ShouldReturnAllClients()
         {
@@ -95,187 +102,159 @@ namespace PruebasMicroMercado
             Assert.Equal(2, result.Count());
         }
 
-        // Test 4: CreateClientAsync - Complexity 2 - Path 1 (Valid)
-        [Fact]
-        public async Task CreateClientAsync_ShouldCreateClient_WhenDataIsValid()
+        // Test 4 & 5: CreateClientAsync - Parameterized
+        // Complexity: 2 (Path 1: Valid, Path 2: Invalid)
+        public static TheoryData<CreateClientDTO, bool, bool> CreateClientTestData =>
+            new TheoryData<CreateClientDTO, bool, bool>
+            {
+                { new CreateClientDTO { Name = "Pedro", LastName = "Ramírez", TaxDocument = "99999999" }, true, true },
+                { new CreateClientDTO { Name = "Ana", LastName = "López", TaxDocument = "88888888" }, true, true },
+                { new CreateClientDTO { Name = "", LastName = "Ramírez", TaxDocument = "99999999" }, false, false },
+                { new CreateClientDTO { Name = "Pedro", LastName = "", TaxDocument = "99999999" }, false, false }
+            };
+
+        [Theory]
+        [MemberData(nameof(CreateClientTestData))]
+        public async Task CreateClientAsync_ShouldReturnCorrectResult_BasedOnValidation(
+            CreateClientDTO clientDto,
+            bool isValidationSuccess,
+            bool shouldReturnClient)
         {
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
 
-            var clientDto = new CreateClientDTO
+            if (isValidationSuccess)
             {
-                Name = "Pedro",
-                LastName = "Ramírez",
-                TaxDocument = "99999999"
-            };
-
-            createValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<CreateClientDTO>(), default))
-                .ReturnsAsync(new ValidationResult());
+                createValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<CreateClientDTO>(), default))
+                    .ReturnsAsync(new ValidationResult());
+            }
+            else
+            {
+                var validationFailures = new List<ValidationFailure>
+                {
+                    new ValidationFailure("Name", "Name is required")
+                };
+                createValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<CreateClientDTO>(), default))
+                    .ReturnsAsync(new ValidationResult(validationFailures));
+            }
 
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
             var result = await service.CreateClientAsync(clientDto);
-            Assert.NotNull(result);
-            Assert.Equal("Pedro", result.Name);
-            Assert.Equal("Ramírez", result.LastName);
-            Assert.Equal(1, result.Status);
+            if (shouldReturnClient)
+            {
+                Assert.NotNull(result);
+                Assert.Equal(clientDto.Name, result.Name);
+                Assert.Equal(1, result.Status);
+            }
+            else
+            {
+                Assert.Null(result);
+            }
         }
 
-        // Test 5: CreateClientAsync - Complexity 2 - Path 2 (Invalid)
-        [Fact]
-        public async Task CreateClientAsync_ShouldReturnNull_WhenValidationFails()
+        // Test 6, 7 & 8: UpdateClientAsync - Parameterized
+        // Complexity: 3 (Path 1: Valid, Path 2: Invalid, Path 3: Not Found)
+        public static TheoryData<int, UpdateClientDTO, bool, bool, bool> UpdateClientTestData =>
+            new TheoryData<int, UpdateClientDTO, bool, bool, bool>
+            {
+                { 1, new UpdateClientDTO { Id = 1, Name = "Carlos Updated", LastName = "López", TaxDocument = "11111111", Status = 1 }, true, true, true },
+                { 1, new UpdateClientDTO { Id = 1, Name = "", LastName = "López", TaxDocument = "11111111", Status = 1 }, false, true, false },
+                { 1, new UpdateClientDTO { Id = 999, Name = "Inexistente", LastName = "Cliente", TaxDocument = "00000000", Status = 1 }, true, false, false }
+            };
+
+        [Theory]
+        [MemberData(nameof(UpdateClientTestData))]
+        public async Task UpdateClientAsync_ShouldReturnCorrectResult_BasedOnScenario(
+            int existingClientId,
+            UpdateClientDTO updateDto,
+            bool isValidationSuccess,
+            bool clientExists,
+            bool expectedSuccess)
         {
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
 
-            var clientDto = new CreateClientDTO
+            if (clientExists)
             {
-                Name = "",
-                LastName = "Ramírez",
-                TaxDocument = "99999999"
-            };
+                var existingClient = new Client
+                {
+                    Id = existingClientId,
+                    Name = "Carlos",
+                    LastName = "López",
+                    TaxDocument = "11111111",
+                    Status = 1,
+                    LastUpdate = DateTime.Now
+                };
+                context.Clients.Add(existingClient);
+                await context.SaveChangesAsync();
+            }
 
-            var validationFailures = new List<ValidationFailure>
+            if (isValidationSuccess)
             {
-                new ValidationFailure("Name", "Name is required")
-            };
-            createValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<CreateClientDTO>(), default))
-                .ReturnsAsync(new ValidationResult(validationFailures));
-
-            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
-            var result = await service.CreateClientAsync(clientDto);
-            Assert.Null(result);
-        }
-
-        // Test 6: UpdateClientAsync - Complexity 3 - Path 1 (Valid update)
-        [Fact]
-        public async Task UpdateClientAsync_ShouldUpdateClient_WhenDataIsValid()
-        {
-            var context = GetInMemoryDbContext();
-            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
-            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
-
-            var existingClient = new Client
+                updateValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<UpdateClientDTO>(), default))
+                    .ReturnsAsync(new ValidationResult());
+            }
+            else
             {
-                Id = 1,
-                Name = "Carlos",
-                LastName = "López",
-                TaxDocument = "11111111",
-                Status = 1,
-                LastUpdate = DateTime.Now
-            };
-            context.Clients.Add(existingClient);
-            await context.SaveChangesAsync();
-
-            var updateDto = new UpdateClientDTO
-            {
-                Id = 1,
-                Name = "Carlos Actualizado",
-                LastName = "López",
-                TaxDocument = "11111111",
-                Status = 1
-            };
-
-            updateValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<UpdateClientDTO>(), default))
-                .ReturnsAsync(new ValidationResult());
-
-            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
-            var result = await service.UpdateClientAsync(updateDto);
-            Assert.NotNull(result);
-            Assert.Equal("Carlos Actualizado", result.Name);
-        }
-
-        // Test 7: UpdateClientAsync - Complexity 3 - Path 2 (Validation fails)
-        [Fact]
-        public async Task UpdateClientAsync_ShouldReturnNull_WhenValidationFails()
-        {
-            var context = GetInMemoryDbContext();
-            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
-            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
-
-            var updateDto = new UpdateClientDTO
-            {
-                Id = 1,
-                Name = "",
-                LastName = "López",
-                TaxDocument = "11111111",
-                Status = 1
-            };
-
-            var validationFailures = new List<ValidationFailure>
-            {
-                new ValidationFailure("Name", "Name is required")
-            };
-            updateValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<UpdateClientDTO>(), default))
-                .ReturnsAsync(new ValidationResult(validationFailures));
+                var validationFailures = new List<ValidationFailure>
+                {
+                    new ValidationFailure("Name", "Name is required")
+                };
+                updateValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<UpdateClientDTO>(), default))
+                    .ReturnsAsync(new ValidationResult(validationFailures));
+            }
 
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
             var result = await service.UpdateClientAsync(updateDto);
-            Assert.Null(result);
-        }
-
-        // Test 8: UpdateClientAsync - Complexity 3 - Path 3 (Client not found)
-        [Fact]
-        public async Task UpdateClientAsync_ShouldReturnNull_WhenClientNotFound()
-        {
-            var context = GetInMemoryDbContext();
-            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
-            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
-
-            var updateDto = new UpdateClientDTO
+            if (expectedSuccess)
             {
-                Id = 999,
-                Name = "Inexistente",
-                LastName = "Cliente",
-                TaxDocument = "00000000",
-                Status = 1
-            };
-
-            updateValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<UpdateClientDTO>(), default))
-                .ReturnsAsync(new ValidationResult());
-
-            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
-            var result = await service.UpdateClientAsync(updateDto);
-            Assert.Null(result);
-        }
-
-        // Test 9: DeleteClientAsync - Complexity 2 - Path 1 (Client exists)
-        [Fact]
-        public async Task DeleteClientAsync_ShouldReturnTrue_WhenClientExists()
-        {
-            var context = GetInMemoryDbContext();
-            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
-            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
-
-            var client = new Client
+                Assert.NotNull(result);
+                Assert.Equal(updateDto.Name, result.Name);
+            }
+            else
             {
-                Id = 1,
-                Name = "Borrar",
-                LastName = "Cliente",
-                TaxDocument = "55555555",
-                Status = 1,
-                LastUpdate = DateTime.Now
-            };
-            context.Clients.Add(client);
-            await context.SaveChangesAsync();
-
-            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
-            var result = await service.DeleteClientAsync(1);
-            Assert.True(result);
-            Assert.Null(await context.Clients.FindAsync(1));
+                Assert.Null(result);
+            }
         }
 
-        // Test 10: DeleteClientAsync - Complexity 2 - Path 2 (Client not found)
-        [Fact]
-        public async Task DeleteClientAsync_ShouldReturnFalse_WhenClientNotFound()
+        // Test 9 & 10: DeleteClientAsync - Parameterized
+        // Complexity: 2 (Path 1: Exists, Path 2: Not Exists)
+        [Theory]
+        [InlineData(1, true)] 
+        [InlineData(999, false)]
+        public async Task DeleteClientAsync_ShouldReturnCorrectResult_BasedOnClientExistence(
+            int clientId,
+            bool expectedResult)
         {
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
-            var result = await service.DeleteClientAsync(999);
-            Assert.False(result);
+
+            if (expectedResult)
+            {
+                var client = new Client
+                {
+                    Id = 1,
+                    Name = "Test",
+                    LastName = "Client",
+                    TaxDocument = "12345678",
+                    Status = 1,
+                    LastUpdate = DateTime.Now
+                };
+                context.Clients.Add(client);
+                await context.SaveChangesAsync();
+            }
+
+            var result = await service.DeleteClientAsync(clientId);
+            Assert.Equal(expectedResult, result);
+
+            if (expectedResult)
+            {
+                Assert.Null(await context.Clients.FindAsync(clientId));
+            }
         }
     }
 }

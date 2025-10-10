@@ -1,8 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-// Este incluye IClientService, IProductService
-// <--- ¡¡¡AÑADIDO ESTE USING PARA TU SaleService!!!
-// Para ClientDTO
-// Para SaleDTO, etc.
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using System.Text.Json;
