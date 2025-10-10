@@ -19,7 +19,7 @@ namespace MicroMercado.Services
             _logger = logger;
         }
 
-        // Projection expression to keep Select logic in one place
+        // --- Projection expression ---
         private static readonly Expression<Func<Product, ProductSearchDTO>> ProjectToDto = p => new ProductSearchDTO
         {
             Id = p.Id,
@@ -32,17 +32,29 @@ namespace MicroMercado.Services
             CategoryName = p.Category!.Name
         };
 
-        // Build predicate for search to encapsulate the complex condition
+        // --- Predicates encapsulated to reduce complexity ---
+        private static class ProductPredicates
+        {
+            public static Expression<Func<Product, bool>> IsActive() =>
+                p => p.Status == 1 && p.Category != null && p.Category.Status == 1;
+
+            public static Expression<Func<Product, bool>> MatchesSearch(string term) =>
+                p => new[]
+                {
+                    p.Name.ToLower(),
+                    p.Description.ToLower(),
+                    p.Brand.ToLower(),
+                    p.Id.ToString(),
+                    p.Category!.Name.ToLower()
+                }.Any(field => field.Contains(term));
+        }
+
+        // --- Combines two expressions dynamically ---
         private static Expression<Func<Product, bool>> BuildSearchPredicate(string normalizedSearch)
         {
-            return p => p.Status == 1 &&
-                        p.Category != null &&
-                        p.Category.Status == 1 &&
-                        (p.Name.ToLower().Contains(normalizedSearch) ||
-                         p.Description.ToLower().Contains(normalizedSearch) ||
-                         p.Brand.ToLower().Contains(normalizedSearch) ||
-                         p.Id.ToString().Contains(normalizedSearch) ||
-                         p.Category.Name.ToLower().Contains(normalizedSearch));
+            var active = ProductPredicates.IsActive();
+            var match = ProductPredicates.MatchesSearch(normalizedSearch);
+            return active.And(match);
         }
 
         public async Task<IEnumerable<ProductSearchDTO>> SearchProductsAsync(string searchTerm)
@@ -118,6 +130,22 @@ namespace MicroMercado.Services
                     productId);
                 throw;
             }
+        }
+    }
+
+    // --- Helper class to combine expressions with AND logic ---
+    public static class ExpressionExtensions
+    {
+        public static Expression<Func<T, bool>> And<T>(
+            this Expression<Func<T, bool>> left,
+            Expression<Func<T, bool>> right)
+        {
+            var param = Expression.Parameter(typeof(T));
+            var combined = Expression.AndAlso(
+                Expression.Invoke(left, param),
+                Expression.Invoke(right, param)
+            );
+            return Expression.Lambda<Func<T, bool>>(combined, param);
         }
     }
 }
