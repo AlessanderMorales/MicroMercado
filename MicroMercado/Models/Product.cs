@@ -10,7 +10,7 @@ public class Product
     public short Stock { get; set; }
     public byte CategoryId { get; set; }
     public byte Status { get; set; } = 1;
-    public DateTime LastUpdate { get; set; } = DateTime.UtcNow;
+    public DateTime LastUpdate { get; set; } = DateTime.Now;
     
     public Category? Category { get; set; }
 }

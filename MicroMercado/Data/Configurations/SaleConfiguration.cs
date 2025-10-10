@@ -32,7 +32,7 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
         
         builder.Property(s => s.ClientId)
             .HasColumnName("client_id")
-            .IsRequired();
+            .IsRequired(false);
         
         builder.HasOne(s => s.Client)
             .WithMany(c => c.Sales)

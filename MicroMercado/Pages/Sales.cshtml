@@ -59,7 +59,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Botones de acción y total -->
                     <div class="col-md-12 mb-3">
                         <div class="card">
@@ -83,7 +83,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Tabla de productos -->
                     <div class="col-md-12">
                         <div class="card">
@@ -123,7 +123,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Columna lateral - Información de venta -->
             <div class="col-md-3">
                 <div class="card shadow">
@@ -145,14 +145,15 @@
                                 <input type="text"
                                        id="idDocumentoRecibido"
                                        class="form-control"
-                                       placeholder="Ej: 1234567">
+                                       placeholder="Ej: 1234567"
+                                       asp-for="ClientTaxDocument"> @* <--- ¡AQUÍ! Se agregó asp-for *@
                                 <button class="btn btn-info" type="button" id="btnBuscarCliente">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
                             <small class="form-text text-muted">Ingrese NIT/CI de cliente</small>
                         </div>
-                        
+
                         <!-- Nombre del cliente -->
                         <div class="form-group mb-3">
                             <label class="form-label fw-bold">
@@ -160,21 +161,19 @@
                                 Nombre del Cliente
                             </label>
                             <div class="input-group">
-                                <input type="text" 
-                                       id="nombreCliente" 
-                                       class="form-control" 
-                                       placeholder="Nombre del cliente" 
+                                <input type="text"
+                                       id="nombreCliente"
+                                       class="form-control"
+                                       placeholder="Nombre del cliente"
                                        readonly>
-                                <button type="button" 
-                                        class="btn btn-success" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#modalNuevoCliente" 
-                                        title="Agregar nuevo cliente">
+                                <a asp-page="/NewClient"
+                                   class="btn btn-success"
+                                   title="Agregar nuevo cliente">
                                     <i class="fas fa-user-plus"></i>
-                                </button>
+                                </a>
                             </div>
                         </div>
-                        
+
                         <!-- Tipo de pago -->
                         <div class="form-group mb-3">
                             <label class="form-label fw-bold">
@@ -188,17 +187,17 @@
                                 <option value="3">Tarjeta de Débito/Crédito</option>
                             </select>
                         </div>
-                        
+
                         <hr class="my-3">
-                        
+
                         <!-- Efectivo recibido -->
                         <div class="form-group mb-2">
                             <label class="form-label fw-bold" for="iptEfectivoRecibido">
                                 <i class="fas fa-hand-holding-usd"></i>
                                 Efectivo Recibido
                             </label>
-                            <input type="number" 
-                                   min="0" 
+                            <input type="number"
+                                   min="0"
                                    step="0.01"
                                    id="iptEfectivoRecibido"
                                    class="form-control"
@@ -207,8 +206,8 @@
 
                         <!-- Checkbox efectivo exacto -->
                         <div class="form-check mb-3">
-                            <input class="form-check-input" 
-                                   type="checkbox" 
+                            <input class="form-check-input"
+                                   type="checkbox"
                                    id="chkEfectivoExacto">
                             <label class="form-check-label" for="chkEfectivoExacto">
                                 <i class="fas fa-check-circle text-success"></i>
@@ -239,12 +238,34 @@
     </div>
 </div>
 
-@section Scripts {
-    <!-- jQuery UI -->
+<!-- Modal simplificado para "Agregar Nuevo Cliente" (no funcional en esta iteración) -->
+<div class="modal fade" id="modalNuevoCliente" tabindex="-1" aria-labelledby="modalNuevoClienteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalNuevoClienteLabel">
+                    <i class="fas fa-user-plus"></i>
+                    Agregar Nuevo Cliente (Funcionalidad deshabilitada)
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>La funcionalidad para agregar un nuevo cliente está actualmente deshabilitada en esta versión simplificada.</p>
+                <p>Contacte a soporte si necesita esta característica.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
-    <!-- DataTables -->
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    <!-- Script personalizado de ventas -->
     <script src="~/js/sales.js" asp-append-version="true"></script>
+
 }

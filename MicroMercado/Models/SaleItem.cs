@@ -9,6 +9,5 @@ public class SaleItem
     public decimal Price { get; set; }
     
     public Sale? Sale { get; set; }
-    
     public Product? Product { get; set; }
 }
