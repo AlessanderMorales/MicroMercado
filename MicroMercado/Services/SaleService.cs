@@ -56,6 +56,20 @@ public class SaleService : ISaleService
         if (!itemsValidation.Success)
             return itemsValidation;
 
+        // Validate client existence: if a client id is provided but the client does not exist or is inactive,
+        // throw an exception so that CreateSaleAsync will treat it as a processing error (matches test expectations).
+        if (saleDTO.ClientId.HasValue)
+        {
+            var clientExists = await _context.Clients
+                .AnyAsync(c => c.Id == saleDTO.ClientId.Value && c.Status == 1);
+
+            if (!clientExists)
+            {
+                // Throwing here will be caught by CreateSaleAsync and result in the generic error message.
+                throw new InvalidOperationException($"Cliente con ID {saleDTO.ClientId.Value} no encontrado o inactivo");
+            }
+        }
+
         var stockValidation = await ValidateStockAsync(saleDTO.Items);
         if (!stockValidation.Success)
         {

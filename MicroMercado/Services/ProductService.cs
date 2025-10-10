@@ -32,45 +32,23 @@ namespace MicroMercado.Services
             CategoryName = p.Category!.Name
         };
 
-        // --- Predicates encapsulated to reduce complexity ---
-        private static class ProductPredicates
-        {
-            public static Expression<Func<Product, bool>> IsActive() =>
-                p => p.Status == 1 && p.Category != null && p.Category.Status == 1;
-
-            public static Expression<Func<Product, bool>> MatchesSearch(string term) =>
-                p => new[]
-                {
-                    p.Name.ToLower(),
-                    p.Description.ToLower(),
-                    p.Brand.ToLower(),
-                    p.Id.ToString(),
-                    p.Category!.Name.ToLower()
-                }.Any(field => field.Contains(term));
-        }
-
-        // --- Combines two expressions dynamically ---
-        private static Expression<Func<Product, bool>> BuildSearchPredicate(string normalizedSearch)
-        {
-            var active = ProductPredicates.IsActive();
-            var match = ProductPredicates.MatchesSearch(normalizedSearch);
-            return active.And(match);
-        }
+        // =========================
+        // Public Methods
+        // =========================
 
         public async Task<IEnumerable<ProductSearchDTO>> SearchProductsAsync(string searchTerm)
         {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+                return Enumerable.Empty<ProductSearchDTO>();
+
             try
             {
-                if (string.IsNullOrWhiteSpace(searchTerm))
-                {
-                    return Enumerable.Empty<ProductSearchDTO>();
-                }
-
                 var normalizedSearch = searchTerm.Trim().ToLower();
+                var predicate = BuildSimplifiedPredicate(normalizedSearch);
 
                 var products = await _context.Products
                     .Include(p => p.Category)
-                    .Where(BuildSearchPredicate(normalizedSearch))
+                    .Where(predicate)
                     .Select(ProjectToDto)
                     .OrderBy(p => p.Name)
                     .Take(20)
@@ -131,21 +109,25 @@ namespace MicroMercado.Services
                 throw;
             }
         }
-    }
 
-    // --- Helper class to combine expressions with AND logic ---
-    public static class ExpressionExtensions
-    {
-        public static Expression<Func<T, bool>> And<T>(
-            this Expression<Func<T, bool>> left,
-            Expression<Func<T, bool>> right)
+        // =========================
+        // Private Helpers
+        // =========================
+
+        private static Expression<Func<Product, bool>> BuildSimplifiedPredicate(string term)
         {
-            var param = Expression.Parameter(typeof(T));
-            var combined = Expression.AndAlso(
-                Expression.Invoke(left, param),
-                Expression.Invoke(right, param)
-            );
-            return Expression.Lambda<Func<T, bool>>(combined, param);
+            return p => p.Status == 1
+                        && p.Category != null
+                        && p.Category.Status == 1
+                        && (ContainsTerm(p.Name, term)
+                            || ContainsTerm(p.Description, term)
+                            || ContainsTerm(p.Brand, term)
+                            || ContainsTerm(p.Category.Name, term));
+        }
+
+        private static bool ContainsTerm(string? field, string term)
+        {
+            return !string.IsNullOrEmpty(field) && field.ToLower().Contains(term);
         }
     }
 }

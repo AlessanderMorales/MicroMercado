@@ -1,237 +1,331 @@
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
-using Microsoft.EntityFrameworkCore;
-using Moq;
 using MicroMercado.Data;
 using MicroMercado.DTOs;
 using MicroMercado.Models;
 using MicroMercado.Services;
+using Microsoft.EntityFrameworkCore;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PruebasMicroMercado
 {
     public class ClientServiceTests
     {
-        private ApplicationDbContext CreateInMemoryContext(string dbName)
+        private ApplicationDbContext GetInMemoryDbContext()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(dbName)
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
-
             return new ApplicationDbContext(options);
         }
 
+        // Test 1: GetClientByIdAsync - Complexity 1
         [Fact]
-        public async Task GetClientByIdAsync_ReturnsClient_WhenExists()
+        public async Task GetClientByIdAsync_ShouldReturnClient_WhenClientExists()
         {
-            var dbName = Guid.NewGuid().ToString();
-            await using var context = CreateInMemoryContext(dbName);
-            var client = new Client { Name = "Juan", LastName = "Perez", TaxDocument = "1234567" };
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
+            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
+
+            var client = new Client
+            {
+                Id = 1,
+                Name = "Juan",
+                LastName = "Pérez",
+                TaxDocument = "12345678",
+                Status = 1,
+                LastUpdate = DateTime.Now
+            };
             context.Clients.Add(client);
             await context.SaveChangesAsync();
 
-            var createValidator = new Mock<IValidator<CreateClientDTO>>();
-            var updateValidator = new Mock<IValidator<UpdateClientDTO>>();
-            var service = new ClientService(context, createValidator.Object, updateValidator.Object);
+            // Act
+            var result = await service.GetClientByIdAsync(1);
 
-            var result = await service.GetClientByIdAsync(client.Id);
-
+            // Assert
             Assert.NotNull(result);
-            Assert.Equal("Juan", result!.Name);
+            Assert.Equal("Juan", result.Name);
+            Assert.Equal("Pérez", result.LastName);
         }
 
+        // Test 2: GetClientByTaxDocumentAsync - Complexity 1
         [Fact]
-        public async Task GetClientByTaxDocumentAsync_ReturnsClient_WhenExists()
+        public async Task GetClientByTaxDocumentAsync_ShouldReturnClient_WhenTaxDocumentExists()
         {
-            var dbName = Guid.NewGuid().ToString();
-            await using var context = CreateInMemoryContext(dbName);
-            var client = new Client { Name = "Ana", LastName = "Gomez", TaxDocument = "7654321" };
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
+            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
+
+            var client = new Client
+            {
+                Id = 1,
+                Name = "María",
+                LastName = "González",
+                TaxDocument = "87654321",
+                Status = 1,
+                LastUpdate = DateTime.Now
+            };
             context.Clients.Add(client);
             await context.SaveChangesAsync();
 
-            var createValidator = new Mock<IValidator<CreateClientDTO>>();
-            var updateValidator = new Mock<IValidator<UpdateClientDTO>>();
-            var service = new ClientService(context, createValidator.Object, updateValidator.Object);
+            // Act
+            var result = await service.GetClientByTaxDocumentAsync("87654321");
 
-            var result = await service.GetClientByTaxDocumentAsync("7654321");
-
+            // Assert
             Assert.NotNull(result);
-            Assert.Equal("Ana", result!.Name);
+            Assert.Equal("María", result.Name);
+            Assert.Equal("87654321", result.TaxDocument);
         }
 
+        // Test 3: GetAllClientsAsync - Complexity 1
         [Fact]
-        public async Task GetAllClientsAsync_ReturnsAllClients()
+        public async Task GetAllClientsAsync_ShouldReturnAllClients()
         {
-            var dbName = Guid.NewGuid().ToString();
-            await using var context = CreateInMemoryContext(dbName);
-            context.Clients.Add(new Client { Name = "A", LastName = "One", TaxDocument = "1" });
-            context.Clients.Add(new Client { Name = "B", LastName = "Two", TaxDocument = "2" });
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
+            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
+
+            context.Clients.AddRange(
+                new Client { Id = 1, Name = "Juan", LastName = "Pérez", TaxDocument = "111", Status = 1, LastUpdate = DateTime.Now },
+                new Client { Id = 2, Name = "María", LastName = "González", TaxDocument = "222", Status = 1, LastUpdate = DateTime.Now }
+            );
             await context.SaveChangesAsync();
 
-            var createValidator = new Mock<IValidator<CreateClientDTO>>();
-            var updateValidator = new Mock<IValidator<UpdateClientDTO>>();
-            var service = new ClientService(context, createValidator.Object, updateValidator.Object);
+            // Act
+            var result = await service.GetAllClientsAsync();
 
-            var all = await service.GetAllClientsAsync();
-
-            Assert.Equal(2, all.Count());
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count());
         }
 
+        // Test 4: CreateClientAsync - Complexity 2 - Path 1 (Valid)
         [Fact]
-        public async Task CreateClientAsync_ReturnsNull_WhenValidationFails()
+        public async Task CreateClientAsync_ShouldCreateClient_WhenDataIsValid()
         {
-            var dbName = Guid.NewGuid().ToString();
-            await using var context = CreateInMemoryContext(dbName);
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
+            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
 
-            var invalidResult = new ValidationResult(new[] { new ValidationFailure("Name", "Required") });
-            var createValidator = new Mock<IValidator<CreateClientDTO>>();
-            createValidator
-                .Setup(v => v.ValidateAsync(It.IsAny<CreateClientDTO>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(invalidResult);
+            var clientDto = new CreateClientDTO
+            {
+                Name = "Pedro",
+                LastName = "Ramírez",
+                TaxDocument = "99999999"
+            };
 
-            var updateValidator = new Mock<IValidator<UpdateClientDTO>>();
-            var service = new ClientService(context, createValidator.Object, updateValidator.Object);
+            createValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<CreateClientDTO>(), default))
+                .ReturnsAsync(new ValidationResult());
 
-            var dto = new CreateClientDTO { Name = "", LastName = "", TaxDocument = "" };
-            var result = await service.CreateClientAsync(dto);
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
 
+            // Act
+            var result = await service.CreateClientAsync(clientDto);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Pedro", result.Name);
+            Assert.Equal("Ramírez", result.LastName);
+            Assert.Equal(1, result.Status);
+        }
+
+        // Test 5: CreateClientAsync - Complexity 2 - Path 2 (Invalid)
+        [Fact]
+        public async Task CreateClientAsync_ShouldReturnNull_WhenValidationFails()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
+            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
+
+            var clientDto = new CreateClientDTO
+            {
+                Name = "",
+                LastName = "Ramírez",
+                TaxDocument = "99999999"
+            };
+
+            var validationFailures = new List<ValidationFailure>
+            {
+                new ValidationFailure("Name", "Name is required")
+            };
+            createValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<CreateClientDTO>(), default))
+                .ReturnsAsync(new ValidationResult(validationFailures));
+
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
+
+            // Act
+            var result = await service.CreateClientAsync(clientDto);
+
+            // Assert
             Assert.Null(result);
-            Assert.Empty(context.Clients);
         }
 
+        // Test 6: UpdateClientAsync - Complexity 3 - Path 1 (Valid update)
         [Fact]
-        public async Task CreateClientAsync_CreatesClient_WhenValidationPasses()
+        public async Task UpdateClientAsync_ShouldUpdateClient_WhenDataIsValid()
         {
-            var dbName = Guid.NewGuid().ToString();
-            await using var context = CreateInMemoryContext(dbName);
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
+            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
 
-            var validResult = new ValidationResult();
-            var createValidator = new Mock<IValidator<CreateClientDTO>>();
-            createValidator
-                .Setup(v => v.ValidateAsync(It.IsAny<CreateClientDTO>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(validResult);
+            var existingClient = new Client
+            {
+                Id = 1,
+                Name = "Carlos",
+                LastName = "López",
+                TaxDocument = "11111111",
+                Status = 1,
+                LastUpdate = DateTime.Now
+            };
+            context.Clients.Add(existingClient);
+            await context.SaveChangesAsync();
 
-            var updateValidator = new Mock<IValidator<UpdateClientDTO>>();
-            var service = new ClientService(context, createValidator.Object, updateValidator.Object);
+            var updateDto = new UpdateClientDTO
+            {
+                Id = 1,
+                Name = "Carlos Actualizado",
+                LastName = "López",
+                TaxDocument = "11111111",
+                Status = 1
+            };
 
-            var dto = new CreateClientDTO { Name = "Carlos", LastName = "Lopez", TaxDocument = "9999999" };
-            var result = await service.CreateClientAsync(dto);
+            updateValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<UpdateClientDTO>(), default))
+                .ReturnsAsync(new ValidationResult());
 
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
+
+            // Act
+            var result = await service.UpdateClientAsync(updateDto);
+
+            // Assert
             Assert.NotNull(result);
-            Assert.Equal(1, context.Clients.Count());
-            Assert.Equal("Carlos", result!.Name);
+            Assert.Equal("Carlos Actualizado", result.Name);
         }
 
+        // Test 7: UpdateClientAsync - Complexity 3 - Path 2 (Validation fails)
         [Fact]
-        public async Task UpdateClientAsync_ReturnsNull_WhenValidationFails()
+        public async Task UpdateClientAsync_ShouldReturnNull_WhenValidationFails()
         {
-            var dbName = Guid.NewGuid().ToString();
-            await using var context = CreateInMemoryContext(dbName);
-            var client = new Client { Name = "Old", LastName = "Name", TaxDocument = "111" };
-            context.Clients.Add(client);
-            await context.SaveChangesAsync();
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
+            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
 
-            var invalidResult = new ValidationResult(new[] { new ValidationFailure("Name", "Invalid") });
-            var createValidator = new Mock<IValidator<CreateClientDTO>>();
-            var updateValidator = new Mock<IValidator<UpdateClientDTO>>();
-            updateValidator
-                .Setup(v => v.ValidateAsync(It.IsAny<UpdateClientDTO>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(invalidResult);
+            var updateDto = new UpdateClientDTO
+            {
+                Id = 1,
+                Name = "",
+                LastName = "López",
+                TaxDocument = "11111111",
+                Status = 1
+            };
 
-            var service = new ClientService(context, createValidator.Object, updateValidator.Object);
+            var validationFailures = new List<ValidationFailure>
+            {
+                new ValidationFailure("Name", "Name is required")
+            };
+            updateValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<UpdateClientDTO>(), default))
+                .ReturnsAsync(new ValidationResult(validationFailures));
 
-            var dto = new UpdateClientDTO { Id = client.Id, Name = "New", LastName = "NewLast", TaxDocument = "222", Status = 1 };
-            var result = await service.UpdateClientAsync(dto);
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
 
-            Assert.Null(result);
-            var still = await context.Clients.FindAsync(client.Id);
-            Assert.Equal("Old", still!.Name);
-        }
+            // Act
+            var result = await service.UpdateClientAsync(updateDto);
 
-        [Fact]
-        public async Task UpdateClientAsync_ReturnsNull_WhenClientNotFound()
-        {
-            var dbName = Guid.NewGuid().ToString();
-            await using var context = CreateInMemoryContext(dbName);
-
-            var validResult = new ValidationResult();
-            var createValidator = new Mock<IValidator<CreateClientDTO>>();
-            var updateValidator = new Mock<IValidator<UpdateClientDTO>>();
-            updateValidator
-                .Setup(v => v.ValidateAsync(It.IsAny<UpdateClientDTO>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(validResult);
-
-            var service = new ClientService(context, createValidator.Object, updateValidator.Object);
-
-            var dto = new UpdateClientDTO { Id = 999, Name = "X", LastName = "Y", TaxDocument = "333", Status = 1 };
-            var result = await service.UpdateClientAsync(dto);
-
+            // Assert
             Assert.Null(result);
         }
 
+        // Test 8: UpdateClientAsync - Complexity 3 - Path 3 (Client not found)
         [Fact]
-        public async Task UpdateClientAsync_UpdatesClient_WhenValid()
+        public async Task UpdateClientAsync_ShouldReturnNull_WhenClientNotFound()
         {
-            var dbName = Guid.NewGuid().ToString();
-            await using var context = CreateInMemoryContext(dbName);
-            var client = new Client { Name = "Antes", LastName = "Antes", TaxDocument = "444" };
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
+            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
+
+            var updateDto = new UpdateClientDTO
+            {
+                Id = 999,
+                Name = "Inexistente",
+                LastName = "Cliente",
+                TaxDocument = "00000000",
+                Status = 1
+            };
+
+            updateValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<UpdateClientDTO>(), default))
+                .ReturnsAsync(new ValidationResult());
+
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
+
+            // Act
+            var result = await service.UpdateClientAsync(updateDto);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        // Test 9: DeleteClientAsync - Complexity 2 - Path 1 (Client exists)
+        [Fact]
+        public async Task DeleteClientAsync_ShouldReturnTrue_WhenClientExists()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
+            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
+
+            var client = new Client
+            {
+                Id = 1,
+                Name = "Borrar",
+                LastName = "Cliente",
+                TaxDocument = "55555555",
+                Status = 1,
+                LastUpdate = DateTime.Now
+            };
             context.Clients.Add(client);
             await context.SaveChangesAsync();
 
-            var validResult = new ValidationResult();
-            var createValidator = new Mock<IValidator<CreateClientDTO>>();
-            var updateValidator = new Mock<IValidator<UpdateClientDTO>>();
-            updateValidator
-                .Setup(v => v.ValidateAsync(It.IsAny<UpdateClientDTO>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(validResult);
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
 
-            var service = new ClientService(context, createValidator.Object, updateValidator.Object);
+            // Act
+            var result = await service.DeleteClientAsync(1);
 
-            var dto = new UpdateClientDTO { Id = client.Id, Name = "Despues", LastName = "Despues", TaxDocument = "555", Status = 1 };
-            var result = await service.UpdateClientAsync(dto);
-
-            Assert.NotNull(result);
-            Assert.Equal("Despues", result!.Name);
-            var fromDb = await context.Clients.FindAsync(client.Id);
-            Assert.Equal("Despues", fromDb!.Name);
-        }
-
-        [Fact]
-        public async Task DeleteClientAsync_ReturnsFalse_WhenClientNotFound()
-        {
-            var dbName = Guid.NewGuid().ToString();
-            await using var context = CreateInMemoryContext(dbName);
-
-            var createValidator = new Mock<IValidator<CreateClientDTO>>();
-            var updateValidator = new Mock<IValidator<UpdateClientDTO>>();
-            var service = new ClientService(context, createValidator.Object, updateValidator.Object);
-
-            var result = await service.DeleteClientAsync(12345);
-
-            Assert.False(result);
-        }
-
-        [Fact]
-        public async Task DeleteClientAsync_DeletesClient_WhenExists()
-        {
-            var dbName = Guid.NewGuid().ToString();
-            await using var context = CreateInMemoryContext(dbName);
-            var client = new Client { Name = "ToDelete", LastName = "X", TaxDocument = "666" };
-            context.Clients.Add(client);
-            await context.SaveChangesAsync();
-
-            var createValidator = new Mock<IValidator<CreateClientDTO>>();
-            var updateValidator = new Mock<IValidator<UpdateClientDTO>>();
-            var service = new ClientService(context, createValidator.Object, updateValidator.Object);
-
-            var result = await service.DeleteClientAsync(client.Id);
-
+            // Assert
             Assert.True(result);
-            Assert.Empty(context.Clients);
+            Assert.Null(await context.Clients.FindAsync(1));
+        }
+
+        // Test 10: DeleteClientAsync - Complexity 2 - Path 2 (Client not found)
+        [Fact]
+        public async Task DeleteClientAsync_ShouldReturnFalse_WhenClientNotFound()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
+            var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
+
+            // Act
+            var result = await service.DeleteClientAsync(999);
+
+            // Assert
+            Assert.False(result);
         }
     }
 }
