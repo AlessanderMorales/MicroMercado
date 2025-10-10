@@ -195,8 +195,8 @@ namespace PruebasMicroMercado
             Assert.False(result);
         }
 
-        // Test 8: HasStockAsync - Complexity 3 - Path 3 (Exception occurs)
-        [Fact]
+        // Test 8: HasStockAsync - Compleity 3 - Path 3(Exception occurs) 
+        [Fact]                 
         public async Task HasStockAsync_ShouldThrowException_WhenDatabaseErrorOccurs()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
