@@ -51,7 +51,7 @@ namespace MicroMercado.Services
                 LastName = clientDto.LastName,
                 TaxDocument = clientDto.TaxDocument,
                 Status = 1,
-                LastUpdate = DateTime.UtcNow
+                LastUpdate = DateTime.Now
             };
 
             _context.Clients.Add(client);
@@ -78,7 +78,7 @@ namespace MicroMercado.Services
             clientToUpdate.LastName = clientDto.LastName;
             clientToUpdate.TaxDocument = clientDto.TaxDocument;
             clientToUpdate.Status = clientDto.Status;
-            clientToUpdate.LastUpdate = DateTime.UtcNow;
+            clientToUpdate.LastUpdate = DateTime.Now;
 
             await _context.SaveChangesAsync();
             return clientToUpdate;

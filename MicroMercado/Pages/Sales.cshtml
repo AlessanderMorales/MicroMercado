@@ -166,13 +166,11 @@
                                        class="form-control"
                                        placeholder="Nombre del cliente"
                                        readonly>
-                                <button type="button"
-                                        class="btn btn-success"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalNuevoCliente"
-                                        title="Agregar nuevo cliente">
+                                <a asp-page="/NewClient"
+                                   class="btn btn-success"
+                                   title="Agregar nuevo cliente">
                                     <i class="fas fa-user-plus"></i>
-                                </button>
+                                </a>
                             </div>
                         </div>
 
