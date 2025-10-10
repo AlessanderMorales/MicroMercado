@@ -19,6 +19,7 @@ namespace MicroMercado.Services
             _logger = logger;
         }
 
+        // --- Projection expression ---
         private static readonly Expression<Func<Product, ProductSearchDTO>> ProjectToDto = p => new ProductSearchDTO
         {
             Id = p.Id,
@@ -31,49 +32,87 @@ namespace MicroMercado.Services
             CategoryName = p.Category!.Name
         };
 
+        // =========================
+        // Public Methods
+        // =========================
+
         public async Task<IEnumerable<ProductSearchDTO>> SearchProductsAsync(string searchTerm)
         {
             if (string.IsNullOrWhiteSpace(searchTerm))
                 return Enumerable.Empty<ProductSearchDTO>();
 
-            var normalizedSearch = searchTerm.Trim().ToLower();
-            var predicate = BuildSimplifiedPredicate(normalizedSearch);
+            try
+            {
+                var normalizedSearch = searchTerm.Trim().ToLower();
+                var predicate = BuildSimplifiedPredicate(normalizedSearch);
 
-            var products = await _context.Products
-                .Include(p => p.Category)
-                .Where(predicate)
-                .Select(ProjectToDto)
-                .OrderBy(p => p.Name)
-                .Take(20)
-                .ToListAsync();
+                var products = await _context.Products
+                    .Include(p => p.Category)
+                    .Where(predicate)
+                    .Select(ProjectToDto)
+                    .OrderBy(p => p.Name)
+                    .Take(20)
+                    .ToListAsync();
 
-            _logger.LogInformation(
-                "Búsqueda de productos con término '{SearchTerm}' retornó {Count} resultados",
-                searchTerm, products.Count);
+                _logger.LogInformation(
+                    "Búsqueda de productos con término '{SearchTerm}' retornó {Count} resultados",
+                    searchTerm, products.Count);
 
-            return products;
+                return products;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error al buscar productos con término: {SearchTerm}",
+                    searchTerm);
+                throw;
+            }
         }
 
         public async Task<ProductSearchDTO?> GetProductByIdAsync(short productId)
         {
-            var product = await _context.Products
-                .Include(p => p.Category)
-                .Where(p => p.Id == productId && p.Status == 1)
-                .Select(ProjectToDto)
-                .FirstOrDefaultAsync();
+            try
+            {
+                var product = await _context.Products
+                    .Include(p => p.Category)
+                    .Where(p => p.Id == productId && p.Status == 1)
+                    .Select(ProjectToDto)
+                    .FirstOrDefaultAsync();
 
-            return product;
+                return product;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error al obtener producto con ID: {ProductId}",
+                    productId);
+                throw;
+            }
         }
 
         public async Task<bool> HasStockAsync(short productId, short quantity)
         {
-            var stock = await _context.Products
-                .Where(p => p.Id == productId && p.Status == 1)
-                .Select(p => (short?)p.Stock)
-                .FirstOrDefaultAsync();
+            try
+            {
+                var stock = await _context.Products
+                    .Where(p => p.Id == productId && p.Status == 1)
+                    .Select(p => (short?)p.Stock)
+                    .FirstOrDefaultAsync();
 
-            return stock.HasValue && stock.Value >= quantity;
+                return stock.HasValue && stock.Value >= quantity;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error al verificar stock del producto {ProductId}",
+                    productId);
+                throw;
+            }
         }
+
+        // =========================
+        // Private Helpers
+        // =========================
 
         private static Expression<Func<Product, bool>> BuildSimplifiedPredicate(string term)
         {
