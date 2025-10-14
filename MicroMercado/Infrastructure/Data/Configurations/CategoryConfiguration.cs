@@ -20,6 +20,11 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .HasMaxLength(20)
             .IsRequired();
         
+        builder.Property(c => c.Description)
+            .HasColumnName("description")
+            .HasMaxLength(80)
+            .IsRequired(false);
+        
         builder.Property(c => c.Status)
             .HasColumnName("status")
             .HasDefaultValue(1);

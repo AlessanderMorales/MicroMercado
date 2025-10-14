@@ -170,8 +170,9 @@ namespace MicroMercado.Presentation.Pages
                 FoundClient = new ClientDTO
                 {
                     Id = client.Id,
-                    Name = client.Name,
-                    LastName = client.LastName,
+                    BusinessName = client.BusinessName,
+                    Email = client.Email,
+                    Address = client.Address,
                     TaxDocument = client.TaxDocument,
                     Status = (byte)client.Status,
                     LastUpdate = client.LastUpdate

@@ -16,19 +16,24 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
             .HasColumnName("id")
             .UseIdentityColumn();
 
-        builder.Property(c => c.Name)
-            .HasColumnName("name")
-            .HasMaxLength(20)
+        builder.Property(c => c.BusinessName)
+            .HasColumnName("business_name")
+            .HasMaxLength(150)
             .IsRequired();
 
-        builder.Property(c => c.LastName)
-            .HasColumnName("last_name")
-            .HasMaxLength(20)
+        builder.Property(c => c.Email)
+            .HasColumnName("email")
+            .HasMaxLength(100)
             .IsRequired();
+
+        builder.Property(c => c.Address)
+            .HasColumnName("address")
+            .HasMaxLength(150)
+            .IsRequired(false);
 
         builder.Property(c => c.TaxDocument)
             .HasColumnName("tax_document")
-            .HasMaxLength(20)
+            .HasMaxLength(25)
             .IsRequired();
 
         builder.Property(c => c.Status)
@@ -41,6 +46,9 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder.HasIndex(c => c.TaxDocument)
+            .IsUnique();
+        
+        builder.HasIndex(c => c.Email)
             .IsUnique();
     }
 }
