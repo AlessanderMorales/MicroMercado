@@ -42,15 +42,14 @@ namespace PruebasMicroMercado
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
 
             context.Clients.AddRange(
-                new Client { Id = 1, Name = "Juan", LastName = "Pérez", TaxDocument = "12345678", Status = 1, LastUpdate = DateTime.Now },
-                new Client { Id = 2, Name = "María", LastName = "González", TaxDocument = "87654321", Status = 1, LastUpdate = DateTime.Now },
-                new Client { Id = 3, Name = "Pedro", LastName = "Ramírez", TaxDocument = "11111111", Status = 1, LastUpdate = DateTime.Now }
+                new Client { Id = 1, BusinessName = "Juan Pérez", TaxDocument = "12345678", Status = 1, LastUpdate = DateTime.Now },
+                new Client { Id = 2, BusinessName = "María González", TaxDocument = "87654321", Status = 1, LastUpdate = DateTime.Now },
+                new Client { Id = 3, BusinessName = "Pedro Ramírez", TaxDocument = "11111111", Status = 1, LastUpdate = DateTime.Now }
             );
             await context.SaveChangesAsync();
             var result = await service.GetClientByIdAsync(clientId);
             Assert.NotNull(result);
-            Assert.Equal(expectedName, result.Name);
-            Assert.Equal(expectedLastName, result.LastName);
+            Assert.Equal($"{expectedName} {expectedLastName}", result.BusinessName);
             Assert.Equal(expectedTaxDocument, result.TaxDocument);
         }
 
@@ -71,15 +70,14 @@ namespace PruebasMicroMercado
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
 
             context.Clients.AddRange(
-                new Client { Id = 1, Name = "Juan", LastName = "Pérez", TaxDocument = "12345678", Status = 1, LastUpdate = DateTime.Now },
-                new Client { Id = 2, Name = "María", LastName = "González", TaxDocument = "87654321", Status = 1, LastUpdate = DateTime.Now },
-                new Client { Id = 3, Name = "Pedro", LastName = "Ramírez", TaxDocument = "11111111", Status = 1, LastUpdate = DateTime.Now }
+                new Client { Id = 1, BusinessName = "Juan Pérez", TaxDocument = "12345678", Status = 1, LastUpdate = DateTime.Now },
+                new Client { Id = 2, BusinessName = "María González", TaxDocument = "87654321", Status = 1, LastUpdate = DateTime.Now },
+                new Client { Id = 3, BusinessName = "Pedro Ramírez", TaxDocument = "11111111", Status = 1, LastUpdate = DateTime.Now }
             );
             await context.SaveChangesAsync();
             var result = await service.GetClientByTaxDocumentAsync(taxDocument);
             Assert.NotNull(result);
-            Assert.Equal(expectedName, result.Name);
-            Assert.Equal(expectedLastName, result.LastName);
+            Assert.Equal($"{expectedName} {expectedLastName}", result.BusinessName);
         }
 
         // Test 3: GetAllClientsAsync
@@ -93,8 +91,8 @@ namespace PruebasMicroMercado
             var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
 
             context.Clients.AddRange(
-                new Client { Id = 1, Name = "Juan", LastName = "Pérez", TaxDocument = "111", Status = 1, LastUpdate = DateTime.Now },
-                new Client { Id = 2, Name = "María", LastName = "González", TaxDocument = "222", Status = 1, LastUpdate = DateTime.Now }
+                new Client { Id = 1, BusinessName = "Juan Pérez", TaxDocument = "111", Status = 1, LastUpdate = DateTime.Now },
+                new Client { Id = 2, BusinessName = "María González", TaxDocument = "222", Status = 1, LastUpdate = DateTime.Now }
             );
             await context.SaveChangesAsync();
             var result = await service.GetAllClientsAsync();
@@ -107,10 +105,10 @@ namespace PruebasMicroMercado
         public static TheoryData<CreateClientDTO, bool, bool> CreateClientTestData =>
             new TheoryData<CreateClientDTO, bool, bool>
             {
-                { new CreateClientDTO { Name = "Pedro", LastName = "Ramírez", TaxDocument = "99999999" }, true, true },
-                { new CreateClientDTO { Name = "Ana", LastName = "López", TaxDocument = "88888888" }, true, true },
-                { new CreateClientDTO { Name = "", LastName = "Ramírez", TaxDocument = "99999999" }, false, false },
-                { new CreateClientDTO { Name = "Pedro", LastName = "", TaxDocument = "99999999" }, false, false }
+                { new CreateClientDTO { BusinessName = "Pedro Ramírez", TaxDocument = "99999999", Email = "", Address = "" }, true, true },
+                { new CreateClientDTO { BusinessName = "Ana López", TaxDocument = "88888888", Email = "", Address = "" }, true, true },
+                { new CreateClientDTO { BusinessName = "", TaxDocument = "99999999", Email = "", Address = "" }, false, false },
+                { new CreateClientDTO { BusinessName = "Pedro", TaxDocument = "99999999", Email = "", Address = "" }, false, false }
             };
 
         [Theory]
@@ -133,7 +131,7 @@ namespace PruebasMicroMercado
             {
                 var validationFailures = new List<ValidationFailure>
                 {
-                    new ValidationFailure("Name", "Name is required")
+                    new ValidationFailure("BusinessName", "BusinessName is required")
                 };
                 createValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<CreateClientDTO>(), default))
                     .ReturnsAsync(new ValidationResult(validationFailures));
@@ -144,7 +142,7 @@ namespace PruebasMicroMercado
             if (shouldReturnClient)
             {
                 Assert.NotNull(result);
-                Assert.Equal(clientDto.Name, result.Name);
+                Assert.Equal(clientDto.BusinessName, result.BusinessName);
                 Assert.Equal(1, result.Status);
             }
             else
@@ -158,9 +156,9 @@ namespace PruebasMicroMercado
         public static TheoryData<int, UpdateClientDTO, bool, bool, bool> UpdateClientTestData =>
             new TheoryData<int, UpdateClientDTO, bool, bool, bool>
             {
-                { 1, new UpdateClientDTO { Id = 1, Name = "Carlos Updated", LastName = "López", TaxDocument = "11111111", Status = 1 }, true, true, true },
-                { 1, new UpdateClientDTO { Id = 1, Name = "", LastName = "López", TaxDocument = "11111111", Status = 1 }, false, true, false },
-                { 1, new UpdateClientDTO { Id = 999, Name = "Inexistente", LastName = "Cliente", TaxDocument = "00000000", Status = 1 }, true, false, false }
+                { 1, new UpdateClientDTO { Id = 1, BusinessName = "Carlos Updated", TaxDocument = "11111111", Email = "", Address = "", Status = 1 }, true, true, true },
+                { 1, new UpdateClientDTO { Id = 1, BusinessName = "", TaxDocument = "11111111", Email = "", Address = "", Status = 1 }, false, true, false },
+                { 1, new UpdateClientDTO { Id = 999, BusinessName = "Inexistente Cliente", TaxDocument = "00000000", Email = "", Address = "", Status = 1 }, true, false, false }
             };
 
         [Theory]
@@ -181,8 +179,7 @@ namespace PruebasMicroMercado
                 var existingClient = new Client
                 {
                     Id = existingClientId,
-                    Name = "Carlos",
-                    LastName = "López",
+                    BusinessName = "Carlos",
                     TaxDocument = "11111111",
                     Status = 1,
                     LastUpdate = DateTime.Now
@@ -200,7 +197,7 @@ namespace PruebasMicroMercado
             {
                 var validationFailures = new List<ValidationFailure>
                 {
-                    new ValidationFailure("Name", "Name is required")
+                    new ValidationFailure("BusinessName", "BusinessName is required")
                 };
                 updateValidatorMock.Setup(v => v.ValidateAsync(It.IsAny<UpdateClientDTO>(), default))
                     .ReturnsAsync(new ValidationResult(validationFailures));
@@ -211,7 +208,7 @@ namespace PruebasMicroMercado
             if (expectedSuccess)
             {
                 Assert.NotNull(result);
-                Assert.Equal(updateDto.Name, result.Name);
+                Assert.Equal(updateDto.BusinessName, result.BusinessName);
             }
             else
             {
@@ -238,8 +235,7 @@ namespace PruebasMicroMercado
                 var client = new Client
                 {
                     Id = 1,
-                    Name = "Test",
-                    LastName = "Client",
+                    BusinessName = "Test Client",
                     TaxDocument = "12345678",
                     Status = 1,
                     LastUpdate = DateTime.Now

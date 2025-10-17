@@ -85,8 +85,7 @@ namespace PruebasMicroMercado
             var client = new Client
             {
                 Id = 1,
-                Name = "Juan",
-                LastName = "Pérez",
+                BusinessName = "Juan Pérez",
                 TaxDocument = "12345678",
                 Status = 1,
                 LastUpdate = DateTime.Now
@@ -258,7 +257,6 @@ namespace PruebasMicroMercado
                 .Options;
             var context = new ApplicationDbContext(options);
 
-            // Dispose context to force an exception
             await context.DisposeAsync();
 
             var logger = GetMockLogger();
