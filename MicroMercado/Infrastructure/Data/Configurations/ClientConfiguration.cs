@@ -15,10 +15,9 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
         builder.Property(c => c.Id)
             .HasColumnName("id")
             .UseIdentityColumn();
-
         builder.Property(c => c.BusinessName)
-            .HasColumnName("business_name")
-            .HasMaxLength(150)
+            .HasColumnName("name")
+            .HasMaxLength(150) 
             .IsRequired();
 
         builder.Property(c => c.Email)
@@ -47,7 +46,7 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
 
         builder.HasIndex(c => c.TaxDocument)
             .IsUnique();
-        
+
         builder.HasIndex(c => c.Email)
             .IsUnique();
     }

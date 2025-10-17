@@ -8,28 +8,28 @@ public class UpdateClientValidator : AbstractValidator<UpdateClientDTO>
     public UpdateClientValidator()
     {
         RuleFor(c => c.Id)
-            .GreaterThan(0).WithMessage("ID inválido");
-        
-        RuleFor(c => c.Name)
-            .NotEmpty().WithMessage("El nombre es obligatorio")
-            .MaximumLength(20).WithMessage("El nombre no puede tener más de 20 caracteres")
-            .Matches(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$")
-            .WithMessage("El nombre solo puede contener letras");
-        
-        RuleFor(c => c.LastName)
-            .NotEmpty().WithMessage("El apellido es obligatorio")
-            .MaximumLength(20).WithMessage("El apellido no puede tener más de 20 caracteres")
-            .Matches(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$")
-            .WithMessage("El apellido solo puede contener letras");
-        
+            .GreaterThan(0).WithMessage("ID inválido para actualizar el cliente.");
+        RuleFor(c => c.BusinessName)
+            .NotEmpty().WithMessage("El nombre o razón social es obligatorio")
+            .MaximumLength(150).WithMessage("El nombre o razón social no puede tener más de 150 caracteres") 
+            .WithMessage("El nombre o razón social contiene caracteres inválidos");
+        RuleFor(c => c.Email)
+            .NotEmpty().WithMessage("El email es obligatorio")
+            .EmailAddress().WithMessage("El formato del email no es válido")
+            .MaximumLength(100).WithMessage("El email no puede tener más de 100 caracteres");
+        RuleFor(c => c.Address)
+            .MaximumLength(150).WithMessage("La dirección no puede tener más de 150 caracteres")
+            .When(c => !string.IsNullOrWhiteSpace(c.Address));
         RuleFor(c => c.TaxDocument)
             .NotEmpty().WithMessage("El documento es obligatorio")
             .MaximumLength(20).WithMessage("El documento no puede tener más de 20 caracteres")
             .Matches(@"^[0-9]+$")
             .WithMessage("El documento solo puede contener números");
-        
+
+
         RuleFor(c => c.Status)
             .Must(s => s == 0 || s == 1)
             .WithMessage("El estado debe ser 0 (inactivo) o 1 (activo)");
     }
+
 }
