@@ -4,13 +4,7 @@ using MicroMercado.Application.DTOs.Sales;
 using MicroMercado.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-// Necesario para IProductService, ISaleService, IClientService
-// Necesario para ClientDTO (para búsqueda de cliente)
-// Necesario para SaleDTO.CreateSaleDTO y otros DTOs de venta
-// Para usar JsonSerializer en logs y deserialización
-// Para operaciones asíncronas
 
-// Para el método .Select() y .Any()
 
 namespace MicroMercado.Presentation.Pages
 {
