@@ -16,7 +16,7 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
             .HasColumnName("id")
             .UseIdentityColumn();
         builder.Property(c => c.BusinessName)
-            .HasColumnName("name")
+            .HasColumnName("business_name")
             .HasMaxLength(150) 
             .IsRequired();
 
