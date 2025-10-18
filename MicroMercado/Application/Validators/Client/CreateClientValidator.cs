@@ -13,11 +13,11 @@ public class CreateClientValidator : AbstractValidator<CreateClientDTO>
             .Matches(@"^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s.,#/-]+$")
             .WithMessage("El nombre o razón social contiene caracteres inválidos");
 
-
         RuleFor(c => c.Email)
+            .NotEmpty().WithMessage("El email es obligatorio") 
             .EmailAddress().WithMessage("El formato del email no es válido")
-            .MaximumLength(100).WithMessage("El email no puede tener más de 100 caracteres")
-            .When(c => !string.IsNullOrWhiteSpace(c.Email));
+            .MaximumLength(100).WithMessage("El email no puede tener más de 100 caracteres");
+
 
         RuleFor(c => c.Address)
             .MaximumLength(150).WithMessage("La dirección no puede tener más de 150 caracteres")
