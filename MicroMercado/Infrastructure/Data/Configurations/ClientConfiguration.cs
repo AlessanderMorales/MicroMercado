@@ -23,7 +23,7 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
         builder.Property(c => c.Email)
             .HasColumnName("email")
             .HasMaxLength(100)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(c => c.Address)
             .HasColumnName("address")
