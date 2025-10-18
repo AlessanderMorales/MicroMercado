@@ -41,13 +41,13 @@ div class="content">
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="NewClient.Email" class="form-label">Email <span class="text-danger">*</span></label> @* <-- ¡AHORA CON ASTERISCO! *@
+                    <label asp-for="NewClient.Email" class="form-label">Email <span class="text-danger">*</span></label>
                     <input asp-for="NewClient.Email" class="form-control" placeholder="Ingrese el email" />
                     <span asp-validation-for="NewClient.Email" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="NewClient.Address" class="form-label">Dirección</label> @* <-- SIN ASTERISCO *@
+                    <label asp-for="NewClient.Address" class="form-label">Dirección</label> 
                     <input asp-for="NewClient.Address" class="form-control" placeholder="Ingrese la dirección (opcional)" />
                     <span asp-validation-for="NewClient.Address" class="text-danger"></span>
                 </div>
@@ -69,7 +69,7 @@ div class="content">
         </form>
     </div>
 </div>
-</div>
+
 
 @section Scripts {
     @{
