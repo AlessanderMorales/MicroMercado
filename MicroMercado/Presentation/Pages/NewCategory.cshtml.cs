@@ -5,17 +5,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MicroMercado.Presentation.Pages.Category
 {
-    // La directiva @page en el .cshtml usará esta ruta: /Category/NewCategory
     public class NewCategoryModel : PageModel
     {
         private readonly ICategoryService _categoryService;
         private readonly ILogger<NewCategoryModel> _logger;
 
         [BindProperty]
-        // Usamos el DTO de creación de Categoría
         public CreateCategoryDTO NewCategory { get; set; } = new CreateCategoryDTO();
 
-        // Inyectamos el ICategoryService
         public NewCategoryModel(ICategoryService categoryService, ILogger<NewCategoryModel> logger)
         {
             _categoryService = categoryService;
@@ -24,12 +21,11 @@ namespace MicroMercado.Presentation.Pages.Category
 
         public void OnGet()
         {
-            // Método vacío para mostrar el formulario
+            // aca va el metodo para mostrar el formulario
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Valida el ModelState (usando CreateCategoryValidator)
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Errores de validación al intentar crear una nueva categoría. Datos: {NewCategory}",
@@ -39,7 +35,6 @@ namespace MicroMercado.Presentation.Pages.Category
 
             try
             {
-                // Llama al servicio de Categoría
                 var createdCategory = await _categoryService.CreateCategoryAsync(NewCategory);
 
                 if (createdCategory == null)
@@ -49,8 +44,6 @@ namespace MicroMercado.Presentation.Pages.Category
                     return Page();
                 }
 
-                // Si todo va bien, redirige a donde quieras (ej. a una página de listado de categorías, o al inicio)
-                // Usaré /Index por simplicidad, ajústalo según tu necesidad.
                 return RedirectToPage("/Index");
             }
             catch (Exception ex)
