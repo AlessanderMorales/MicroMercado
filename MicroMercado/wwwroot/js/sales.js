@@ -160,7 +160,7 @@ $(document).ready(function () {
         updateClientInfo(client) {
             if (client) {
                 this.selectedClientId = client.id;
-                this.selectedClientName = `${client.name} ${client.lastName}`;
+                this.selectedClientName = client.businessName;;
                 this.selectedClientTaxDocument = client.taxDocument;
 
                 $('#nombreCliente').val(this.selectedClientName);

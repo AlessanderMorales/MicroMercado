@@ -8,6 +8,8 @@ using MicroMercado.Application.Services;
 using MicroMercado.Application.Validators.Client;
 using MicroMercado.Application.Validators.Product;
 using MicroMercado.Infrastructure.Data;
+using MicroMercado.Application.DTOs.Category;
+using MicroMercado.Application.Validators.Category;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,9 +43,6 @@ builder.Services.AddScoped<ISaleService, SaleService>(); // <-- Este registro ah
 // Registro de Validadores de FluentValidation
 builder.Services.AddScoped<IValidator<CreateClientDTO>, CreateClientValidator>();
 builder.Services.AddScoped<IValidator<UpdateClientDTO>, UpdateClientValidator>();
-
-builder.Services.AddScoped<IValidator<CreateProductDTO>, CreateProductValidator>();
-builder.Services.AddScoped<IValidator<UpdateProductDTO>, UpdateProductValidator>();
 
 
 // Configuración de Logging

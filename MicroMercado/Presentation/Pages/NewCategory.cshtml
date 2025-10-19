@@ -1,0 +1,71 @@
+﻿@page
+@model MicroMercado.Presentation.Pages.Category.NewCategoryModel
+
+@{
+    ViewData["Title"] = "Registrar Nueva Categoría";
+    Layout = "~/Presentation/Pages/Shared/_Layout.cshtml"; ;
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Registrar Nueva Categoría</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-page="/Index">Inicio</a></li>
+                    <li class="breadcrumb-item active">Nueva Categoría</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Datos de la Categoría</h3>
+            </div>
+            <form method="post">
+                <div class="card-body">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                    {{-- Campo de Nombre --}}
+                    <div class="form-group mb-3">
+                        <label asp-for="NewCategory.Name" class="form-label">Nombre de la Categoría <span class="text-danger">*</span></label>
+                        <input asp-for="NewCategory.Name" class="form-control" placeholder="Ingrese el nombre (ej: Bebidas, Lácteos)" />
+                        <span asp-validation-for="NewCategory.Name" class="text-danger"></span>
+                    </div>
+
+                    {{-- Campo de Descripción --}}
+                    <div class="form-group mb-3">
+                        <label asp-for="NewCategory.Description" class="form-label">Descripción</label>
+                        {{-- Usamos un textarea para descripciones más largas, puedes cambiarlo a input si prefieres. --}}
+                        <textarea asp-for="NewCategory.Description" class="form-control" placeholder="Describa brevemente la categoría (opcional)" rows="3"></textarea>
+                        <span asp-validation-for="NewCategory.Description" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Guardar Categoría
+                    </button>
+                    {{-- Ajusta esta ruta si tienes una página de listado de categorías --}}
+                    <a asp-page="/Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Cancelar y Volver
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
