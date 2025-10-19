@@ -1,4 +1,6 @@
 using System.Linq.Expressions;
+using FluentValidation;
+using MicroMercado.Application.DTOs.Product;
 using MicroMercado.Application.DTOs.Sales;
 using MicroMercado.Domain.Models;
 using MicroMercado.Infrastructure.Data;
@@ -10,13 +12,19 @@ namespace MicroMercado.Application.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ProductService> _logger;
+        private readonly IValidator<CreateProductDTO> _createProductValidator;
+        private readonly IValidator<UpdateProductDTO> _updateProductValidator;
 
         public ProductService(
             ApplicationDbContext context,
-            ILogger<ProductService> logger)
+            ILogger<ProductService> logger,
+            IValidator<CreateProductDTO> createProductValidator,
+            IValidator<UpdateProductDTO> updateProductValidator)
         {
             _context = context;
             _logger = logger;
+            _createProductValidator = createProductValidator;
+            _updateProductValidator = updateProductValidator;
         }
 
         private static readonly Expression<Func<Product, ProductSearchDTO>> ProjectToDto = p => new ProductSearchDTO
@@ -136,6 +144,175 @@ namespace MicroMercado.Application.Services
         private static bool ContainsTerm(string? field, string term)
         {
             return !string.IsNullOrEmpty(field) && field.ToLower().Contains(term);
+        }
+        
+        
+        private ProductDTO MapToProductDTO(Product product)
+        {
+            return new ProductDTO
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Brand = product.Brand,
+                Price = product.Price,
+                Stock = product.Stock,
+                CategoryId = product.CategoryId,
+                CategoryName = product.Category?.Name ?? string.Empty,
+                Status = product.Status,
+                LastUpdate = product.LastUpdate
+            };
+        }
+
+        public async Task<IEnumerable<ProductDTO>> GetAllProductsAsync()
+        {
+            try
+            {
+                return await _context.Products
+                    .Include(p => p.Category)
+                    .Select(p => MapToProductDTO(p))
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener todos los productos");
+                throw;
+            }
+        }
+
+        public async Task<ProductDTO?> GetProductDetailsByIdAsync(short id)
+        {
+            try
+            {
+                var product = await _context.Products
+                    .Include(p => p.Category)
+                    .FirstOrDefaultAsync(p => p.Id == id);
+                
+                return product != null ? MapToProductDTO(product) : null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener detalles del producto {ProductId}", id);
+                throw;
+            }
+        }
+
+        public async Task<Product?> CreateProductAsync(CreateProductDTO productDto)
+        {
+            var validationResult = await _createProductValidator.ValidateAsync(productDto);
+            if (!validationResult.IsValid)
+            {
+                _logger.LogWarning("Validation errors creating product: {Errors}",
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+                return null;
+            }
+
+            var categoryExists = await _context.Categories
+                .AnyAsync(c => c.Id == productDto.CategoryId && c.Status == 1);
+
+            if (!categoryExists)
+            {
+                _logger.LogWarning("Category {CategoryId} not found or inactive", productDto.CategoryId);
+                return null;
+            }
+            
+            var existingProduct = await _context.Products
+                .AnyAsync(p => p.Name.ToLower() == productDto.Name.Trim().ToLower());
+
+            if (existingProduct)
+            {
+                _logger.LogWarning("Product with name {Name} already exists", productDto.Name);
+                return null;
+            }
+
+            var product = new Product
+            {
+                Name = productDto.Name.Trim(),
+                Description = productDto.Description?.Trim() ?? string.Empty,
+                Brand = productDto.Brand.Trim(),
+                Price = productDto.Price,
+                Stock = productDto.Stock,
+                CategoryId = productDto.CategoryId,
+                Status = 1,
+                LastUpdate = DateTime.Now
+            };
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+            
+            _logger.LogInformation("Product {ProductId} created successfully: {ProductName}", 
+                product.Id, product.Name);
+            return product;
+        }
+
+        public async Task<Product?> UpdateProductAsync(UpdateProductDTO productDto)
+        {
+            var validationResult = await _updateProductValidator.ValidateAsync(productDto);
+            if (!validationResult.IsValid)
+            {
+                _logger.LogWarning("Validation errors updating product: {Errors}",
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+                return null;
+            }
+
+            var productToUpdate = await _context.Products.FindAsync(productDto.Id);
+            if (productToUpdate == null)
+            {
+                _logger.LogWarning("Product {ProductId} not found", productDto.Id);
+                return null;
+            }
+            
+            var categoryExists = await _context.Categories
+                .AnyAsync(c => c.Id == productDto.CategoryId && c.Status == 1);
+
+            if (!categoryExists)
+            {
+                _logger.LogWarning("Category {CategoryId} not found or inactive", productDto.CategoryId);
+                return null;
+            }
+            
+            var existingProduct = await _context.Products
+                .AnyAsync(p => p.Id != productDto.Id && 
+                              p.Name.ToLower() == productDto.Name.Trim().ToLower());
+
+            if (existingProduct)
+            {
+                _logger.LogWarning("Another product with name {Name} already exists", productDto.Name);
+                return null;
+            }
+
+            productToUpdate.Name = productDto.Name.Trim();
+            productToUpdate.Description = productDto.Description?.Trim() ?? string.Empty;
+            productToUpdate.Brand = productDto.Brand.Trim();
+            productToUpdate.Price = productDto.Price;
+            productToUpdate.Stock = productDto.Stock;
+            productToUpdate.CategoryId = productDto.CategoryId;
+            productToUpdate.Status = productDto.Status;
+            productToUpdate.LastUpdate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            
+            _logger.LogInformation("Product {ProductId} updated successfully: {ProductName}", 
+                productDto.Id, productToUpdate.Name);
+            return productToUpdate;
+        }
+
+        public async Task<bool> DeleteProductAsync(short id)
+        {
+            var productToDelete = await _context.Products.FindAsync(id);
+            if (productToDelete == null)
+            {
+                _logger.LogWarning("Product {ProductId} not found", id);
+                return false;
+            }
+            
+            productToDelete.Status = 0;
+            _context.Products.Update(productToDelete);
+            await _context.SaveChangesAsync();
+            
+            _logger.LogInformation("Product {ProductId} deleted (soft delete): {ProductName}", 
+                id, productToDelete.Name);
+            return true;
         }
     }
 }
