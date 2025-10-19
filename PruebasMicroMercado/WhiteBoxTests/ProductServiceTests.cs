@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PruebasMicroMercado
+namespace PruebasMicroMercado.WhiteBoxTests
 {
     public class ProductServiceTests
     {
