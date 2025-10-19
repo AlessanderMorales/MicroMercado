@@ -59,6 +59,7 @@ builder.Services.AddScoped<IValidator<UpdateClientDTO>, UpdateClientValidator>()
 builder.Services.AddScoped<IValidator<CreateProductDTO>, CreateProductValidator>();
 builder.Services.AddScoped<IValidator<UpdateProductDTO>, UpdateProductValidator>();
 
+
 builder.Services.AddScoped<IValidator<CreateCategoryDTO>, CreateCategoryValidator>();
 builder.Services.AddScoped<IValidator<UpdateCategoryDTO>, UpdateCategoryValidator>();
 
