@@ -5,7 +5,7 @@ using Xunit;
 
 namespace PruebasMicroMercado.BlackBoxTests
 {
-    [CollectionDefinition("SeleniumTests")]
+    [CollectionDefinition("SeleniumTests", DisableParallelization = true)]
     public class SeleniumTestsCollection : ICollectionFixture<WebDriverFixture>
     {
         // This class is just a collection definition for xUnit
