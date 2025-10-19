@@ -3,8 +3,10 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using System.Text.Json;
 using MicroMercado.Application.DTOs.Client;
+using MicroMercado.Application.DTOs.Product;
 using MicroMercado.Application.Services;
 using MicroMercado.Application.Validators.Client;
+using MicroMercado.Application.Validators.Product;
 using MicroMercado.Infrastructure.Data;
 using MicroMercado.Application.DTOs.Category;
 using MicroMercado.Application.Validators.Category;
@@ -45,6 +47,9 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 // Registro de Validadores de FluentValidation
 builder.Services.AddScoped<IValidator<CreateClientDTO>, CreateClientValidator>();
 builder.Services.AddScoped<IValidator<UpdateClientDTO>, UpdateClientValidator>();
+
+builder.Services.AddScoped<IValidator<CreateProductDTO>, CreateProductValidator>();
+builder.Services.AddScoped<IValidator<UpdateProductDTO>, UpdateProductValidator>();
 
 
 builder.Services.AddScoped<IValidator<CreateCategoryDTO>, CreateCategoryValidator>();
