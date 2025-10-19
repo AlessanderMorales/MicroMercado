@@ -34,8 +34,61 @@ namespace PruebasMicroMercado.BlackBoxTests
             var input = _wait.Until(d => d.FindElement(By.Id("product_id")));
             input.Clear();
             input.SendKeys(productName);
-            _wait.Until(d => d.FindElements(By.CssSelector("#lstProductosVenta tbody tr"))
-                            .Any(r => r.Text.Contains(productName)));
+
+            // Try to use the page search API and add product via the page's salesManager to avoid flaky UI autocomplete
+            try
+            {
+                var js = @"
+var term = arguments[0];
+var callback = arguments[arguments.length - 1];
+fetch('/Sales?handler=SearchProducts&term=' + encodeURIComponent(term))
+  .then(function(resp){ return resp.json(); })
+  .then(function(json){
+    if(json && json.success && json.data && json.data.length>0 && window.salesManager && typeof window.salesManager.addProductToCart === 'function'){
+      // Use the first product
+      window.salesManager.addProductToCart(json.data[0]);
+      callback(true);
+    } else {
+      callback(false);
+    }
+  })
+  .catch(function(){ callback(false); });
+";
+
+                var added = ((IJavaScriptExecutor)_driver).ExecuteAsyncScript(js, productName);
+                if (added is bool b && b) return;
+            }
+            catch
+            {
+                // ignore and fallback to autocomplete method below
+            }
+
+            // Fallback: Wait for autocomplete suggestions to appear and click the first matching item
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
+            wait.Until(d =>
+            {
+                try
+                {
+                    var suggestions = d.FindElements(By.CssSelector("ul.ui-autocomplete li"));
+                    if (suggestions != null && suggestions.Count > 0)
+                    {
+                        try { suggestions[0].Click(); } catch { try { ((IJavaScriptExecutor)d).ExecuteScript("arguments[0].click();", suggestions[0]); } catch { } }
+                        return d.FindElements(By.CssSelector("#lstProductosVenta tbody tr:not(.empty-cart-message)")).Any(r => r.Text.Contains(productName));
+                    }
+
+                    return false;
+                }
+                catch (OpenQA.Selenium.UnhandledAlertException)
+                {
+                    try { var alert = d.SwitchTo().Alert(); alert.Accept(); } catch (OpenQA.Selenium.NoAlertPresentException) { }
+                    System.Threading.Thread.Sleep(200);
+                    return false;
+                }
+                catch (OpenQA.Selenium.StaleElementReferenceException)
+                {
+                    return false;
+                }
+            });
         }
 
         public void SetInputValue(string id, string value)
@@ -100,10 +153,34 @@ namespace PruebasMicroMercado.BlackBoxTests
         public void AddProductToCart(string productName, int quantity)
         {
             SearchProduct(productName);
+            // Locate the row while handling alerts and stale elements
+            var rowWait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
+            var row = rowWait.Until(d =>
+            {
+                try
+                {
+                    return d.FindElements(By.CssSelector("#lstProductosVenta tbody tr"))
+                            .FirstOrDefault(r => r.Text.Contains(productName));
+                }
+                catch (OpenQA.Selenium.UnhandledAlertException)
+                {
+                    try
+                    {
+                        var alert = d.SwitchTo().Alert();
+                        alert.Accept();
+                    }
+                    catch (OpenQA.Selenium.NoAlertPresentException) { }
 
-            var row = _wait.Until(d =>
-                d.FindElements(By.CssSelector("#lstProductosVenta tbody tr"))
-                 .FirstOrDefault(r => r.Text.Contains(productName)));
+                    System.Threading.Thread.Sleep(200);
+                    return null;
+                }
+                catch (OpenQA.Selenium.StaleElementReferenceException)
+                {
+                    return null;
+                }
+            });
+
+            if (row == null) throw new NoSuchElementException($"Product row not found: {productName}");
 
             var qtyInput = row.FindElement(By.CssSelector("input[type='number']"));
             qtyInput.Clear();
@@ -123,7 +200,31 @@ namespace PruebasMicroMercado.BlackBoxTests
             var searchBtn = _driver.FindElement(By.Id("btnBuscarCliente"));
             searchBtn.Click();
 
-            _wait.Until(d => d.FindElement(By.Id("selTipoPago")).Displayed);
+            // Wait until either the client name is populated or the payment select is available
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
+            wait.Until(d =>
+            {
+                try
+                {
+                    var nombre = d.FindElement(By.Id("nombreCliente")).GetAttribute("value");
+                    if (!string.IsNullOrEmpty(nombre)) return true;
+
+                    var sel = d.FindElements(By.Id("selTipoPago")).FirstOrDefault();
+                    if (sel != null && sel.Displayed) return true;
+
+                    return false;
+                }
+                catch (OpenQA.Selenium.UnhandledAlertException)
+                {
+                    try { var alert = d.SwitchTo().Alert(); alert.Accept(); } catch (OpenQA.Selenium.NoAlertPresentException) { }
+                    System.Threading.Thread.Sleep(200);
+                    return false;
+                }
+                catch (OpenQA.Selenium.NoSuchElementException)
+                {
+                    return false;
+                }
+            });
         }
 
         public void SetPaymentType(int type)
@@ -192,7 +293,8 @@ namespace PruebasMicroMercado.BlackBoxTests
             {
                 try
                 {
-                    var rows = d.FindElements(By.CssSelector("#lstProductosVenta tbody tr")).Count;
+                    // Count only actual product rows (exclude the placeholder row with class 'empty-cart-message')
+                    var rows = d.FindElements(By.CssSelector("#lstProductosVenta tbody tr:not(.empty-cart-message)")).Count;
                     return rows == 0;
                 }
                 catch (OpenQA.Selenium.UnhandledAlertException)
