@@ -24,10 +24,12 @@ public class CreateProductValidator : AbstractValidator<CreateProductDTO>
             .WithMessage("La marca contiene caracteres inválidos");
 
         RuleFor(p => p.Price)
+            .NotEmpty().WithMessage("El precio del producto es obligatorio")
             .GreaterThan(0).WithMessage("El precio debe ser mayor a 0")
             .LessThan(10000).WithMessage("El precio no puede exceder 9999.99");
 
         RuleFor(p => p.Stock)
+            .NotEmpty().WithMessage("El stock del producto es obligatorio")
             .GreaterThanOrEqualTo((short)0).WithMessage("El stock no puede ser negativo")
             .LessThan((short)10000).WithMessage("El stock no puede exceder 9999");
 
