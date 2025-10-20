@@ -44,6 +44,9 @@ namespace MicroMercado.Presentation.Pages
                     _logger.LogWarning("No se pudo crear el cliente. Datos: {NewClient}", System.Text.Json.JsonSerializer.Serialize(NewClient));
                     return Page();
                 }
+                
+                TempData["SuccessMessage"] = $"Cliente '{createdClient.BusinessName}' creado exitosamente con NIT/CI: {createdClient.TaxDocument}";
+                TempData["ClientTaxDocument"] = createdClient.TaxDocument;
 
                 return RedirectToPage("/Sales");
             }

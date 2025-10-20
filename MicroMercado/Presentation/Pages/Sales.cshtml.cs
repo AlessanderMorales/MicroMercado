@@ -34,6 +34,15 @@ namespace MicroMercado.Presentation.Pages
 
         public void OnGet()
         {
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewData["SuccessMessage"] = TempData["SuccessMessage"];
+            }
+            
+            if (TempData["ClientTaxDocument"] != null)
+            {
+                ClientTaxDocument = TempData["ClientTaxDocument"]?.ToString();
+            }
         }
 
 

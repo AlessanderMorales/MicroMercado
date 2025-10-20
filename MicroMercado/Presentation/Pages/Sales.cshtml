@@ -33,6 +33,23 @@
 
 <div id="notification-container" style="position: fixed; top: 70px; right: 20px; z-index: 1050; width: 350px;"></div>
 
+@if (ViewData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 70px; right: 20px; z-index: 1050; width: 350px;">
+        <i class="fas fa-check-circle me-2"></i>
+        @ViewData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    
+    <script>
+        setTimeout(function() {
+            $('.alert-success').fadeOut(300, function() {
+                $(this).remove();
+            });
+        }, 5000);
+    </script>
+}
+
 <div class="content">
     <div class="container-fluid">
         <div class="row mb-3">
