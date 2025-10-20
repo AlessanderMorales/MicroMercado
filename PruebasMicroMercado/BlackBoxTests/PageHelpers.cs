@@ -31,7 +31,6 @@ namespace PruebasMicroMercado.BlackBoxTests
 
         public void SearchProduct(string productName)
         {
-            // Use direct API call to search and add product - more reliable than UI autocomplete
             try
             {
                 var js = @"
@@ -109,10 +108,8 @@ function updateTotal() {
 
                 var result = ((IJavaScriptExecutor)_driver).ExecuteAsyncScript(js, productName);
 
-                // Wait for product to appear in cart
                 System.Threading.Thread.Sleep(1000);
 
-                // Verify product was added
                 var cartRows = _driver.FindElements(By.CssSelector("#lstProductosVenta tbody tr:not(.empty-cart-message)"));
                 if (cartRows.Count == 0)
                 {
@@ -150,7 +147,6 @@ function updateTotal() {
         {
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(30));
 
-            // Accept any alert that appears
             try
             {
                 var alert = _driver.SwitchTo().Alert();
@@ -185,10 +181,8 @@ function updateTotal() {
 
         public void AddProductToCart(string productName, int quantity)
         {
-            // First search and add the product
             SearchProduct(productName);
 
-            // Then update quantity if needed
             if (quantity != 1)
             {
                 var rowWait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
@@ -197,7 +191,7 @@ function updateTotal() {
                     try
                     {
                         return d.FindElements(By.CssSelector("#lstProductosVenta tbody tr:not(.empty-cart-message)"))
-                                .LastOrDefault(); // Get the last row (most recently added)
+                                .LastOrDefault();
                     }
                     catch (StaleElementReferenceException)
                     {
@@ -212,7 +206,6 @@ function updateTotal() {
                 qtyInput.Clear();
                 qtyInput.SendKeys(quantity.ToString());
 
-                // Trigger change event via JavaScript
                 ((IJavaScriptExecutor)_driver).ExecuteScript(@"
                     var input = arguments[0];
                     var event = new Event('change', { bubbles: true });
@@ -241,7 +234,6 @@ function updateTotal() {
                 System.Threading.Thread.Sleep(500);
             }
 
-            // Wait until total updates
             _wait.Until(d => GetTotal() > 0);
         }
 
@@ -254,22 +246,19 @@ function updateTotal() {
             var searchBtn = _driver.FindElement(By.Id("btnBuscarCliente"));
             searchBtn.Click();
 
-            // Wait for client search to complete
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(d =>
             {
                 try
                 {
-                    // Accept alert if it appears
                     try
                     {
                         var alert = d.SwitchTo().Alert();
                         alert.Accept();
-                        return true; // Client not found, but that's ok
+                        return true; 
                     }
                     catch (NoAlertPresentException)
                     {
-                        // No alert, check if client name was populated
                         var nombre = d.FindElement(By.Id("nombreCliente")).GetAttribute("value");
                         if (!string.IsNullOrEmpty(nombre)) return true;
                     }
@@ -296,11 +285,9 @@ function updateTotal() {
             var input = _driver.FindElement(By.Id("iptEfectivoRecibido"));
             input.Clear();
 
-            // Format the amount without thousand separators, using dot as decimal separator
             string amountStr = amount.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
             input.SendKeys(amountStr);
 
-            // Trigger blur and change events
             ((IJavaScriptExecutor)_driver).ExecuteScript(@"
                 var input = arguments[0];
                 
@@ -342,10 +329,8 @@ function updateTotal() {
             var btn = _driver.FindElement(By.Id("btnIniciarVenta"));
             btn.Click();
 
-            // Wait for either success or error response
             System.Threading.Thread.Sleep(2000);
 
-            // Accept any alert that appears
             try
             {
                 var alert = _driver.SwitchTo().Alert();
@@ -360,58 +345,44 @@ function updateTotal() {
             {
                 var totalText = _driver.FindElement(By.Id("boleta_total")).Text.Trim();
 
-                // Remove any currency symbols and spaces
                 totalText = totalText.Replace("Bs", "").Replace("$", "").Trim();
 
-                // Remove thousand separators (both comma and dot can be used)
-                // Handle formats like: 1,234.56 or 1.234,56
-
-                // If the text has both comma and dot, determine which is decimal separator
                 if (totalText.Contains(",") && totalText.Contains("."))
                 {
-                    // If dot comes after comma, dot is decimal separator (1,234.56)
                     if (totalText.LastIndexOf('.') > totalText.LastIndexOf(','))
                     {
                         totalText = totalText.Replace(",", "");
                     }
                     else
                     {
-                        // If comma comes after dot, comma is decimal separator (1.234,56)
                         totalText = totalText.Replace(".", "").Replace(",", ".");
                     }
                 }
                 else if (totalText.Contains(","))
                 {
-                    // Only comma - could be thousand separator or decimal separator
-                    // If there are multiple commas or comma is far from end, it's thousand separator
                     int commaCount = totalText.Count(c => c == ',');
                     int lastCommaPos = totalText.LastIndexOf(',');
                     int charsAfterComma = totalText.Length - lastCommaPos - 1;
 
                     if (commaCount > 1 || charsAfterComma == 3)
                     {
-                        // It's a thousand separator
                         totalText = totalText.Replace(",", "");
                     }
                     else if (charsAfterComma <= 2)
                     {
-                        // It's a decimal separator
                         totalText = totalText.Replace(",", ".");
                     }
                 }
                 else if (totalText.Contains("."))
                 {
-                    // Only dot - could be thousand separator or decimal separator
                     int dotCount = totalText.Count(c => c == '.');
                     int lastDotPos = totalText.LastIndexOf('.');
                     int charsAfterDot = totalText.Length - lastDotPos - 1;
 
                     if (dotCount > 1 || charsAfterDot == 3)
                     {
-                        // It's a thousand separator
                         totalText = totalText.Replace(".", "");
                     }
-                    // If charsAfterDot <= 2, keep the dot as decimal separator
                 }
 
                 return decimal.TryParse(totalText, System.Globalization.NumberStyles.Any,
@@ -449,7 +420,6 @@ function updateTotal() {
             var btn = _driver.FindElement(By.Id("btnVaciarListado"));
             btn.Click();
 
-            // Accept alert if it appears
             try
             {
                 var alert = _driver.SwitchTo().Alert();
@@ -457,7 +427,6 @@ function updateTotal() {
             }
             catch (NoAlertPresentException) { }
 
-            // Clear via JavaScript to ensure it works
             ((IJavaScriptExecutor)_driver).ExecuteScript(@"
                 var tbody = document.querySelector('#lstProductosVenta tbody');
                 if (tbody) {
