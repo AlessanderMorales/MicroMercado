@@ -147,7 +147,7 @@ namespace MicroMercado.Application.Services
         }
         
         
-        private ProductDTO MapToProductDTO(Product product)
+        private static ProductDTO MapToProductDTO(Product product)
         {
             return new ProductDTO
             {

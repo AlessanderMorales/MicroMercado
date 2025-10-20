@@ -1,0 +1,97 @@
+@page
+@model MicroMercado.Presentation.Pages.ProductModel
+
+@{
+    Layout = "~/Presentation/Pages/Shared/_Layout.cshtml";
+}
+<section id="owners" class="section bg-light">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <h2 class="fw-bold">Listado de productos</h2>
+    </div>
+    
+    <div class="table-responsive shadow-sm rounded-3">
+      <table class="table align-middle">
+        <thead class="table-dark text-center">
+        <tr>
+          <th style="width:7%;">#</th>
+          <th style="width:35%;">Nombre</th>
+          <th style="width:14%;">Marca</th>
+          <th style="width:12%;">Precio [Bs.]</th>
+          <th style="width:12%;">Stock [und]</th>
+          <th style="width:20%;">Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var t in Model.Products.Select((item, index) => new { item, index = index + 1 }))
+        {
+          <tr>
+            <td class="text-center"><strong>@t.index</strong></td>
+            <td>@t.item.Name</td>
+            <td>@t.item.Brand</td>
+            <td class="text-center">@t.item.Price.ToString("N2")</td>
+            <td class="text-center">@t.item.Stock</td>
+            <td class="text-nowrap text-center">
+              <a asp-page="/Owners/Edit" class="btn btn-warning btn-sm me-1">
+                <i class="fas fa-edit"></i> Editar
+              </a>
+              <button type="button" class="btn btn-sm btn-danger"
+                      data-bs-toggle="modal"
+                      data-bs-target="#deleteModal@(t.item.Id)"
+                      data-product-name="@t.item.Name">
+                <i class="bi bi-trash"></i> Eliminar
+              </button>
+            </td>
+          </tr>
+        }
+        </tbody>
+        <tfoot class="table-light">
+        <tr>
+          <td colspan="6" class="text-end">
+            <strong>@Model.Products.Count()</strong> registro(s) encontrado(s)
+          </td>
+        </tr>
+        </tfoot>
+      </table>
+      
+    @foreach (var t in Model.Products)
+{
+    <div class="modal fade" id="deleteModal@(t.Id)" tabindex="-1" aria-labelledby="deleteModalLabel@(t.Id)" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-dark text-white border-0">
+                    <h5 class="modal-title text-light" id="deleteModalLabel@(t.Id)">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Confirmar eliminación
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="mb-3">
+                        ¿Está seguro de que desea eliminar el producto <strong>@t.Name</strong>?
+                    </p>
+                    <p class="text-muted small">
+                        <i class="fas fa-info-circle me-2"></i> Esta acción no se puede deshacer.
+                    </p>
+                </div>
+
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i> Cancelar
+                    </button>
+                    <form method="post"
+                          asp-page-handler="Delete"
+                          asp-route-id="@t.Id"
+                          style="display: inline;">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i> Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+    </div>
+  </div>
+</section>
