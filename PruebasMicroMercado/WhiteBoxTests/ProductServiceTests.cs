@@ -1,4 +1,5 @@
 ﻿using MicroMercado.Application.Services;
+using FluentValidation;
 using MicroMercado.Application.DTOs.Sales;
 using MicroMercado.Domain.Models;
 using MicroMercado.Infrastructure.Data;
@@ -25,6 +26,22 @@ namespace PruebasMicroMercado.WhiteBoxTests
         private Mock<ILogger<ProductService>> GetMockLogger()
         {
             return new Mock<ILogger<ProductService>>();
+        }
+
+        private (Mock<IValidator<MicroMercado.Application.DTOs.Product.CreateProductDTO>> createValidator, Mock<IValidator<MicroMercado.Application.DTOs.Product.UpdateProductDTO>> updateValidator) GetMockValidators()
+        {
+            var createMock = new Mock<IValidator<MicroMercado.Application.DTOs.Product.CreateProductDTO>>();
+            var updateMock = new Mock<IValidator<MicroMercado.Application.DTOs.Product.UpdateProductDTO>>();
+
+            createMock
+                .Setup(v => v.ValidateAsync(It.IsAny<MicroMercado.Application.DTOs.Product.CreateProductDTO>(), default))
+                .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
+            updateMock
+                .Setup(v => v.ValidateAsync(It.IsAny<MicroMercado.Application.DTOs.Product.UpdateProductDTO>(), default))
+                .ReturnsAsync(new FluentValidation.Results.ValidationResult());
+
+            return (createMock, updateMock);
         }
 
         private async Task SeedTestData(ApplicationDbContext context)
@@ -97,7 +114,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
         {
             var context = GetInMemoryDbContext();
             var logger = GetMockLogger();
-            var service = new ProductService(context, logger.Object);
+            var validators = GetMockValidators();
+            var service = new ProductService(context, logger.Object, validators.createValidator.Object, validators.updateValidator.Object);
             var result = await service.SearchProductsAsync("");
             Assert.NotNull(result);
             Assert.Empty(result);
@@ -110,7 +128,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
             var context = GetInMemoryDbContext();
             await SeedTestData(context);
             var logger = GetMockLogger();
-            var service = new ProductService(context, logger.Object);
+            var validators = GetMockValidators();
+            var service = new ProductService(context, logger.Object, validators.createValidator.Object, validators.updateValidator.Object);
             var result = await service.SearchProductsAsync("laptop");
             Assert.NotNull(result);
             var products = result.ToList();
@@ -130,7 +149,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
             await context.DisposeAsync();
 
             var logger = GetMockLogger();
-            var service = new ProductService(context, logger.Object);
+            var validators = GetMockValidators();
+            var service = new ProductService(context, logger.Object, validators.createValidator.Object, validators.updateValidator.Object);
             await Assert.ThrowsAsync<ObjectDisposedException>(async () =>
             {
                 await service.SearchProductsAsync("laptop");
@@ -144,7 +164,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
             var context = GetInMemoryDbContext();
             await SeedTestData(context);
             var logger = GetMockLogger();
-            var service = new ProductService(context, logger.Object);
+            var validators = GetMockValidators();
+            var service = new ProductService(context, logger.Object, validators.createValidator.Object, validators.updateValidator.Object);
             var result = await service.GetProductByIdAsync(1);
             Assert.NotNull(result);
             Assert.Equal("Laptop Dell", result.Name);
@@ -164,7 +185,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
             await context.DisposeAsync();
 
             var logger = GetMockLogger();
-            var service = new ProductService(context, logger.Object);
+            var validators = GetMockValidators();
+            var service = new ProductService(context, logger.Object, validators.createValidator.Object, validators.updateValidator.Object);
             await Assert.ThrowsAsync<ObjectDisposedException>(async () =>
             {
                 await service.GetProductByIdAsync(1);
@@ -178,7 +200,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
             var context = GetInMemoryDbContext();
             await SeedTestData(context);
             var logger = GetMockLogger();
-            var service = new ProductService(context, logger.Object);
+            var validators = GetMockValidators();
+            var service = new ProductService(context, logger.Object, validators.createValidator.Object, validators.updateValidator.Object);
             var result = await service.HasStockAsync(1, 5);
             Assert.True(result);
         }
@@ -190,7 +213,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
             var context = GetInMemoryDbContext();
             await SeedTestData(context);
             var logger = GetMockLogger();
-            var service = new ProductService(context, logger.Object);
+            var validators = GetMockValidators();
+            var service = new ProductService(context, logger.Object, validators.createValidator.Object, validators.updateValidator.Object);
             var result = await service.HasStockAsync(1, 20);
             Assert.False(result);
         }
@@ -206,7 +230,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
             await context.DisposeAsync();
 
             var logger = GetMockLogger();
-            var service = new ProductService(context, logger.Object);
+            var validators = GetMockValidators();
+            var service = new ProductService(context, logger.Object, validators.createValidator.Object, validators.updateValidator.Object);
             await Assert.ThrowsAsync<ObjectDisposedException>(async () =>
             {
                 await service.HasStockAsync(1, 5);

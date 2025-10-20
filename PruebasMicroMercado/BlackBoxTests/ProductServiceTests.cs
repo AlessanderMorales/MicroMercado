@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using MicroMercado.Application.DTOs.Product;
 using MicroMercado.Application.Services;
-using MicroMercado.Domain.Entities;
+using MicroMercado.Domain.Models;
 using MicroMercado.Domain.Models;
 using MicroMercado.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PruebasMicroMercado.WhiteBoxTests
+namespace PruebasMicroMercado.BlackBoxTests
 {
     public class ProductServiceTests : IDisposable
     {
@@ -63,7 +63,7 @@ namespace PruebasMicroMercado.WhiteBoxTests
                 Name = "Test Category",
                 Description = "Test Category Description",
                 Status = 1,
-                CreatedAt = DateTime.Now
+                LastUpdate = DateTime.Now
             };
 
             _context.Categories.Add(category);
@@ -81,7 +81,7 @@ namespace PruebasMicroMercado.WhiteBoxTests
                     Stock = 100,
                     CategoryId = 1,
                     Status = 1,
-                    CreatedAt = DateTime.Now
+                    LastUpdate = DateTime.Now
                 },
                 new Product
                 {
@@ -93,7 +93,7 @@ namespace PruebasMicroMercado.WhiteBoxTests
                     Stock = 50,
                     CategoryId = 1,
                     Status = 1,
-                    CreatedAt = DateTime.Now
+                    LastUpdate = DateTime.Now
                 },
                 new Product
                 {
@@ -105,7 +105,7 @@ namespace PruebasMicroMercado.WhiteBoxTests
                     Stock = 0,
                     CategoryId = 1,
                     Status = 1,
-                    CreatedAt = DateTime.Now
+                    LastUpdate = DateTime.Now
                 }
             };
 
@@ -116,10 +116,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
         [Fact]
         public async Task GetAllProductsAsync_ShouldReturnAllProducts()
         {
-            // Act
             var result = await _productService.GetAllProductsAsync();
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal(3, result.Count());
         }
@@ -127,10 +125,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
         [Fact]
         public async Task GetProductByIdAsync_ExistingProduct_ShouldReturnProduct()
         {
-            // Act
             var result = await _productService.GetProductByIdAsync(1);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal("Test Product 1", result.Name);
             Assert.Equal(10.50m, result.Price);
@@ -139,20 +135,16 @@ namespace PruebasMicroMercado.WhiteBoxTests
         [Fact]
         public async Task GetProductByIdAsync_NonExistingProduct_ShouldReturnNull()
         {
-            // Act
             var result = await _productService.GetProductByIdAsync(999);
 
-            // Assert
             Assert.Null(result);
         }
 
         [Fact]
         public async Task SearchProductsAsync_ByName_ShouldReturnMatchingProducts()
         {
-            // Act
             var result = await _productService.SearchProductsAsync("Product 1");
 
-            // Assert
             Assert.NotNull(result);
             Assert.Single(result);
             Assert.Contains(result, p => p.Name.Contains("Product 1"));
@@ -161,10 +153,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
         [Fact]
         public async Task SearchProductsAsync_ByBrand_ShouldReturnMatchingProducts()
         {
-            // Act
             var result = await _productService.SearchProductsAsync("Brand B");
 
-            // Assert
             Assert.NotNull(result);
             Assert.Single(result);
             Assert.Contains(result, p => p.Brand == "Brand B");
@@ -173,30 +163,24 @@ namespace PruebasMicroMercado.WhiteBoxTests
         [Fact]
         public async Task HasStockAsync_ProductWithStock_ShouldReturnTrue()
         {
-            // Act
             var result = await _productService.HasStockAsync(1, 10);
 
-            // Assert
             Assert.True(result);
         }
 
         [Fact]
         public async Task HasStockAsync_ProductWithoutStock_ShouldReturnFalse()
         {
-            // Act
             var result = await _productService.HasStockAsync(3, 1);
 
-            // Assert
             Assert.False(result);
         }
 
         [Fact]
         public async Task HasStockAsync_RequestedQuantityExceedsStock_ShouldReturnFalse()
         {
-            // Act
             var result = await _productService.HasStockAsync(1, 200);
 
-            // Assert
             Assert.False(result);
         }
 
