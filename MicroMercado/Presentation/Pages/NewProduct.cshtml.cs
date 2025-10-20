@@ -1,3 +1,5 @@
+using FluentValidation;
+using MicroMercado.Application.DTOs.Category;
 using MicroMercado.Application.DTOs.Product;
 using MicroMercado.Application.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -8,38 +10,56 @@ namespace MicroMercado.Presentation.Pages;
 public class NewProductModel : PageModel
 { 
     private readonly IProductService _productService;
-    //private readonly ICategoryService _categoryService;
+    private readonly ICategoryService _categoryService;
     private readonly ILogger<NewProductModel> _logger;
+    private readonly IValidator<CreateProductDTO> _validator;
 
     [BindProperty]
     public CreateProductDTO NewProduct { get; set; } = new CreateProductDTO();
 
-    //public List<CategoryDTO> Categories { get; set; } = new List<CategoryDTO>();
+    public List<CategoryDTO> Categories { get; set; } = new List<CategoryDTO>();
 
     public NewProductModel(
         IProductService productService,
-      //  ICategoryService categoryService,
-        ILogger<NewProductModel> logger)
+        ICategoryService categoryService,
+        ILogger<NewProductModel> logger,
+        IValidator<CreateProductDTO> validator)
     {
         _productService = productService;
-        //_categoryService = categoryService;
+        _categoryService = categoryService;
         _logger = logger;
+        _validator = validator;
     }
 
     public async Task<IActionResult> OnGetAsync()
     {
-        //await LoadCategoriesAsync();
+        await LoadCategoriesAsync();
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        //await LoadCategoriesAsync();
+        await LoadCategoriesAsync();
+        
+        ModelState.Clear();
+        
+        var validationResult = await _validator.ValidateAsync(NewProduct);
 
+        if (!validationResult.IsValid)
+        {
+            foreach (var error in validationResult.Errors)
+            {
+                ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+            }
+            
+            _logger.LogWarning("Validation errors: {Errors}",
+                string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+        
+            return Page();
+        }
+        
         if (!ModelState.IsValid)
         {
-            _logger.LogWarning("Validation errors when trying to create new product. Data: {NewProduct}",
-                System.Text.Json.JsonSerializer.Serialize(NewProduct));
             return Page();
         }
 
@@ -50,7 +70,7 @@ public class NewProductModel : PageModel
             if (createdProduct == null)
             {
                 ModelState.AddModelError(string.Empty, 
-                    "No se pudo crear el producto. Verifique que el nombre no exista y que la categoría sea válida.");
+                    "No se pudo crear el producto. Verifique que el nombre no exista.");
                 _logger.LogWarning("Failed to create product. Data: {NewProduct}", 
                     System.Text.Json.JsonSerializer.Serialize(NewProduct));
                 return Page();
@@ -68,7 +88,7 @@ public class NewProductModel : PageModel
             return Page();
         }
     }
-    /*
+    
     private async Task LoadCategoriesAsync()
     {
         try
@@ -89,5 +109,4 @@ public class NewProductModel : PageModel
             ModelState.AddModelError(string.Empty, "Error al cargar las categorías.");
         }
     }
-    */
 }

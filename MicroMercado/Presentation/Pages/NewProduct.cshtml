@@ -41,6 +41,13 @@
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
         }
+        
+        .alert ul {
+            list-style: none !important;
+            padding-left: 0 !important;
+            margin-bottom: 0 !important;
+            display: inline !important;
+        }
     </style>
 }
 
@@ -82,12 +89,8 @@
                             @if (!ViewData.ModelState.IsValid)
                             {
                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    <h5 class="alert-heading">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                        Errores de Validación
-                                    </h5>
-                                    <hr>
-                                    <div asp-validation-summary="All" class="mb-0"></div>
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div asp-validation-summary="All" class="mb-0 d-inline-block"></div>
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
                             }
@@ -193,13 +196,11 @@
                                         Categoría
                                     </label>
                                     <div class="input-group">
-                                        @*
                                         <select asp-for="NewProduct.CategoryId"
                                                 class="form-select"
                                                 asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
                                             <option value="0">-- Seleccione una categoría --</option>
                                         </select>
-                                        *@
                                         <a asp-page="/NewCategory"
                                            class="btn btn-success btn-create-category"
                                            title="Crear nueva categoría"
