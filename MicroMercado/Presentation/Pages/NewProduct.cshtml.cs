@@ -27,6 +27,8 @@ public class NewProductModel : PageModel
     {
         _productService = productService;
         _logger = logger;
+        _categoryService = categoryService;
+        _validator = validator;
     }
 
     public async Task<IActionResult> OnGetAsync()
