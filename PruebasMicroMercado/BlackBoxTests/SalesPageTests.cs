@@ -131,7 +131,7 @@ namespace PruebasMicroMercado.BlackBoxTests
             // We'll just verify the sale process completed without errors
             if (cartRows.Count > 0 && !saleSucceeded)
             {
-                Assert.True(false, "Sale appears to have failed - cart not cleared and no success message");
+                Assert.Fail("Sale appears to have failed - cart not cleared and no success message");
             }
 
             // Test passes if we reached here - sale was attempted and no error occurred
