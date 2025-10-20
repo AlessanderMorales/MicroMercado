@@ -26,7 +26,7 @@ public class CategoryService : ICategoryService
         _updateCategoryValidator = updateCategoryValidator;
     }
 
-    private CategoryDTO MapToCategoryDTO(Category category)
+    private static CategoryDTO MapToCategoryDTO(Category category)
     {
         return new CategoryDTO
         {
@@ -40,9 +40,8 @@ public class CategoryService : ICategoryService
 
     public async Task<IEnumerable<CategoryDTO>> GetAllCategoriesAsync()
     {
-        return await _context.Categories
-            .Select(c => MapToCategoryDTO(c))
-            .ToListAsync();
+        var categories = await _context.Categories.ToListAsync();
+        return categories.Select(c => MapToCategoryDTO(c)).ToList();
     }
 
     public async Task<CategoryDTO?> GetCategoryByIdAsync(byte id)
