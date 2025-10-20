@@ -7,7 +7,7 @@ public class CreateClientValidator : AbstractValidator<CreateClientDTO>
 {
     public CreateClientValidator()
     {
-        // Validación para BusinessName
+
         RuleFor(c => c.BusinessName)
             .NotEmpty().WithMessage("El nombre o razón social es obligatorio") 
             .MinimumLength(3).WithMessage("El nombre o razón social debe tener al menos 3 caracteres") 
@@ -15,7 +15,6 @@ public class CreateClientValidator : AbstractValidator<CreateClientDTO>
             .Matches(@"^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s.,#/-]+$")
             .WithMessage("El nombre o razón social contiene caracteres inválidos"); 
 
-        // Validación para Email
         RuleFor(c => c.Email)
             .NotEmpty().WithMessage("El email es obligatorio") 
             .EmailAddress().WithMessage("El formato del email no es válido") 
@@ -38,6 +37,6 @@ public class CreateClientValidator : AbstractValidator<CreateClientDTO>
         if (string.IsNullOrWhiteSpace(taxDocument))
             return false;
         var cleanDocument = taxDocument.Replace("-", "");
-        return cleanDocument.Length >= 10 && cleanDocument.Length <= 25;
+        return cleanDocument.Length >= 6 && cleanDocument.Length <= 25;
     }
 }
