@@ -335,14 +335,45 @@ $(document).ready(function () {
                     }
                 });
             } else {
-                if (confirm('¿Está seguro de vaciar el detalle de venta?')) {
+                const confirmHtml = `
+                    <div class="modal fade" id="confirmClearModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-warning">
+                                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Confirmar</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Está seguro de vaciar el detalle de venta?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-danger" id="confirmClearBtn">Sí, vaciar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                $('body').append(confirmHtml);
+                const modal = new bootstrap.Modal(document.getElementById('confirmClearModal'));
+                
+                $('#confirmClearBtn').on('click', () => {
                     this.cart = [];
                     this.updateCartDisplay();
                     $('#product_id').val('');
                     $('#iptEfectivoRecibido').val('');
                     $('#chkEfectivoExacto').prop('checked', false);
                     this.showNotification('info', 'Lista vaciada');
-                }
+                    modal.hide();
+                    $('#confirmClearModal').remove();
+                });
+                
+                modal.show();
+                
+                $('#confirmClearModal').on('hidden.bs.modal', function () {
+                    $(this).remove();
+                });
             }
         }
 
@@ -386,10 +417,53 @@ $(document).ready(function () {
                 efectivoRecibido = total;
             }
 
-            if (!confirm(`¿Confirmar venta por Bs. ${total.toFixed(2)}?`)) {
+           const shouldContinue = await new Promise((resolve) => {
+                const confirmHtml = `
+                    <div class="modal fade" id="confirmSaleModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-primary text-white">
+                                    <h5 class="modal-title"><i class="fas fa-check-circle"></i> Confirmar Venta</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="mb-0">¿Confirmar venta por <strong class="text-success">Bs. ${total.toFixed(2)}</strong>?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-primary" id="confirmSaleBtn">Sí, confirmar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                $('body').append(confirmHtml);
+                const modal = new bootstrap.Modal(document.getElementById('confirmSaleModal'));
+                
+                $('#confirmSaleBtn').on('click', () => {
+                    modal.hide();
+                    resolve(true);
+                });
+                
+                $('#confirmSaleModal').on('hidden.bs.modal', function () {
+                    $(this).remove();
+                    if (!$('#confirmSaleBtn').data('clicked')) {
+                        resolve(false);
+                    }
+                });
+                
+                $('#confirmSaleBtn').on('click', function() {
+                    $(this).data('clicked', true);
+                });
+                
+                modal.show();
+            });
+            
+            if (!shouldContinue) {
                 return;
             }
-            
+
             this.isProcessingSale = true;
 
             try {
@@ -515,9 +589,60 @@ $(document).ready(function () {
                     confirmButtonText: 'Aceptar'
                 });
             } else {
-                alert('Venta #' + saleData.saleId + ' confirmada exitosamente\n\n' +
-                    'Total: Bs. ' + saleData.totalAmount.toFixed(2) + '\n' +
-                    'Vuelto: Bs. ' + saleData.change.toFixed(2));
+                const modalHtml = `
+                    <div class="modal fade" id="saleSummaryModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-success text-white">
+                                    <h5 class="modal-title">
+                                        <i class="fas fa-check-circle"></i> ¡Venta Confirmada!
+                                    </h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="alert alert-success mb-3">
+                                        <strong>Venta #${saleData.saleId}</strong> registrada exitosamente
+                                    </div>
+                                    <table class="table table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Fecha:</strong></td>
+                                                <td>${fechaFormateada}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Total:</strong></td>
+                                                <td class="text-success"><strong>Bs. ${saleData.totalAmount.toFixed(2)}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Efectivo Recibido:</strong></td>
+                                                <td>Bs. ${saleData.cashReceived.toFixed(2)}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Vuelto:</strong></td>
+                                                <td class="text-danger">Bs. ${saleData.change.toFixed(2)}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Productos:</strong></td>
+                                                <td>${saleData.itemsCount} items</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                $('body').append(modalHtml);
+                const modal = new bootstrap.Modal(document.getElementById('saleSummaryModal'));
+                modal.show();
+                
+                $('#saleSummaryModal').on('hidden.bs.modal', function () {
+                    $(this).remove();
+                });
             }
         }
 
@@ -540,8 +665,37 @@ $(document).ready(function () {
                     timerProgressBar: true
                 });
             } else {
-                const icons = { success: '✓', error: '✗', warning: '⚠', info: 'ℹ' };
-                alert(`${icons[type] || ''} ${message}`);
+  
+                const icons = {
+                    success: 'fa-check-circle',
+                    error: 'fa-exclamation-triangle',
+                    warning: 'fa-exclamation-circle',
+                    info: 'fa-info-circle'
+                };
+                
+                const colors = {
+                    success: 'alert-success',
+                    error: 'alert-danger',
+                    warning: 'alert-warning',
+                    info: 'alert-info'
+                };
+        
+                const alertHtml = `
+                    <div class="alert ${colors[type]} alert-dismissible fade show" role="alert">
+                        <i class="fas ${icons[type]} me-2"></i>
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+        
+                const container = $('#notification-container');
+                container.append(alertHtml);
+                
+                setTimeout(() => {
+                    container.find('.alert').first().fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                }, 5000);
             }
         }
 

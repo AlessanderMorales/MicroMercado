@@ -283,8 +283,7 @@ namespace MicroMercado.Presentation.Pages
 
                 if (result.Success)
                 {
-                    _logger.LogInformation("✅ Venta creada exitosamente. SaleId: {SaleId}",
-                        result.Data?.SaleId);
+                    _logger.LogInformation("✅ Venta creada exitosamente. SaleId: {SaleId}");
                     return new JsonResult(new
                     {
                         success = true,
