@@ -25,7 +25,7 @@ namespace MicroMercado.Application.Validators.Client
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("El documento es obligatorio")
                 .Matches(@"^[0-9]+$").WithMessage("El documento solo puede contener números")
-                .Must(BeValidTaxDocument).WithMessage("El documento debe tener entre 6 y 25 dígitos");
+                .Must(BeValidTaxDocument).WithMessage("El documento debe tener entre 6 y 9 dígitos");
         }
         private bool BeValidTaxDocument(string taxDocument)
         {
@@ -33,7 +33,7 @@ namespace MicroMercado.Application.Validators.Client
                 return false;
 
             var cleanDocument = taxDocument.Replace("-", "");
-            return cleanDocument.Length >= 6 && cleanDocument.Length <= 25;
+            return cleanDocument.Length >= 6 && cleanDocument.Length < 9;
         }
     }
 }
