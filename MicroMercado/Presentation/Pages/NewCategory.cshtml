@@ -32,15 +32,18 @@
                 <div class="card-body">
                     @Html.AntiForgeryToken()
                     <div asp-validation-summary="All" class="text-danger mb-3"></div>
-                    
+
+                    {{-- Campo de Nombre --}}
                     <div class="form-group mb-3">
                         <label asp-for="NewCategory.Name" class="form-label">Nombre de la Categoría <span class="text-danger">*</span></label>
                         <input asp-for="NewCategory.Name" class="form-control" placeholder="Ingrese el nombre (ej: Bebidas, Lácteos)" />
                         <span asp-validation-for="NewCategory.Name" class="text-danger"></span>
                     </div>
-                    
+
+                    {{-- Campo de Descripción --}}
                     <div class="form-group mb-3">
                         <label asp-for="NewCategory.Description" class="form-label">Descripción</label>
+                        {{-- Usamos un textarea para descripciones más largas, puedes cambiarlo a input si prefieres. --}}
                         <textarea asp-for="NewCategory.Description" class="form-control" placeholder="Describa brevemente la categoría (opcional)" rows="3"></textarea>
                         <span asp-validation-for="NewCategory.Description" class="text-danger"></span>
                     </div>
@@ -50,6 +53,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i> Guardar Categoría
                     </button>
+                    {{-- Ajusta esta ruta si tienes una página de listado de categorías --}}
                     <a asp-page="/Index" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Cancelar y Volver
                     </a>
