@@ -8,7 +8,6 @@ namespace PruebasMicroMercado.BlackBoxTests
     [CollectionDefinition("SeleniumTests", DisableParallelization = true)]
     public class SeleniumTestsCollection : ICollectionFixture<WebDriverFixture>
     {
-        // This class is just a collection definition for xUnit
     }
 
     public class WebDriverFixture : IDisposable
@@ -19,23 +18,16 @@ namespace PruebasMicroMercado.BlackBoxTests
         {
             var options = new ChromeOptions();
 
-            // Start browser maximized
             options.AddArgument("--start-maximized");
 
-            // Disable annoying notifications and infobars
             options.AddArgument("--disable-notifications");
             options.AddArgument("--disable-infobars");
             options.AddArgument("--no-sandbox");
             options.AddArgument("--disable-dev-shm-usage");
             options.AddArgument("--disable-gpu");
 
-            // Remove headless to see the browser by default
-            // options.AddArgument("--headless"); // Commented out for visible browser
-
-            // Initialize Chrome driver
             Driver = new ChromeDriver(options);
 
-            // Optional: implicit wait for elements (helps with slow page load)
             Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
         }
 
@@ -48,7 +40,6 @@ namespace PruebasMicroMercado.BlackBoxTests
             }
             catch
             {
-                // Ignore exceptions on dispose
             }
         }
     }
