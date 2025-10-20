@@ -24,7 +24,6 @@ builder.Services.AddRazorPages(options =>
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
 });
 
-
 // Configuración de la base de datos PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {

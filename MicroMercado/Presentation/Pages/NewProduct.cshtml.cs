@@ -26,14 +26,11 @@ public class NewProductModel : PageModel
         IValidator<CreateProductDTO> validator)
     {
         _productService = productService;
-        _categoryService = categoryService;
         _logger = logger;
-        _validator = validator;
     }
 
     public async Task<IActionResult> OnGetAsync()
     {
-        await LoadCategoriesAsync();
         return Page();
     }
 
@@ -88,7 +85,6 @@ public class NewProductModel : PageModel
             return Page();
         }
     }
-    
     private async Task LoadCategoriesAsync()
     {
         try
