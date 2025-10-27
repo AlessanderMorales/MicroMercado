@@ -11,7 +11,7 @@
     </div>
     
     <div class="table-responsive shadow-sm rounded-3">
-      <table class="table align-middle">
+      <table id="productTable" class="table align-middle">
         <thead class="table-dark text-center">
         <tr>
           <th style="width:7%;">#</th>
@@ -45,53 +45,96 @@
           </tr>
         }
         </tbody>
-        <tfoot class="table-light">
-        <tr>
-          <td colspan="6" class="text-end">
-            <strong>@Model.Products.Count()</strong> registro(s) encontrado(s)
-          </td>
-        </tr>
-        </tfoot>
       </table>
       
     @foreach (var t in Model.Products)
-{
-    <div class="modal fade" id="deleteModal@(t.Id)" tabindex="-1" aria-labelledby="deleteModalLabel@(t.Id)" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-dark text-white border-0">
-                    <h5 class="modal-title text-light" id="deleteModalLabel@(t.Id)">
-                        <i class="fas fa-exclamation-triangle me-2"></i> Confirmar eliminación
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+    {
+        <div class="modal fade" id="deleteModal@(t.Id)" tabindex="-1" aria-labelledby="deleteModalLabel@(t.Id)" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-dark text-white border-0">
+                        <h5 class="modal-title text-light" id="deleteModalLabel@(t.Id)">
+                            <i class="fas fa-exclamation-triangle me-2"></i> Confirmar eliminación
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
 
-                <div class="modal-body">
-                    <p class="mb-3">
-                        ¿Está seguro de que desea eliminar el producto <strong>@t.Name</strong>?
-                    </p>
-                    <p class="text-muted small">
-                        <i class="fas fa-info-circle me-2"></i> Esta acción no se puede deshacer.
-                    </p>
-                </div>
+                    <div class="modal-body">
+                        <p class="mb-3">
+                            ¿Está seguro de que desea eliminar el producto <strong>@t.Name</strong>?
+                        </p>
+                        <p class="text-muted small">
+                            <i class="fas fa-info-circle me-2"></i> Esta acción no se puede deshacer.
+                        </p>
+                    </div>
 
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i> Cancelar
-                    </button>
-                    <form method="post"
-                          asp-page-handler="Delete"
-                          asp-route-id="@t.Id"
-                          style="display: inline;">
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash me-2"></i> Eliminar
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i> Cancelar
                         </button>
-                    </form>
+                        <form method="post"
+                              asp-page-handler="Delete"
+                              asp-route-id="@t.Id"
+                              style="display: inline;">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i> Eliminar
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-}
+    }
     </div>
   </div>
 </section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#productTable').DataTable({
+                pageLength: 15,
+                language: {
+                    lengthMenu: `<div class="input-group input-group-sm">
+                                    <span class="input-group-text">Registros por página</span>
+                                    <span class="mx-2">_MENU_</span>
+                                </div>`,
+                    zeroRecords: 'No se encontraron resultados',
+                    info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+                    infoEmpty: 'Mostrando 0 a 0 de 0 registros',
+                    infoFiltered: '(filtrados de _MAX_ registros totales)',
+                    search: '',
+                    searchPlaceholder: 'Buscar...',
+                    paginate: {
+                        first: 'Primero',
+                        previous: 'Anterior',
+                        next: 'Siguiente',
+                        last: 'Último'
+                    }
+                },
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: 5 },
+                    { type: 'num', targets: 0 }
+                ],
+                order: [[0, 'asc']],
+                dom: '<"row align-items-center mb-3"' + 
+                     '<"col-12 col-sm-6"l>' + 
+                     '<"col-12 col-sm-6"f>>' + 
+                     '<"row"<"col-sm-12"tr>>' + 
+                     '<"row align-items-center mt-3"' + 
+                     '<"col-12 col-sm-5"i>' + 
+                     '<"col-12 col-sm-7"p>>',
+                classes: {
+                    sLengthSelect: 'form-select form-select-sm',
+                    sFilterInput: 'form-control form-control-sm',
+                    wrapper: 'dataTables_wrapper dt-bootstrap5'
+                }
+            });
+            var searchInput = $('.dataTables_filter input');
+            searchInput.unwrap().wrap('<div class="input-group input-group-sm"></div>');
+            searchInput.before('<span class="input-group-text"><i class="fas fa-search"></i></span>');
+            searchInput.addClass('form-control');
+        });
+    </script>
+}
