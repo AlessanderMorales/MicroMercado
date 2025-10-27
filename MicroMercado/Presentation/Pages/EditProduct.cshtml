@@ -1,0 +1,300 @@
+@page
+@model MicroMercado.Presentation.Pages.EditProductModel
+
+@{
+   ViewData["Title"] = "Editar Producto";
+   Layout = "~/Presentation/Pages/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .category-select-wrapper {
+            position: relative;
+        }
+        
+        .form-select {
+            padding-right: 2.5rem;
+        }
+        
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-right: none;
+        }
+        
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #f5576c;
+            box-shadow: 0 0 0 0.2rem rgba(245, 87, 108, 0.25);
+        }
+        
+        .btn-create-category {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+        
+        .alert ul {
+            list-style: none !important;
+            padding-left: 0 !important;
+            margin-bottom: 0 !important;
+            display: inline !important;
+        }
+    </style>
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <a asp-page="/ProductPage" class="btn btn-info mb-2">
+                    <i class="fas fa-list"></i> Ver Lista de productos
+                </a>
+                
+                <h1 class="m-0">
+                    <i class="fas fa-edit text-warning"></i>
+                    Editar Producto
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-page="/Index">Inicio</a></li>
+                    <li class="breadcrumb-item"><a asp-page="/ProductPage">Productos</a></li>
+                    <li class="breadcrumb-item active">Editar</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-lg">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-pencil-alt"></i>
+                            Modificar Información del Producto
+                        </h3>
+                    </div>
+                    
+                    <form method="post">
+                        <div class="card-body">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" asp-for="EditProduct.Id" />
+                            
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div asp-validation-summary="All" class="mb-0 d-inline-block"></div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            }
+
+                            <div class="row">
+                                <!-- Nombre del Producto -->
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="EditProduct.Name" class="form-label fw-bold required-field">
+                                        <i class="fas fa-tag"></i>
+                                        Nombre del Producto
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-barcode"></i>
+                                        </span>
+                                        <input asp-for="EditProduct.Name" 
+                                               class="form-control" 
+                                               placeholder="Ej: Coca Cola 2L" />
+                                    </div>
+                                    <span asp-validation-for="EditProduct.Name" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Marca -->
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="EditProduct.Brand" class="form-label fw-bold required-field">
+                                        <i class="fas fa-copyright"></i>
+                                        Marca
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-trademark"></i>
+                                        </span>
+                                        <input asp-for="EditProduct.Brand" 
+                                               class="form-control" 
+                                               placeholder="Ej: Coca Cola Company" />
+                                    </div>
+                                    <span asp-validation-for="EditProduct.Brand" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label asp-for="EditProduct.Description" class="form-label fw-bold">
+                                        <i class="fas fa-align-left"></i>
+                                        Descripción
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-info-circle"></i>
+                                        </span>
+                                        <textarea asp-for="EditProduct.Description" 
+                                                  class="form-control" 
+                                                  placeholder="Descripción breve del producto (opcional)" 
+                                                  rows="2"></textarea>
+                                    </div>
+                                    <span asp-validation-for="EditProduct.Description" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Precio -->
+                                <div class="col-md-4 mb-3">
+                                    <label asp-for="EditProduct.Price" class="form-label fw-bold required-field">
+                                        <i class="fas fa-dollar-sign"></i>
+                                        Precio (Bs.)
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Bs.</span>
+                                        <input asp-for="EditProduct.Price" 
+                                               type="number" 
+                                               step="0.01" 
+                                               min="0" 
+                                               class="form-control" 
+                                               readonly 
+                                               style="background-color: #e9ecef; cursor: not-allowed;" />
+                                    </div>
+                                    <span asp-validation-for="EditProduct.Price" class="text-danger small"></span>
+                                </div>
+                                
+                                <!-- Stock -->
+                                <div class="col-md-4 mb-3">
+                                    <label asp-for="EditProduct.Stock" class="form-label fw-bold required-field">
+                                        <i class="fas fa-boxes"></i>
+                                        Stock
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-warehouse"></i>
+                                        </span>
+                                        <input asp-for="EditProduct.Stock" 
+                                               type="number" 
+                                               min="0" 
+                                               class="form-control" 
+                                               readonly
+                                               style="background-color: #e9ecef; cursor: not-allowed;" />
+                                    </div>
+                                    <span asp-validation-for="EditProduct.Stock" class="text-danger small"></span>
+                                </div>
+                                
+                                <!-- Categoría -->
+                                <div class="col-md-4 mb-3">
+                                    <label asp-for="EditProduct.CategoryId" class="form-label fw-bold required-field">
+                                        <i class="fas fa-folder"></i>
+                                        Categoría
+                                    </label>
+                                    <div class="input-group">
+                                        <select asp-for="EditProduct.CategoryId"
+                                                class="form-select"
+                                                asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
+                                            <option value="0">-- Seleccione una categoría --</option>
+                                        </select>
+                                        <a asp-page="/NewCategory"
+                                           class="btn btn-success btn-create-category"
+                                           title="Crear nueva categoría"
+                                           target="_blank">
+                                            <i class="fas fa-plus"></i>
+                                        </a>
+                                    </div>
+                                    <span asp-validation-for="EditProduct.CategoryId" class="text-danger small"></span>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-lightbulb"></i>
+                                        ¿No encuentra la categoría? Haga clic en el botón + para crearla
+                                    </small>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="card-footer bg-light">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn btn-warning btn-lg w-100">
+                                        <i class="fas fa-save"></i>
+                                        Actualizar Producto
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <a asp-page="/ProductPage" class="btn btn-secondary btn-lg w-100">
+                                        <i class="fas fa-times"></i>
+                                        Cancelar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="card mt-3">
+                    <div class="card-body bg-light">
+                        <h6 class="fw-bold">
+                            <i class="fas fa-info-circle text-info"></i>
+                            Información Importante
+                        </h6>
+                        <ul class="mb-0">
+                            <li>Los campos marcados con <span class="text-danger">*</span> son obligatorios</li>
+                            <li>El precio debe ser mayor a 0 y no puede exceder 9999.99</li>
+                            <li>El stock puede ser 0 si no tiene unidades disponibles</li>
+                            <li>Asegúrese de seleccionar la categoría correcta para el producto</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceInput = document.querySelector('input[name="EditProduct.Price"]');
+            if (priceInput) {
+                priceInput.addEventListener('input', function() {
+                    if (this.value < 0) {
+                        this.value = 0;
+                    }
+                    if (this.value > 9999.99) {
+                        this.value = 9999.99;
+                    }
+                });
+            }
+            
+            const stockInput = document.querySelector('input[name="EditProduct.Stock"]');
+            if (stockInput) {
+                stockInput.addEventListener('input', function() {
+                    if (this.value < 0) {
+                        this.value = 0;
+                    }
+                    if (this.value > 9999) {
+                        this.value = 9999;
+                    }
+                });
+            }
+        });
+    </script>
+}

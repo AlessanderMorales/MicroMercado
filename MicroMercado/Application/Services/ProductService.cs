@@ -288,7 +288,6 @@ namespace MicroMercado.Application.Services
             productToUpdate.Price = productDto.Price;
             productToUpdate.Stock = productDto.Stock;
             productToUpdate.CategoryId = productDto.CategoryId;
-            productToUpdate.Status = productDto.Status;
             productToUpdate.LastUpdate = DateTime.Now;
 
             await _context.SaveChangesAsync();
