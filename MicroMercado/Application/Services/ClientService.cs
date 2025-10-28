@@ -1,9 +1,10 @@
 ﻿using FluentValidation;
 using MicroMercado.Application.DTOs.Client;
-using MicroMercado.Domain.Models;
+using MicroMercado.Domain.Models; 
 using MicroMercado.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore; 
-
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging; 
+using System.Linq; 
 
 namespace MicroMercado.Application.Services
 {
@@ -12,38 +13,80 @@ namespace MicroMercado.Application.Services
         private readonly ApplicationDbContext _context;
         private readonly IValidator<CreateClientDTO> _createClientValidator;
         private readonly IValidator<UpdateClientDTO> _updateClientValidator;
+        private readonly ILogger<ClientService> _logger; 
 
         public ClientService(ApplicationDbContext context,
                              IValidator<CreateClientDTO> createClientValidator,
-                             IValidator<UpdateClientDTO> updateClientValidator)
+                             IValidator<UpdateClientDTO> updateClientValidator,
+                             ILogger<ClientService> logger)
         {
             _context = context;
             _createClientValidator = createClientValidator;
             _updateClientValidator = updateClientValidator;
+            _logger = logger; 
         }
 
-        public async Task<Client?> GetClientByIdAsync(int id)
+        public async Task<ClientDTO?> GetClientByIdAsync(int id)
         {
-            return await _context.Clients.FindAsync(id);
+            var client = await _context.Clients.FindAsync(id);
+            if (client == null)
+            {
+                return null;
+            }
+
+            return new ClientDTO
+            {
+                Id = client.Id,
+                BusinessName = client.BusinessName,
+                Email = client.Email,
+                Address = client.Address,
+                TaxDocument = client.TaxDocument,
+                Status = (byte)client.Status,
+                LastUpdate = DateTime.SpecifyKind(client.LastUpdate, DateTimeKind.Unspecified) 
+            };
         }
 
-        public async Task<Client?> GetClientByTaxDocumentAsync(string taxDocument)
+        public async Task<ClientDTO?> GetClientByTaxDocumentAsync(string taxDocument)
         {
-            return await _context.Clients.FirstOrDefaultAsync(c => c.TaxDocument == taxDocument);
+            var client = await _context.Clients.FirstOrDefaultAsync(c => c.TaxDocument == taxDocument);
+            if (client == null)
+            {
+                return null;
+            }
+            return new ClientDTO
+            {
+                Id = client.Id,
+                BusinessName = client.BusinessName,
+                Email = client.Email,
+                Address = client.Address,
+                TaxDocument = client.TaxDocument,
+                Status = (byte)client.Status,
+                LastUpdate = DateTime.SpecifyKind(client.LastUpdate, DateTimeKind.Unspecified)
+            };
         }
 
-        public async Task<IEnumerable<Client>> GetAllClientsAsync()
+        public async Task<IEnumerable<ClientDTO>> GetAllClientsAsync()
         {
-            return await _context.Clients.ToListAsync();
+            return await _context.Clients
+                .Select(client => new ClientDTO 
+                {
+                    Id = client.Id,
+                    BusinessName = client.BusinessName,
+                    Email = client.Email,
+                    Address = client.Address,
+                    TaxDocument = client.TaxDocument,
+                    Status = (byte)client.Status,
+                    LastUpdate = DateTime.SpecifyKind(client.LastUpdate, DateTimeKind.Unspecified)
+                })
+                .ToListAsync();
         }
-
-        public async Task<Client?> CreateClientAsync(CreateClientDTO clientDto)
+        public async Task<ClientDTO?> CreateClientAsync(CreateClientDTO clientDto)
         {
             var validationResult = await _createClientValidator.ValidateAsync(clientDto);
             if (!validationResult.IsValid)
             {
-
-                Console.WriteLine($"Validation errors creating client: {string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage))}");
+                _logger.LogWarning("Validation errors creating client: {Errors}",
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
                 return null;
             }
             var existingClient = await _context.Clients
@@ -51,31 +94,40 @@ namespace MicroMercado.Application.Services
 
             if (existingClient)
             {
-                Console.WriteLine($"Client with TaxDocument {clientDto.TaxDocument} already exists.");
+                _logger.LogWarning("Client with TaxDocument {TaxDocument} already exists.", clientDto.TaxDocument);
                 return null;
             }
 
-            var client = new Client 
+            var client = new Client
             {
                 BusinessName = clientDto.BusinessName,
                 Email = clientDto.Email,
                 Address = clientDto.Address,
                 TaxDocument = clientDto.TaxDocument,
-                Status = 1, 
-                LastUpdate = DateTime.Now
+                Status = 1,
+                LastUpdate = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)
             };
 
             _context.Clients.Add(client);
             await _context.SaveChangesAsync();
-            return client; 
+            return new ClientDTO
+            {
+                Id = client.Id,
+                BusinessName = client.BusinessName,
+                Email = client.Email,
+                Address = client.Address,
+                TaxDocument = client.TaxDocument,
+                Status = (byte)client.Status,
+                LastUpdate = DateTime.SpecifyKind(client.LastUpdate, DateTimeKind.Unspecified)
+            };
         }
-
-        public async Task<Client?> UpdateClientAsync(UpdateClientDTO clientDto)
+        public async Task<ClientDTO?> UpdateClientAsync(UpdateClientDTO clientDto)
         {
             var validationResult = await _updateClientValidator.ValidateAsync(clientDto);
             if (!validationResult.IsValid)
             {
-                Console.WriteLine($"Validation errors updating client: {string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage))}");
+                _logger.LogWarning("Validation errors updating client: {Errors}",
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
                 return null;
             }
 
@@ -90,10 +142,19 @@ namespace MicroMercado.Application.Services
             clientToUpdate.Address = clientDto.Address;
             clientToUpdate.TaxDocument = clientDto.TaxDocument;
             clientToUpdate.Status = clientDto.Status;
-            clientToUpdate.LastUpdate = DateTime.Now;
+            clientToUpdate.LastUpdate = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
 
             await _context.SaveChangesAsync();
-            return clientToUpdate;
+            return new ClientDTO
+            {
+                Id = clientToUpdate.Id,
+                BusinessName = clientToUpdate.BusinessName,
+                Email = clientToUpdate.Email,
+                Address = clientToUpdate.Address,
+                TaxDocument = clientToUpdate.TaxDocument,
+                Status = (byte)clientToUpdate.Status,
+                LastUpdate = DateTime.SpecifyKind(clientToUpdate.LastUpdate, DateTimeKind.Unspecified)
+            };
         }
 
         public async Task<bool> DeleteClientAsync(int id)
