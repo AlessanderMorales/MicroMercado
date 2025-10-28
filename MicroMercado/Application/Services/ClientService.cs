@@ -1,10 +1,13 @@
 ﻿using FluentValidation;
 using MicroMercado.Application.DTOs.Client;
-using MicroMercado.Domain.Models; 
+using MicroMercado.Domain.Models;
 using MicroMercado.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging; 
-using System.Linq; 
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MicroMercado.Application.Services
 {
@@ -13,7 +16,7 @@ namespace MicroMercado.Application.Services
         private readonly ApplicationDbContext _context;
         private readonly IValidator<CreateClientDTO> _createClientValidator;
         private readonly IValidator<UpdateClientDTO> _updateClientValidator;
-        private readonly ILogger<ClientService> _logger; 
+        private readonly ILogger<ClientService> _logger;
 
         public ClientService(ApplicationDbContext context,
                              IValidator<CreateClientDTO> createClientValidator,
@@ -23,7 +26,7 @@ namespace MicroMercado.Application.Services
             _context = context;
             _createClientValidator = createClientValidator;
             _updateClientValidator = updateClientValidator;
-            _logger = logger; 
+            _logger = logger;
         }
 
         public async Task<ClientDTO?> GetClientByIdAsync(int id)
@@ -33,7 +36,6 @@ namespace MicroMercado.Application.Services
             {
                 return null;
             }
-
             return new ClientDTO
             {
                 Id = client.Id,
@@ -42,7 +44,7 @@ namespace MicroMercado.Application.Services
                 Address = client.Address,
                 TaxDocument = client.TaxDocument,
                 Status = (byte)client.Status,
-                LastUpdate = DateTime.SpecifyKind(client.LastUpdate, DateTimeKind.Unspecified) 
+                LastUpdate = DateTime.SpecifyKind(client.LastUpdate, DateTimeKind.Unspecified)
             };
         }
 
@@ -68,7 +70,8 @@ namespace MicroMercado.Application.Services
         public async Task<IEnumerable<ClientDTO>> GetAllClientsAsync()
         {
             return await _context.Clients
-                .Select(client => new ClientDTO 
+                .Where(client => client.Status == 1) 
+                .Select(client => new ClientDTO
                 {
                     Id = client.Id,
                     BusinessName = client.BusinessName,
@@ -80,6 +83,7 @@ namespace MicroMercado.Application.Services
                 })
                 .ToListAsync();
         }
+
         public async Task<ClientDTO?> CreateClientAsync(CreateClientDTO clientDto)
         {
             var validationResult = await _createClientValidator.ValidateAsync(clientDto);
@@ -110,6 +114,7 @@ namespace MicroMercado.Application.Services
 
             _context.Clients.Add(client);
             await _context.SaveChangesAsync();
+
             return new ClientDTO
             {
                 Id = client.Id,
@@ -121,6 +126,7 @@ namespace MicroMercado.Application.Services
                 LastUpdate = DateTime.SpecifyKind(client.LastUpdate, DateTimeKind.Unspecified)
             };
         }
+
         public async Task<ClientDTO?> UpdateClientAsync(UpdateClientDTO clientDto)
         {
             var validationResult = await _updateClientValidator.ValidateAsync(clientDto);
@@ -137,14 +143,24 @@ namespace MicroMercado.Application.Services
                 return null;
             }
 
+            var existingClientWithSameTaxDocument = await _context.Clients
+                .AnyAsync(c => c.Id != clientDto.Id && c.TaxDocument == clientDto.TaxDocument);
+            if (existingClientWithSameTaxDocument)
+            {
+                _logger.LogWarning("Another client with TaxDocument {TaxDocument} already exists.", clientDto.TaxDocument);
+                return null;
+            }
+
+
             clientToUpdate.BusinessName = clientDto.BusinessName;
             clientToUpdate.Email = clientDto.Email;
             clientToUpdate.Address = clientDto.Address;
             clientToUpdate.TaxDocument = clientDto.TaxDocument;
-            clientToUpdate.Status = clientDto.Status;
+            clientToUpdate.Status = clientDto.Status; 
             clientToUpdate.LastUpdate = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
 
             await _context.SaveChangesAsync();
+
             return new ClientDTO
             {
                 Id = clientToUpdate.Id,
@@ -159,14 +175,18 @@ namespace MicroMercado.Application.Services
 
         public async Task<bool> DeleteClientAsync(int id)
         {
-            var clientToDelete = await _context.Clients.FindAsync(id);
-            if (clientToDelete == null)
+            var clientToMarkAsInactive = await _context.Clients.FindAsync(id);
+            if (clientToMarkAsInactive == null)
             {
+                _logger.LogWarning("Attempted to logically delete client with ID {ClientId}, but client was not found.", id);
                 return false;
             }
 
-            _context.Clients.Remove(clientToDelete);
+            clientToMarkAsInactive.Status = 0;
+            clientToMarkAsInactive.LastUpdate = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified); 
+
             await _context.SaveChangesAsync();
+            _logger.LogInformation("Client with ID {ClientId} logically deleted (Status set to 0).", id);
             return true;
         }
     }
