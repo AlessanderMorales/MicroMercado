@@ -1,8 +1,8 @@
-﻿@page
-@model MicroMercado.Presentation.Pages.NewCategoryModel
+﻿@page "{id:byte}"
+@model MicroMercado.Presentation.Pages.EditCategoryModel
 
 @{
-    ViewData["Title"] = "Nueva Categoría";
+    ViewData["Title"] = "Editar Categoría";
     Layout = "~/Presentation/Pages/Shared/_Layout.cshtml";
 }
 
@@ -10,13 +10,13 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Agregar Nueva Categoría</h1>
+                <h1 class="m-0">Editar Categoría</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a asp-page="/Index">Inicio</a></li>
                     <li class="breadcrumb-item"><a asp-page="/Category">Categorías</a></li>
-                    <li class="breadcrumb-item active">Nueva</li>
+                    <li class="breadcrumb-item active">Editar</li>
                 </ol>
             </div>
         </div>
@@ -36,20 +36,29 @@
 
         <div class="card shadow">
             <div class="card-header">
-                <h3 class="card-title">Datos de la Categoría</h3>
+                <h3 class="card-title">Editar Datos</h3>
             </div>
             <div class="card-body">
                 <form method="post">
                     @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="UpdateCategory.Id" />
                     <div class="mb-3">
-                        <label asp-for="CreateCategory.Name" class="form-label">Nombre</label>
-                        <input asp-for="CreateCategory.Name" class="form-control" />
-                        <span asp-validation-for="CreateCategory.Name" class="text-danger"></span>
+                        <label asp-for="UpdateCategory.Name" class="form-label">Nombre</label>
+                        <input asp-for="UpdateCategory.Name" class="form-control" />
+                        <span asp-validation-for="UpdateCategory.Name" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label asp-for="CreateCategory.Description" class="form-label">Descripción</label>
-                        <textarea asp-for="CreateCategory.Description" class="form-control" rows="3"></textarea>
-                        <span asp-validation-for="CreateCategory.Description" class="text-danger"></span>
+                        <label asp-for="UpdateCategory.Description" class="form-label">Descripción</label>
+                        <textarea asp-for="UpdateCategory.Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="UpdateCategory.Description" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="UpdateCategory.Status" class="form-label">Estado</label>
+                        <select asp-for="UpdateCategory.Status" class="form-select">
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                        </select>
+                        <span asp-validation-for="UpdateCategory.Status" class="text-danger"></span>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                     <a asp-page="/Category" class="btn btn-secondary">Cancelar</a>

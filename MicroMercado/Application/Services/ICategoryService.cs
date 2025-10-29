@@ -7,7 +7,7 @@ public interface ICategoryService
 {
     Task<IEnumerable<CategoryDTO>> GetAllCategoriesAsync();
     Task<CategoryDTO?> GetCategoryByIdAsync(byte id);
-    Task<Category?> CreateCategoryAsync(CreateCategoryDTO categoryDto);
-    Task<Category?> UpdateCategoryAsync(UpdateCategoryDTO categoryDto);
+    Task<CategoryDTO?> CreateCategoryAsync(CreateCategoryDTO categoryDto);
+    Task<CategoryDTO?> UpdateCategoryAsync(UpdateCategoryDTO categoryDto);
     Task<bool> DeleteCategoryAsync(byte id);
 }
