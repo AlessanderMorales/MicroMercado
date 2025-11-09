@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Microsoft.Extensions.Logging; 
 
 namespace PruebasMicroMercado.WhiteBoxTests
 {
@@ -39,7 +40,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
-            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
+            var loggerMock = new Mock<ILogger<ClientService>>(); // Mock del logger
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object, loggerMock.Object); // Pasar loggerMock.Object
 
             context.Clients.AddRange(
                 new Client { Id = 1, BusinessName = "Juan Pérez", TaxDocument = "12345678", Status = 1, LastUpdate = DateTime.Now },
@@ -67,7 +69,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
-            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
+            var loggerMock = new Mock<ILogger<ClientService>>(); // Mock del logger
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object, loggerMock.Object); // Pasar loggerMock.Object
 
             context.Clients.AddRange(
                 new Client { Id = 1, BusinessName = "Juan Pérez", TaxDocument = "12345678", Status = 1, LastUpdate = DateTime.Now },
@@ -88,7 +91,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
-            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
+            var loggerMock = new Mock<ILogger<ClientService>>(); // Mock del logger
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object, loggerMock.Object); // Pasar loggerMock.Object
 
             context.Clients.AddRange(
                 new Client { Id = 1, BusinessName = "Juan Pérez", TaxDocument = "111", Status = 1, LastUpdate = DateTime.Now },
@@ -121,6 +125,7 @@ namespace PruebasMicroMercado.WhiteBoxTests
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
+            var loggerMock = new Mock<ILogger<ClientService>>(); // Mock del logger
 
             if (isValidationSuccess)
             {
@@ -137,7 +142,7 @@ namespace PruebasMicroMercado.WhiteBoxTests
                     .ReturnsAsync(new ValidationResult(validationFailures));
             }
 
-            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object, loggerMock.Object); // Pasar loggerMock.Object
             var result = await service.CreateClientAsync(clientDto);
             if (shouldReturnClient)
             {
@@ -173,6 +178,7 @@ namespace PruebasMicroMercado.WhiteBoxTests
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
+            var loggerMock = new Mock<ILogger<ClientService>>(); // Mock del logger
 
             if (clientExists)
             {
@@ -203,7 +209,7 @@ namespace PruebasMicroMercado.WhiteBoxTests
                     .ReturnsAsync(new ValidationResult(validationFailures));
             }
 
-            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object, loggerMock.Object); // Pasar loggerMock.Object
             var result = await service.UpdateClientAsync(updateDto);
             if (expectedSuccess)
             {
@@ -219,7 +225,7 @@ namespace PruebasMicroMercado.WhiteBoxTests
         // Test 9 & 10: DeleteClientAsync - Parameterized
         // Complexity: 2 (Path 1: Exists, Path 2: Not Exists)
         [Theory]
-        [InlineData(1, true)] 
+        [InlineData(1, true)]
         [InlineData(999, false)]
         public async Task DeleteClientAsync_ShouldReturnCorrectResult_BasedOnClientExistence(
             int clientId,
@@ -228,7 +234,8 @@ namespace PruebasMicroMercado.WhiteBoxTests
             var context = GetInMemoryDbContext();
             var createValidatorMock = new Mock<IValidator<CreateClientDTO>>();
             var updateValidatorMock = new Mock<IValidator<UpdateClientDTO>>();
-            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object);
+            var loggerMock = new Mock<ILogger<ClientService>>(); // Mock del logger
+            var service = new ClientService(context, createValidatorMock.Object, updateValidatorMock.Object, loggerMock.Object); // Pasar loggerMock.Object
 
             if (expectedResult)
             {

@@ -170,7 +170,7 @@ namespace MicroMercado.Application.Services
             {
                 return await _context.Products
                     .Include(p => p.Category)
-                    .Where(p => p.Status == 1)
+                    .Where(p => p.Status == (byte)1 && p.Category != null && p.Category.Status == (byte)1) 
                     .Select(p => MapToProductDTO(p))
                     .ToListAsync();
             }
