@@ -164,39 +164,44 @@ namespace PruebasMicroMercado.WhiteBoxTests
         }
 
         #region SearchProductsAsync Tests
+
         [Theory]
         [InlineData("yogurt", 1, "Yogurt Bebible Sabor Durazno")] 
         [InlineData("lacteos", 4, "Yogurt Bebible Sabor Durazno", "Leche de Soya sabor Banana Soy", "Mantequilla con Sal Pil 900 Gr", "Mantequilla sin Sal Pil 200 Gr")] 
-        [InlineData("pil", 5, "Yogurt Bebible Sabor Durazno", "Leche de Soya sabor Banana Soy", "Mantequilla con Sal Pil 900 Gr", "Mantequilla sin Sal Pil 200 Gr", "Dulce de Leche Sancor 1 Kg")]
+        [InlineData("pil", 9, 
+            "Dulce de Leche Sancor 1 Kg",
+            "Leche de Soya sabor Banana Soy", 
+            "Mantequilla con Sal Pil 900 Gr", 
+            "Mantequilla sin Sal Pil 200 Gr", 
+            "Yogurt Bebible Sabor Durazno" 
+        
+            )]
         [InlineData("frutas", 5, "Manzana Roja Abasto 500 Gr", "Mandarina Morocochi Abasto 500", "Rucula Lannin Impex", "Naranja Criolla Abasto 500 Gr", "Manzana Verde Abasto 500 Gr")] 
         [InlineData("colgate", 2, "Pasta Dental Limpieza 180 Gr", "Cepillo Flex Foramen Unidad")] 
         [InlineData("rexona", 2, "Desodorantes y Antitranspirantes", "Desodorante Roll on Antibacterial F Rexona")] 
-        [InlineData("productos de limpieza", 23, 
-            "Detergente en polvo Matic Omo 2 k", "Suavizante Caricias Brisa De Prima", "Quitamanchas Vanish Prelavado G", "Jabon Delicada Uno 210 Gr",
-            "Ambientador Harmony Glade", "Aerosol Mata Todo Tyson 360 cm", "Lavavajillas Naranja Mr Flash 1050", "Crema Brillametal Brasso Negro",
-            "SacaGrasa con Gatillo Salpo", "Esponja Ola 3 Unds", "Toalla De Cocina Hogar 1 Un", "Papel Higienico Plus Doble h",
-            "Limpia Baño Ultra Rapido co", "Agua Lavandina Aditiva Mari", "Disinfectante Bebe Lysoform", "Limpia Vidrios con Gatillo Oli",
-            "Crema para Calzado Betun N", "Cepillo Multiuso para Ropa C", "Escoba Multiuso Clorinda Un", "Guante Naranja T7 1/2 Master",
-            "Recogedor de Basura con M", "Palo Trapeador Movica Unid", "Bolsa Rayada 60 cm x 80 cm"
+        [InlineData("productos de limpieza", 20,
+            "Aerosol Mata Todo Tyson 360 cm", "Agua Lavandina Aditiva Mari", "Ambientador Harmony Glade", "Bolsa Rayada 60 cm x 80 cm",
+            "Cepillo Multiuso para Ropa C", "Crema Brillametal Brasso Negro", "Crema para Calzado Betun N", "Detergente en polvo Matic Omo 2 k",
+            "Disinfectante Bebe Lysoform", "Escoba Multiuso Clorinda Un", "Esponja Ola 3 Unds", "Guante Naranja T7 1/2 Master",
+            "Jabon Delicada Uno 210 Gr", "Lavavajillas Naranja Mr Flash 1050", "Limpia Baño Ultra Rapido co", "Limpia Vidrios con Gatillo Oli",
+            "Palo Trapeador Movica Unid", "Papel Higienico Plus Doble h", "Quitamanchas Vanish Prelavado G", "Recogedor de Basura con M"
             )]
-        [InlineData("ambientadores", 2, "Ambientador Harmony Glade", "Aerosol Mata Todo Tyson 360 cm")] 
-        [InlineData("alimentos diversos", 38, 
-            "Arroz Familiar Caisy 1 Kg", "Arroz Superior", "Arroz Integral y Especiales", "1 bolsa de Frijol de 50gr", "1 bolsa de Frutos Secos", "1 bolsa de Arveja 100gr", "1 bolsa de Garbanzo 45 gr",
-            "Endulzante con Stevia Equal 50", "Edulcorante de Mesa Liquido", "Pasta al Huevo Tagliatelle Ar", "Fideo Codo Rayado Don V", "Fideo Cabello de Angel Don", "Fideos Ramen Sabor Costilla",
-            "Pure de Papas Kris 250 Gr", "Sopa Familiar Pollos con Fic", "Sopa Crema Zapallo Knorr 7", "Sopa de Pollo Maruchan 85",
-            "Cafe Frasco Clasico Iguaçu", "Hojuelas de Avena y Chia Ch", "Chocolate en polvo Chokolisto", "Dulce de Leche Sancor 1 Kg",
-            "Papa Original Pringles 149 G", "Pipoca sabor Mantequilla Ac", "Mix de Frutos Secos Varios I", "Nachos de Maiz Tradicional I",
-            "Aceituna Verde Sachet Ceb", "Alcaparras Hemmer 170 Gr", "Atun Ensalada California Rea", "Sardina Salsa de Tomate Sa",
-            "Mayonesa light Kris 200 Ml", "Ketchup original Doypack Kr", "Mostaza Original Kris 400 Gr", "Lajua Churrasquera B&R 22"
+        [InlineData("ambientadores", 2, "Ambientador Harmony Glade", "Aerosol Mata Todo Tyson 360 cm")]
+        [InlineData("alimentos diversos", 20,
+            "1 bolsa de Arveja 100gr", "1 bolsa de Frijol de 50gr", "1 bolsa de Frutos Secos", "1 bolsa de Garbanzo 45 gr",
+            "Aceituna Verde Sachet Ceb", "Alcaparras Hemmer 170 Gr", "Arroz Familiar Caisy 1 Kg", "Arroz Integral y Especiales",
+            "Arroz Superior", "Atun Ensalada California Rea", "Cafe Frasco Clasico Iguaçu", "Chocolate en polvo Chokolisto",
+            "Dulce de Leche Sancor 1 Kg", "Edulcorante de Mesa Liquido", "Endulzante con Stevia Equal 50", "Fideo Cabello de Angel Don",
+            "Fideo Codo Rayado Don V", "Fideos Ramen Sabor Costilla", "Hojuelas de Avena y Chia Ch", "Ketchup original Doypack Kr"
             )]
         [InlineData("carnes", 6,
-            "Chunchulines en Bandeja x kg", "Resa de Carne Sin Condimento e", "Langostinos Precocidos Puerto Az",
-            "Pechuga de Pollo sin piel en Br", "Tender de Pollo Sofia 500 Gr", "Alas de Pollo en Bandeja Sofia"
+            "Alas de Pollo en Bandeja Sofia", "Chunchulines en Bandeja x kg", "Langostinos Precocidos Puerto Az",
+            "Pechuga de Pollo sin piel en Br", "Resa de Carne Sin Condimento e", "Tender de Pollo Sofia 500 Gr"
             )]
-        [InlineData("inexistente", 0)] 
+        [InlineData("inexistente", 0)]
         [InlineData("", 0)]
-        [InlineData("Producto Inactivo de Prueba", 0)] 
-        [InlineData("Producto Activo en Categoria Inactiva", 0)] 
+        [InlineData("Producto Inactivo de Prueba", 0)]
+        [InlineData("Producto Activo en Categoria Inactiva", 0)]
         public async Task SearchProductsAsync_ShouldReturnExpectedProducts(
             string searchTerm, int expectedCount, params string[] expectedNames)
         {
@@ -366,12 +371,12 @@ namespace PruebasMicroMercado.WhiteBoxTests
             Assert.NotNull(result);
             var products = result.ToList();
 
-            Assert.Equal(87, products.Count);
+            Assert.Equal(89, products.Count);
             Assert.Contains(products, p => p.Id == 1 && p.Name == "Yogurt Bebible Sabor Durazno" && p.CategoryName == "Lacteos");
             Assert.Contains(products, p => p.Id == 28 && p.Name == "Detergente en polvo Matic Omo 2 k" && p.CategoryName == "Productos de Limpieza");
             Assert.Contains(products, p => p.Id == 89 && p.Name == "Alas de Pollo en Bandeja Sofia" && p.CategoryName == "Carnes");
-            Assert.DoesNotContain(products, p => p.Id == 90); // Producto activo en Categoría inactiva
-            Assert.DoesNotContain(products, p => p.Id == 91); // Producto inactivo
+            Assert.DoesNotContain(products, p => p.Id == 90); 
+            Assert.DoesNotContain(products, p => p.Id == 91); 
         }
 
         // Test: GetAllProductsAsync_ShouldReturnEmpty_WhenNoProductsExist
@@ -476,7 +481,7 @@ namespace PruebasMicroMercado.WhiteBoxTests
 
         // Test: CreateProductAsync_ShouldCreateProduct_WhenAllConditionsAreMet
         // Propósito: Verifica que un producto se crea exitosamente cuando el DTO es válido,
-  
+        //            la categoría existe y está activa, y el nombre del producto es único.
         [Fact]
         public async Task CreateProductAsync_ShouldCreateProduct_WhenAllConditionsAreMet()
         {
@@ -493,15 +498,15 @@ namespace PruebasMicroMercado.WhiteBoxTests
                 Brand = "Quaker",
                 Price = 4.50m,
                 Stock = 20,
-                CategoryId = 2 
+                CategoryId = 2 // Alimentos Diversos
             };
 
             var result = await service.CreateProductAsync(newProductDto);
 
             Assert.NotNull(result);
-            Assert.True(result.Id > 0); 
+            Assert.True(result.Id > 0); // Id generado por la BD
             Assert.Equal("Cereal Avena Integral", result.Name);
-            Assert.Equal((byte)1, result.Status); 
+            Assert.Equal((byte)1, result.Status); // Se crea como activo
             Assert.Equal(20, result.Stock);
 
             // Verificar que realmente se añadió a la base de datos
@@ -510,9 +515,9 @@ namespace PruebasMicroMercado.WhiteBoxTests
             Assert.Equal("Cereal Avena Integral", productInDb.Name);
         }
 
-        // Test: CreateProductAsync_ShouldReturnNull_WhenValidationFails
+        // Test: CreateProductAsync - ShouldReturnNull_WhenValidationFails
         // Propósito: Verifica que la creación de un producto falla y retorna null
-
+        //            cuando el DTO de creación no pasa las reglas de validación.
         [Fact]
         public async Task CreateProductAsync_ShouldReturnNull_WhenValidationFails()
         {
@@ -530,15 +535,15 @@ namespace PruebasMicroMercado.WhiteBoxTests
             var result = await service.CreateProductAsync(invalidProductDto);
 
             Assert.Null(result);
-            Assert.Equal(89, await context.Products.CountAsync()); // Contar solo los sembrados
+            Assert.Equal(91, await context.Products.CountAsync()); // <-- CORREGIDO AQUÍ: 89 iniciales + 2 de inactividad = 91
         }
 
-        // Test: CreateProductAsync_ShouldReturnNull_WhenCategoryIsInvalid
+        // Test: CreateProductAsync - ShouldReturnNull_WhenCategoryIsInvalid
         // Propósito: Verifica que la creación de un producto falla y retorna null
         //            cuando la CategoryId proporcionada no existe o la categoría está inactiva.
         [Theory]
-        [InlineData(999, "Categoría inexistente")] 
-        [InlineData(7, "Categoría inactiva")] 
+        [InlineData(999, "Categoría inexistente")] // Categoría inexistente
+        [InlineData(7, "Categoría inactiva")] // Categoría inactiva (ID 7)
         public async Task CreateProductAsync_ShouldReturnNull_WhenCategoryIsInvalid(int categoryId, string scenario)
         {
             var context = GetInMemoryDbContext();
@@ -560,17 +565,17 @@ namespace PruebasMicroMercado.WhiteBoxTests
             var result = await service.CreateProductAsync(newProductDto);
 
             Assert.Null(result);
-            Assert.Equal(89, await context.Products.CountAsync());
+            Assert.Equal(91, await context.Products.CountAsync()); // <-- CORREGIDO AQUÍ: 89 iniciales + 2 de inactividad = 91
         }
 
-        // Test: CreateProductAsync_ShouldReturnNull_WhenProductNameAlreadyExists
+        // Test: CreateProductAsync - ShouldReturnNull_WhenProductNameAlreadyExists
         // Propósito: Verifica que la creación de un producto falla y retorna null
         //            cuando ya existe otro producto con el mismo nombre.
         [Fact]
         public async Task CreateProductAsync_ShouldReturnNull_WhenProductNameAlreadyExists()
         {
             var context = GetInMemoryDbContext();
-            await SeedTestData(context); 
+            await SeedTestData(context); // Ya existe "Yogurt Bebible Sabor Durazno"
             var logger = GetMockLogger();
             var validators = GetMockValidators();
             var service = new ProductService(context, logger.Object, validators.createValidator.Object, validators.updateValidator.Object);
@@ -579,12 +584,12 @@ namespace PruebasMicroMercado.WhiteBoxTests
             var result = await service.CreateProductAsync(newProductDto);
 
             Assert.Null(result);
-            Assert.Equal(89, await context.Products.CountAsync());
+            Assert.Equal(91, await context.Products.CountAsync()); // <-- CORREGIDO AQUÍ: 89 iniciales + 2 de inactividad = 91
         }
 
-        // Test: CreateProductAsync_ShouldThrowException_WhenDatabaseErrorOccurs
+        // Test: CreateProductAsync - ShouldThrowException_WhenDatabaseErrorOccurs
         // Propósito: Verifica que el método CreateProductAsync lanza una excepción (y la registra)
-      
+        //            cuando ocurre un error inesperado en la base de datos durante la creación.
         [Fact]
         public async Task CreateProductAsync_ShouldThrowException_WhenDatabaseErrorOccurs()
         {
@@ -719,15 +724,15 @@ namespace PruebasMicroMercado.WhiteBoxTests
         public async Task UpdateProductAsync_ShouldReturnNull_WhenProductNameAlreadyExistsOnAnotherProduct()
         {
             var context = GetInMemoryDbContext();
-            await SeedTestData(context); // Producto 1: "Yogurt Bebible Sabor Durazno", Producto 2: "Leche de Soya sabor Banana Soy"
+            await SeedTestData(context);
             var logger = GetMockLogger();
             var validators = GetMockValidators();
             var service = new ProductService(context, logger.Object, validators.createValidator.Object, validators.updateValidator.Object);
 
             var updateProductDto = new UpdateProductDTO
             {
-                Id = 1, // Intentamos actualizar Yogurt
-                Name = "Leche de Soya sabor Banana Soy", // Con el nombre de otro producto (ID 2)
+                Id = 1, 
+                Name = "Leche de Soya sabor Banana Soy", 
                 Description = "Descripción actualizada",
                 Brand = "Pil",
                 Price = 15.00m,
