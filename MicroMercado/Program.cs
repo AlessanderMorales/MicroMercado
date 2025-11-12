@@ -21,6 +21,12 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
+
+if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
