@@ -39,7 +39,7 @@ namespace MicroMercado.Presentation.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error loading categories list.");
-                ErrorMessage = "Error al cargar la lista de categorías.";
+                ErrorMessage = "Error al cargar la lista de categorÃ­as.";
                 return Page();
             }
         }
@@ -51,27 +51,27 @@ namespace MicroMercado.Presentation.Pages
                 var category = await _categoryService.GetCategoryByIdAsync(id);
                 if (category == null)
                 {
-                    ErrorMessage = "Categoría no encontrada para eliminar.";
+                    ErrorMessage = "CategorÃ­a no encontrada para eliminar.";
                     return RedirectToPage();
                 }
 
                 bool deleted = await _categoryService.DeleteCategoryAsync(id);
                 if (deleted)
                 {
-                    SuccessMessage = $"Categoría '{category.Name}' eliminada correctamente.";
+                    SuccessMessage = $"CategorÃ­a '{category.Name}' eliminada correctamente.";
                 }
                 else
                 {
-                    ErrorMessage = "No se pudo eliminar la categoría.";
+                    ErrorMessage = "No se pudo eliminar la categorÃ­a.";
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al eliminar la categoría con ID: {CategoryId}", id);
-                ErrorMessage = "Ocurrió un error inesperado al eliminar la categoría.";
+                _logger.LogError(ex, "Error al eliminar la categorÃ­a con ID: {CategoryId}", id);
+                ErrorMessage = "OcurriÃ³ un error inesperado al eliminar la categorÃ­a.";
             }
 
-            return RedirectToPage();
+            return RedirectToPage("CategoryPage");
         }
     }
 }

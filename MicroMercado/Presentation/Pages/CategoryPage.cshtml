@@ -57,69 +57,38 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         }
-
-        <div class="card shadow-lg">
-            <div class="card-header">
-                <h3 class="card-title mb-0">
-                    <i class="fas fa-table"></i>
-                    Detalles de Categorías
-                </h3>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table id="lstCategories" class="table table-striped table-hover datatable mb-0">
-                        <thead class="bg-primary text-white">
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Descripción</th>
-                                <th>Estado</th>
-                                <th>Última Actualización</th>
-                                <th class="text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.Categories == null || !Model.Categories.Any())
-                            {
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">
-                                        <i class="fas fa-tags fa-3x mb-3 d-block"></i>
-                                        <p class="mb-0">No hay categorías registradas.</p>
-                                        <small>Haga clic en "Agregar Nueva Categoría" para empezar.</small>
-                                    </td>
-                                </tr>
-                            }
-                            else
-                            {
-                                @foreach (var cat in Model.Categories)
-                                {
-                                    <tr>
-                                        <td>@cat.Id</td>
-                                        <td>@cat.Name</td>
-                                        <td>@cat.Description</td>
-                                        <td>
-                                            <span class="badge @(cat.Status == 1 ? "bg-success" : "bg-danger")">
-                                                @cat.StatusText
-                                            </span>
-                                        </td>
-                                        <td>@cat.LastUpdate.ToShortDateString()</td>
-                                        <td class="text-center">
-                                            <a asp-page="/EditCategory" asp-route-id="@cat.Id" class="btn btn-warning btn-sm me-1" title="Editar Categoría">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <button type="button" class="btn btn-danger btn-sm"
-                                                    onclick="confirmDeleteCategory(@cat.Id, '@cat.Name')"
-                                                    title="Eliminar Categoría">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        
+        <div class="table-responsive shadow-sm rounded-3">
+            <table id="categoryTable" class="table align-middle">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th  style="width:10%; text-align:center;">#</th>
+                        <th  style="width:30%; text-align:center;">Nombre</th>
+                        <th  style="width:35%; text-align:center;">Descripción</th>
+                        <th  style="width:24%; text-align:center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var t in Model.Categories.Select((item, index) => new { item, index = index + 1 }))
+                {
+                    <tr>
+                        <td style="text-align:center;">@t.index</td>
+                        <td>@t.item.Name</td>
+                        <td>@t.item.Description</td>
+                        <td class="text-center">
+                            <a asp-page="/EditCategory" asp-route-id="@t.item.Id" class="btn btn-warning btn-sm me-1" title="Editar Categoría">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <button type="button" class="btn btn-danger btn-sm"
+                                    onclick="confirmDeleteCategory(@t.item.Id, '@t.item.Name')"
+                                    title="Eliminar Categoría">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
         </div>
 
     </div>
@@ -149,23 +118,51 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-
     <script>
         $(document).ready(function () {
-            $('#lstCategories').DataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+            $('#categoryTable').DataTable({
+                pageLength: 10,
+                language: {
+                    lengthMenu: `<div class="input-group input-group-sm">
+                                    <span class="input-group-text">Registros por página</span>
+                                    <span class="mx-2">_MENU_</span>
+                                </div>`,
+                    zeroRecords: 'No se encontraron resultados',
+                    info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+                    infoEmpty: 'Mostrando 0 a 0 de 0 registros',
+                    infoFiltered: '(filtrados de _MAX_ registros totales)',
+                    search: '',
+                    searchPlaceholder: 'Buscar...',
+                    paginate: {
+                        first: 'Primero',
+                        previous: 'Anterior',
+                        next: 'Siguiente',
+                        last: 'Último'
+                    }
                 },
-                "paging": true,
-                "lengthChange": true,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: 3 },
+                    { type: 'num', targets: 0 }
+                ],
+                order: [[0, 'asc']],
+                dom: '<"row align-items-center mb-3"' + 
+                     '<"col-12 col-sm-6"l>' + 
+                     '<"col-12 col-sm-6"f>>' + 
+                     '<"row"<"col-sm-12"tr>>' + 
+                     '<"row align-items-center mt-3"' + 
+                     '<"col-12 col-sm-5"i>' + 
+                     '<"col-12 col-sm-7"p>>',
+                classes: {
+                    sLengthSelect: 'form-select form-select-sm',
+                    sFilterInput: 'form-control form-control-sm',
+                    wrapper: 'dataTables_wrapper dt-bootstrap5'
+                }
             });
+            var searchInput = $('.dataTables_filter input');
+            searchInput.unwrap().wrap('<div class="input-group input-group-sm"></div>');
+            searchInput.before('<span class="input-group-text"><i class="fas fa-search"></i></span>');
+            searchInput.addClass('form-control');
         });
 
         function confirmDeleteCategory(categoryId, categoryName) {
