@@ -15,7 +15,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a asp-page="/Index">Inicio</a></li>
-                    <li class="breadcrumb-item"><a asp-page="/Category">Categorías</a></li>
+                    <li class="breadcrumb-item"><a asp-page="/CategoryPage">Categorías</a></li>
                     <li class="breadcrumb-item active">Editar</li>
                 </ol>
             </div>
@@ -51,14 +51,6 @@
                         <label asp-for="UpdateCategory.Description" class="form-label">Descripción</label>
                         <textarea asp-for="UpdateCategory.Description" class="form-control" rows="3"></textarea>
                         <span asp-validation-for="UpdateCategory.Description" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="UpdateCategory.Status" class="form-label">Estado</label>
-                        <select asp-for="UpdateCategory.Status" class="form-select">
-                            <option value="1">Activo</option>
-                            <option value="0">Inactivo</option>
-                        </select>
-                        <span asp-validation-for="UpdateCategory.Status" class="text-danger"></span>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                     <a asp-page="/CategoryPage" class="btn btn-secondary">Cancelar</a>
