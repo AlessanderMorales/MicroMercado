@@ -33,8 +33,8 @@ namespace MicroMercado.Presentation.Pages
             var category = await _categoryService.GetCategoryByIdAsync(id);
             if (category == null)
             {
-                ErrorMessage = "Categoría no encontrada.";
-                return RedirectToPage("/Category");
+                ErrorMessage = "CategorÃ­a no encontrada.";
+                return RedirectToPage("/CategoryPage");
             }
 
             UpdateCategory.Id = category.Id;
@@ -52,17 +52,17 @@ namespace MicroMercado.Presentation.Pages
                 var result = await _categoryService.UpdateCategoryAsync(UpdateCategory);
                 if (result == null)
                 {
-                    ErrorMessage = "No se pudo actualizar la categoría. Verifique los datos o que no exista otra categoría con el mismo nombre.";
+                    ErrorMessage = "No se pudo actualizar la categorÃ­a. Verifique los datos o que no exista otra categorÃ­a con el mismo nombre.";
                     return Page();
                 }
 
-                SuccessMessage = $"Categoría '{result.Name}' actualizada correctamente.";
-                return RedirectToPage("/Category");
+                SuccessMessage = $"CategorÃ­a '{result.Name}' actualizada correctamente.";
+                return RedirectToPage("/CategoryPage");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error actualizando categoría.");
-                ErrorMessage = "Ocurrió un error inesperado al actualizar la categoría.";
+                _logger.LogError(ex, "Error actualizando categorÃ­a.");
+                ErrorMessage = "OcurriÃ³ un error inesperado al actualizar la categorÃ­a.";
                 return Page();
             }
         }
