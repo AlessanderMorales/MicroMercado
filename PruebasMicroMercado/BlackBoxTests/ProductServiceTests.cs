@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using MicroMercado.Application.DTOs.Product;
 using MicroMercado.Application.Services;
 using MicroMercado.Domain.Models;

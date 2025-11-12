@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 using OpenQA.Selenium;
 using System.Threading;
 
@@ -15,7 +15,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         public void PrivacyPage_Loads()
         {
             var driver = _fixture.Driver;
-            driver.Navigate().GoToUrl("https://localhost:7040/Privacy");
+            driver.Navigate().GoToUrl("https://localhost:7155/Privacy");
             Thread.Sleep(500);
 
             Assert.Contains("Sobre Nosotros", driver.PageSource);

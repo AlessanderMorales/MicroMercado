@@ -1,0 +1,955 @@
+???????????????????????????????????????????????????????????????????????????????
+    CASOS DE PRUEBA DE CAJA NEGRA MANUAL - MICROMERCADO
+???????????????????????????????????????????????????????????????????????????????
+
+NOTA IMPORTANTE:
+Estas son pruebas MANUALES de CAJA NEGRA.
+- Se ejecutan interactuando con la interfaz web del usuario final
+- NO se utiliza código, Selenium, ni herramientas de automatización
+- NO se accede directamente a la base de datos
+- Solo se verifica el comportamiento visible para el usuario
+- Se prueban las funcionalidades a través de la UI en https://localhost:7040
+
+???????????????????????????????????????????????????????????????????????????????
+
+
+1. GESTIÓN DE CATEGORÍAS
+???????????????????????????????????????????????????????????????????????????????
+
+? HAPPY PATH - Flujo Completo Exitoso de Categorías
+???????????????????????????????????????????????????????????????????????????????
+Nombre: Categorias_CRUD_Completo_Exitoso
+Objetivo: Verificar que un usuario puede crear, listar, actualizar y eliminar categorías exitosamente
+
+PRECONDICIONES:
+• Aplicación MicroMercado corriendo en https://localhost:7040
+• Tener credenciales válidas (si hay login)
+• Navegador web actualizado (Chrome, Edge, Firefox)
+
+PASOS DE EJECUCIÓN:
+
+1. CREAR PRIMERA CATEGORÍA
+   1.1. Navegar a la sección "Categorías" desde el menú principal
+   1.2. Hacer clic en el botón "Nueva Categoría" o similar
+   1.3. Completar el formulario:
+      • Nombre: "Electrónica"
+        • Descripción: "Dispositivos electrónicos"
+   1.4. Hacer clic en "Guardar"
+   
+   ? RESULTADO ESPERADO:
+   • Aparece mensaje de éxito: "Categoría creada exitosamente"
+   • Se redirige a la lista de categorías
+   • "Electrónica" aparece en la tabla con Status "Activo"
+
+2. LISTAR CATEGORÍAS
+   2.1. Verificar que en la lista de categorías aparece:
+   • Nombre: "Electrónica"
+        • Descripción: "Dispositivos electrónicos"
+    • Estado: "Activo" (ícono verde o texto)
+   
+   ? RESULTADO ESPERADO:
+   • La tabla muestra 1 categoría
+• Los datos coinciden con los ingresados
+
+3. EDITAR CATEGORÍA
+   3.1. Hacer clic en el botón "Editar" de la categoría "Electrónica"
+   3.2. Cambiar la descripción a: "Electrónica y tecnología"
+   3.3. Hacer clic en "Guardar"
+   
+   ? RESULTADO ESPERADO:
+   • Aparece mensaje: "Categoría actualizada exitosamente"
+   • En la lista se muestra la descripción actualizada
+   • El nombre permanece igual
+
+4. CREAR SEGUNDA CATEGORÍA
+   4.1. Hacer clic en "Nueva Categoría"
+   4.2. Completar:
+        • Nombre: "Alimentos"
+        • Descripción: "Productos comestibles"
+   4.3. Guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje de éxito
+   • La lista ahora muestra 2 categorías activas
+
+5. ELIMINAR CATEGORÍA (Borrado Lógico)
+   5.1. Hacer clic en el botón "Eliminar" de "Electrónica"
+ 5.2. Confirmar en el diálogo de confirmación
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Categoría eliminada exitosamente"
+   • "Electrónica" ya NO aparece en la lista de categorías activas
+   • Solo "Alimentos" está visible
+
+RESULTADO FINAL:
+? Todas las operaciones CRUD funcionan correctamente
+? La interfaz muestra mensajes claros de confirmación
+? Los datos se persisten correctamente
+???????????????????????????????????????????????????????????????????????????????
+
+
+? UNHAPPY PATH - Intentos de Operaciones Inválidas en Categorías
+???????????????????????????????????????????????????????????????????????????????
+Nombre: Categorias_Operaciones_Invalidas
+Objetivo: Verificar que el sistema previene y maneja errores correctamente
+
+PRECONDICIONES:
+• Aplicación corriendo
+• Existe categoría "Electrónica" activa
+• Existe categoría "Alimentos" activa
+
+ESCENARIOS DE ERROR:
+
+1. INTENTAR CREAR CATEGORÍA CON NOMBRE VACÍO
+   1.1. Ir a "Nueva Categoría"
+   1.2. Dejar el campo "Nombre" vacío
+   1.3. Ingresar solo descripción: "Test"
+   1.4. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+• Aparece mensaje de validación: "El nombre es requerido" (o similar)
+   • El formulario NO se envía
+   • La categoría NO se crea
+
+2. INTENTAR CREAR CATEGORÍA CON NOMBRE DUPLICADO
+   2.1. Ir a "Nueva Categoría"
+2.2. Ingresar nombre: "Electrónica" (ya existe)
+   2.3. Ingresar descripción: "Otra descripción"
+   2.4. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje de error: "Ya existe una categoría con ese nombre"
+ • La categoría NO se crea
+   • Se mantiene en el formulario para corregir
+
+3. INTENTAR ACTUALIZAR CON NOMBRE VACÍO
+   3.1. Editar categoría "Alimentos"
+   3.2. Borrar completamente el nombre (dejar vacío)
+   3.3. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+ • Mensaje de validación: "El nombre es requerido"
+   • Los cambios NO se guardan
+   • Los datos originales permanecen sin cambios
+
+4. INTENTAR ACTUALIZAR CON NOMBRE DUPLICADO
+   4.1. Editar categoría "Alimentos"
+   4.2. Cambiar nombre a: "Electrónica"
+   4.3. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Ya existe otra categoría con ese nombre"
+   • Los cambios NO se guardan
+   • Nombre permanece como "Alimentos"
+
+5. VERIFICAR VALIDACIÓN EN TIEMPO REAL
+   5.1. Abrir formulario de nueva categoría
+   5.2. Ingresar nombre con solo espacios: "   "
+   5.3. Salir del campo (blur)
+   
+   ? RESULTADO ESPERADO:
+   • Aparece mensaje de validación inmediatamente
+   • El campo se marca como inválido (borde rojo)
+
+RESULTADO FINAL:
+? Todas las validaciones funcionan correctamente
+? Se muestran mensajes de error claros
+? El sistema previene operaciones inválidas
+? Los datos permanecen consistentes
+???????????????????????????????????????????????????????????????????????????????
+
+
+???????????????????????????????????????????????????????????????????????????????
+2. GESTIÓN DE PRODUCTOS
+???????????????????????????????????????????????????????????????????????????????
+
+? HAPPY PATH - Flujo Completo Exitoso de Productos
+???????????????????????????????????????????????????????????????????????????????
+Nombre: Productos_CRUD_Completo_Exitoso
+Objetivo: Verificar todas las operaciones CRUD de productos
+
+PRECONDICIONES:
+• Existe categoría "Lácteos" (ID=6) activa
+• Existe categoría "Alimentos" (ID=2) activa
+• Aplicación corriendo en https://localhost:7040
+
+PASOS DE EJECUCIÓN:
+
+1. BUSCAR PRODUCTO EXISTENTE
+   1.1. Navegar a la sección "Productos"
+   1.2. En el buscador, escribir: "yogurt"
+   1.3. Presionar Enter o hacer clic en "Buscar"
+   
+   ? RESULTADO ESPERADO:
+   • Aparece al menos 1 producto en los resultados
+   • Muestra: "Yogurt Bebible Sabor Durazno"
+   • Incluye: Precio, Stock, Categoría "Lácteos"
+
+2. BUSCAR POR CATEGORÍA
+   2.1. Escribir en el buscador: "lácteos"
+   2.2. Buscar
+   
+   ? RESULTADO ESPERADO:
+   • Aparecen múltiples productos (Yogurt, Leche, Mantequillas)
+   • Todos muestran Categoría: "Lácteos"
+   • Solo productos activos aparecen
+
+3. VER DETALLES DE UN PRODUCTO
+   3.1. Hacer clic en un producto de la lista (ej: Yogurt)
+   3.2. Debe abrir vista detallada
+   
+   ? RESULTADO ESPERADO:
+   • Muestra todos los campos:
+     - Nombre completo
+     - Descripción
+     - Marca
+     - Precio
+     - Stock disponible
+   - Categoría
+     - Estado: Activo
+
+4. CREAR NUEVO PRODUCTO
+   4.1. Hacer clic en "Nuevo Producto"
+   4.2. Completar formulario:
+        • Nombre: "Cereal Avena Integral"
+        • Descripción: "Cereal nutritivo"
+        • Marca: "Quaker"
+    • Precio: 4.50
+        • Stock: 20
+        • Categoría: Seleccionar "Alimentos" del dropdown
+   4.3. Guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Producto creado exitosamente"
+ • El producto aparece en la lista
+   • Estado: "Activo"
+
+5. ACTUALIZAR PRODUCTO
+   5.1. Buscar "Yogurt Bebible Sabor Durazno"
+   5.2. Hacer clic en "Editar"
+   5.3. Modificar:
+        • Nombre: "Yogurt Natural Descremado"
+        • Precio: 12.00
+   • Stock: 60
+   5.4. Guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Producto actualizado"
+   • Los cambios se reflejan en la lista
+   • La categoría permanece igual
+
+6. ELIMINAR PRODUCTO (Borrado Lógico)
+   6.1. Seleccionar el producto creado ("Cereal Avena Integral")
+   6.2. Hacer clic en "Eliminar"
+   6.3. Confirmar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Producto eliminado"
+   • Ya no aparece en búsquedas de productos activos
+
+7. VERIFICAR FILTRO DE PRODUCTOS ACTIVOS
+   7.1. Buscar "Cereal Avena Integral"
+   
+   ? RESULTADO ESPERADO:
+   • No aparece en resultados (está inactivo)
+   • Solo productos activos son visibles
+
+RESULTADO FINAL:
+? Todas las operaciones CRUD funcionan
+? Las búsquedas filtran correctamente
+? El sistema maneja correctamente el estado activo/inactivo
+???????????????????????????????????????????????????????????????????????????????
+
+
+? UNHAPPY PATH - Intentos de Operaciones Inválidas en Productos
+???????????????????????????????????????????????????????????????????????????????
+Nombre: Productos_Operaciones_Invalidas
+Objetivo: Verificar validaciones y manejo de errores
+
+PRECONDICIONES:
+• Existe producto "Yogurt Bebible Sabor Durazno" activo
+• Existe producto "Leche de Soya" activo
+• Existe categoría inactiva (ID=7)
+
+ESCENARIOS DE ERROR:
+
+1. BUSCAR CON TÉRMINO VACÍO
+   1.1. Dejar el campo de búsqueda vacío
+   1.2. Hacer clic en buscar
+   
+   ? RESULTADO ESPERADO:
+   • No se muestran resultados, o
+   • Se muestran todos los productos activos
+
+2. BUSCAR PRODUCTO INEXISTENTE
+ 2.1. Buscar: "ProductoQueNoExiste123"
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "No se encontraron productos"
+   • La lista está vacía
+
+3. BUSCAR PRODUCTO INACTIVO
+   3.1. Buscar: "Producto Inactivo de Prueba"
+   
+   ? RESULTADO ESPERADO:
+   • No aparece en resultados
+   • Solo productos activos son visibles
+
+4. CREAR PRODUCTO CON CAMPOS VACÍOS
+   4.1. Ir a "Nuevo Producto"
+   4.2. Dejar Nombre vacío
+   4.3. Ingresar solo Precio: 10.00
+   4.4. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensajes de validación:
+     - "El nombre es requerido"
+- "La descripción es requerida"
+     - "La marca es requerida"
+     - "Debe seleccionar una categoría"
+   • El producto NO se crea
+
+5. CREAR PRODUCTO CON PRECIO INVÁLIDO
+   5.1. Ir a "Nuevo Producto"
+   5.2. Completar campos correctamente
+   5.3. Ingresar Precio: -10.00 (negativo)
+   5.4. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "El precio debe ser mayor a 0"
+   • El producto NO se crea
+
+6. CREAR PRODUCTO CON STOCK NEGATIVO
+   6.1. Ingresar Stock: -5
+   6.2. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "El stock no puede ser negativo"
+   • El producto NO se crea
+
+7. CREAR PRODUCTO CON NOMBRE DUPLICADO
+   7.1. Ingresar nombre: "Yogurt Bebible Sabor Durazno" (ya existe)
+   7.2. Completar otros campos
+ 7.3. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Ya existe un producto con ese nombre"
+   • El producto NO se crea
+
+8. CREAR PRODUCTO CON CATEGORÍA INACTIVA
+   8.1. Intentar seleccionar una categoría inactiva del dropdown
+   
+   ? RESULTADO ESPERADO:
+   • Las categorías inactivas NO aparecen en el dropdown, o
+   • Si aparecen, al guardar muestra error: "Categoría no válida"
+
+9. ACTUALIZAR PRODUCTO CON NOMBRE DUPLICADO
+   9.1. Editar "Yogurt Bebible Sabor Durazno"
+   9.2. Cambiar nombre a: "Leche de Soya" (pertenece a otro producto)
+   9.3. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Ya existe otro producto con ese nombre"
+ • Los cambios NO se guardan
+   • El nombre original permanece
+
+10. ACTUALIZAR A CATEGORÍA INEXISTENTE
+  10.1. Editar un producto
+    10.2. Manipular el HTML para seleccionar CategoryId=999
+    10.3. Intentar guardar
+    
+    ? RESULTADO ESPERADO:
+  • Mensaje: "Categoría no válida"
+    • Los cambios NO se guardan
+
+RESULTADO FINAL:
+? Todas las validaciones funcionan correctamente
+? El sistema previene datos inválidos
+? Los mensajes de error son claros
+? Los datos permanecen consistentes
+???????????????????????????????????????????????????????????????????????????????
+
+
+???????????????????????????????????????????????????????????????????????????????
+3. GESTIÓN DE CLIENTES
+???????????????????????????????????????????????????????????????????????????????
+
+? HAPPY PATH - Flujo Completo Exitoso de Clientes
+???????????????????????????????????????????????????????????????????????????????
+Nombre: Clientes_CRUD_Completo_Exitoso
+Objetivo: Verificar operaciones CRUD de clientes
+
+PRECONDICIONES:
+• Aplicación corriendo
+• Acceso al módulo de clientes
+
+PASOS DE EJECUCIÓN:
+
+1. CREAR PRIMER CLIENTE
+   1.1. Navegar a https://localhost:7040/NewClient
+   1.2. Completar formulario:
+        • Nombre/Razón Social: "Empresa ABC"
+   • Email: "contacto@abc.com"
+        • Documento Tributario: "12345678"
+        • Dirección: "Calle 123"
+   1.3. Hacer clic en "Guardar Cliente"
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Cliente creado exitosamente"
+   • Redirige a página de ventas (/Sales) o lista de clientes
+   • El cliente queda registrado
+
+2. BUSCAR CLIENTE POR DOCUMENTO
+   2.1. Ir al módulo de ventas o clientes
+   2.2. En el campo "Documento", ingresar: "12345678"
+   2.3. Hacer clic en "Buscar Cliente"
+ 
+   ? RESULTADO ESPERADO:
+   • Aparece el nombre: "Empresa ABC"
+   • Se cargan todos los datos del cliente
+   • Email: "contacto@abc.com"
+
+3. VER LISTA DE CLIENTES
+   3.1. Navegar a lista/tabla de clientes
+   
+   ? RESULTADO ESPERADO:
+   • Aparece "Empresa ABC" en la lista
+   • Muestra: Nombre, Email, Documento
+   • Estado: "Activo"
+
+4. ACTUALIZAR CLIENTE
+   4.1. Hacer clic en "Editar" del cliente "Empresa ABC"
+   4.2. Modificar:
+     • Nombre: "Empresa ABC Actualizada"
+   • Dirección: "Nueva Dirección 456"
+   4.3. Mantener mismo documento: "12345678"
+   4.4. Guardar
+   
+ ? RESULTADO ESPERADO:
+   • Mensaje: "Cliente actualizado"
+   • Los cambios se reflejan en la lista
+   • El documento permanece igual (no se considera duplicado)
+
+5. CREAR SEGUNDO CLIENTE
+   5.1. Ir a "Nuevo Cliente"
+   5.2. Completar:
+        • Nombre: "Empresa XYZ"
+     • Email: "info@xyz.com"
+        • Documento: "87654321"
+        • Dirección: "Av. Principal"
+   5.3. Guardar
+   
+   ? RESULTADO ESPERADO:
+   • Cliente creado exitosamente
+   • Ahora hay 2 clientes activos en la lista
+
+6. ELIMINAR CLIENTE (Borrado Lógico)
+   6.1. Seleccionar cliente "Empresa ABC Actualizada"
+   6.2. Hacer clic en "Eliminar"
+   6.3. Confirmar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Cliente eliminado"
+   • Ya no aparece en la lista de clientes activos
+   • Solo "Empresa XYZ" está visible
+
+7. VERIFICAR BÚSQUEDA DE CLIENTE ELIMINADO
+   7.1. Buscar por documento: "12345678"
+   
+   ? RESULTADO ESPERADO:
+   • No encuentra el cliente (está inactivo), o
+   • Muestra mensaje: "Cliente no encontrado o inactivo"
+
+RESULTADO FINAL:
+? Todas las operaciones CRUD funcionan
+? El borrado lógico funciona correctamente
+? Las búsquedas filtran clientes activos
+???????????????????????????????????????????????????????????????????????????????
+
+
+? UNHAPPY PATH - Intentos de Operaciones Inválidas en Clientes
+???????????????????????????????????????????????????????????????????????????????
+Nombre: Clientes_Operaciones_Invalidas
+Objetivo: Verificar validaciones y manejo de errores
+
+PRECONDICIONES:
+• Existe cliente: "Empresa ABC", Doc="12345678", Email="contacto@abc.com"
+• Existe cliente: "Empresa XYZ", Doc="87654321", Email="info@xyz.com"
+
+ESCENARIOS DE ERROR:
+
+1. CREAR CLIENTE CON CAMPOS VACÍOS
+   1.1. Ir a /NewClient
+ 1.2. Dejar todos los campos vacíos
+   1.3. Hacer clic en "Guardar Cliente"
+   
+   ? RESULTADO ESPERADO:
+   • Mensajes de validación:
+  - "El nombre/razón social es requerido"
+     - "El documento es requerido"
+     - "El email es requerido"
+   • El cliente NO se crea
+   • Permanece en el formulario
+
+2. CREAR CLIENTE CON DOCUMENTO DUPLICADO
+   2.1. Ir a "Nuevo Cliente"
+   2.2. Ingresar:
+     • Nombre: "Nueva Empresa"
+      • Documento: "12345678" (ya existe)
+      • Email: "nuevo@test.com"
+   2.3. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Ya existe un cliente con ese documento"
+   • El cliente NO se crea
+
+3. CREAR CLIENTE CON EMAIL DUPLICADO
+   3.1. Ir a "Nuevo Cliente"
+   3.2. Ingresar:
+  • Nombre: "Otra Empresa"
+        • Documento: "11111111"
+        • Email: "contacto@abc.com" (ya existe)
+   3.3. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Ya existe un cliente con ese email"
+   • El cliente NO se crea
+
+4. CREAR CLIENTE CON EMAIL INVÁLIDO
+ 4.1. Ingresar Email: "correo_invalido" (sin @)
+   4.2. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Formato de email inválido"
+ • El cliente NO se crea
+
+5. BUSCAR CLIENTE INEXISTENTE
+   5.1. En búsqueda, ingresar documento: "99999999"
+   5.2. Hacer clic en "Buscar Cliente"
+ 
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Cliente no encontrado"
+   • Los campos permanecen vacíos
+   • No se carga ningún dato
+
+6. ACTUALIZAR CLIENTE CON NOMBRE VACÍO
+   6.1. Editar "Empresa ABC"
+   6.2. Borrar completamente el nombre (dejar vacío)
+   6.3. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "El nombre es requerido"
+   • Los cambios NO se guardan
+   • El nombre original permanece
+
+7. ACTUALIZAR CON DOCUMENTO DUPLICADO
+   7.1. Editar "Empresa ABC"
+   7.2. Cambiar documento a: "87654321" (pertenece a Empresa XYZ)
+   7.3. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+ • Mensaje: "Ese documento ya está registrado"
+   • Los cambios NO se guardan
+
+8. ACTUALIZAR CON EMAIL DUPLICADO
+   8.1. Editar "Empresa ABC"
+   8.2. Cambiar email a: "info@xyz.com" (pertenece a otro cliente)
+   8.3. Intentar guardar
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Ese email ya está en uso"
+   • Los cambios NO se guardan
+
+RESULTADO FINAL:
+? Validaciones de unicidad funcionan
+? Validaciones de formato funcionan
+? El sistema previene duplicados
+? Los mensajes son claros
+???????????????????????????????????????????????????????????????????????????????
+
+
+???????????????????????????????????????????????????????????????????????????????
+4. GESTIÓN DE VENTAS (PUNTO DE VENTA)
+???????????????????????????????????????????????????????????????????????????????
+
+? HAPPY PATH - Venta Completa Exitosa Manual
+???????????????????????????????????????????????????????????????????????????????
+Nombre: Venta_Completa_Exitosa_Efectivo
+Objetivo: Realizar una venta completa con múltiples productos
+
+PRECONDICIONES:
+• Cliente registrado: Doc="9404687"
+• Productos disponibles:
+  - Yogurt (Stock ? 2, Precio=10.00)
+  - Leche (Stock ? 1, Precio=8.00)
+  - Mantequilla (Stock ? 1, Precio=25.00)
+• Todos los productos activos
+
+PASOS DE EJECUCIÓN:
+
+1. ACCEDER AL PUNTO DE VENTA
+   1.1. Navegar a https://localhost:7040
+   1.2. Hacer clic en "Ir al Punto de Venta"
+   1.3. Debe cargar la página /Sales
+   
+   ? RESULTADO ESPERADO:
+   • Página carga correctamente
+   • Muestra buscador de productos
+   • Muestra campo de cliente
+   • Muestra carrito vacío
+
+2. SELECCIONAR CLIENTE
+   2.1. En campo "Documento del Cliente", escribir: "9404687"
+   2.2. Hacer clic en "Buscar Cliente"
+   2.3. Esperar respuesta
+   
+   ? RESULTADO ESPERADO:
+   • Aparece el nombre del cliente
+   • Campo de nombre se llena automáticamente
+   • Sin mensajes de error
+
+3. AGREGAR PRIMER PRODUCTO (YOGURT)
+   3.1. En buscador de productos, escribir: "yogurt"
+   3.2. Hacer clic en "Buscar" o presionar Enter
+   3.3. De los resultados, hacer clic en "Agregar" del Yogurt
+   3.4. Cambiar cantidad a: 2
+   
+   ? RESULTADO ESPERADO:
+   • El producto aparece en el carrito
+   • Cantidad: 2
+   • Precio unitario: 10.00
+   • Subtotal: 20.00
+   • Total general: 20.00
+
+4. AGREGAR SEGUNDO PRODUCTO (LECHE)
+   4.1. Buscar: "leche"
+   4.2. Agregar Leche al carrito
+   4.3. Cantidad: 1
+   
+   ? RESULTADO ESPERADO:
+   • Ahora hay 2 productos en el carrito
+   • Subtotal Leche: 8.00
+   • Total general actualizado: 28.00
+
+5. AGREGAR TERCER PRODUCTO (MANTEQUILLA)
+   5.1. Buscar: "mantequilla"
+   5.2. Agregar al carrito
+   5.3. Cantidad: 1
+   
+   ? RESULTADO ESPERADO:
+   • 3 productos en carrito
+   • Subtotal Mantequilla: 25.00
+   • Total general: 53.00
+
+6. VERIFICAR CARRITO
+   6.1. Revisar visualmente el carrito
+   
+   ? RESULTADO ESPERADO:
+   • 3 filas de productos
+ • Yogurt × 2 = 20.00
+   • Leche × 1 = 8.00
+   • Mantequilla × 1 = 25.00
+   • Total: 53.00
+
+7. CONFIGURAR PAGO EN EFECTIVO
+   7.1. En selector "Tipo de Pago", elegir: "Efectivo"
+   7.2. En campo "Efectivo Recibido", ingresar: 153.00
+   7.3. Salir del campo (blur/tab)
+   
+   ? RESULTADO ESPERADO:
+   • Campo "Vuelto" se calcula automáticamente
+   • Vuelto mostrado: 100.00
+   • Total permanece en: 53.00
+
+8. CONFIRMAR VENTA
+ 8.1. Hacer clic en botón "Iniciar Venta" o "Confirmar Venta"
+   8.2. Esperar procesamiento
+   
+   ? RESULTADO ESPERADO:
+   • Aparece alerta/modal con mensaje: "Venta realizada exitosamente" o similar
+   • Se muestra algún código/número de venta
+   • Hacer clic en "Aceptar"
+
+9. VERIFICAR POST-VENTA
+   9.1. Después de confirmar
+   
+   ? RESULTADO ESPERADO:
+   • El carrito se vacía automáticamente
+   • Total vuelve a: 0.00
+   • Campo de cliente se limpia (o queda para siguiente venta)
+ • Efectivo y Vuelto se resetean
+   • Página lista para nueva venta
+
+10. VERIFICAR STOCK ACTUALIZADO (OPCIONAL)
+    10.1. Buscar nuevamente "Yogurt"
+    10.2. Verificar stock
+    
+    ? RESULTADO ESPERADO:
+    • Stock de Yogurt disminuyó en 2 unidades
+    • Stock de Leche disminuyó en 1
+    • Stock de Mantequilla disminuyó en 1
+
+RESULTADO FINAL:
+? Venta completada exitosamente
+? Cálculos correctos (total, vuelto)
+? Stock actualizado
+? Sistema listo para siguiente venta
+???????????????????????????????????????????????????????????????????????????????
+
+
+? UNHAPPY PATH - Intentos de Venta Inválidos Manual
+???????????????????????????????????????????????????????????????????????????????
+Nombre: Ventas_Operaciones_Invalidas
+Objetivo: Verificar que el sistema previene ventas inválidas
+
+PRECONDICIONES:
+• Acceso a /Sales
+• Cliente válido disponible: Doc="9404687"
+• Productos con stock disponibles
+
+ESCENARIOS DE ERROR:
+
+1. INTENTAR VENTA SIN CLIENTE
+   1.1. Ir a /Sales
+   1.2. Agregar producto "Yogurt" al carrito (cantidad 1)
+   1.3. NO seleccionar ningún cliente (dejar campo vacío)
+   1.4. Configurar pago: Efectivo, monto suficiente
+   1.5. Hacer clic en "Iniciar Venta"
+   
+   ? RESULTADO ESPERADO:
+   • Aparece alerta/mensaje: "Debe seleccionar un cliente"
+   • La venta NO se procesa
+   • El carrito permanece con el producto
+   • Se debe forzar la selección del cliente
+
+2. INTENTAR VENTA SIN PRODUCTOS (CARRITO VACÍO)
+   2.1. Ir a /Sales
+   2.2. Seleccionar cliente: "9404687"
+   2.3. NO agregar ningún producto al carrito
+   2.4. Configurar pago
+   2.5. Hacer clic en "Iniciar Venta"
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "El carrito está vacío" o "Debe agregar productos"
+   • La venta NO se procesa
+   • Botón "Iniciar Venta" puede estar deshabilitado
+
+3. INTENTAR VENTA CON CLIENTE INEXISTENTE
+   3.1. En campo documento, ingresar: "99999999"
+   3.2. Hacer clic en "Buscar Cliente"
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Cliente no encontrado"
+   • Campo de nombre permanece vacío
+• No se puede proceder con la venta
+
+4. INTENTAR AGREGAR PRODUCTO INEXISTENTE
+   4.1. Buscar: "ProductoQueNoExiste123"
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "No se encontraron productos"
+   • Lista de resultados vacía
+   • Carrito sin cambios
+
+5. BUSCAR CON TÉRMINO VACÍO
+   5.1. Dejar campo de búsqueda vacío
+5.2. Hacer clic en buscar
+   
+   ? RESULTADO ESPERADO:
+   • No se muestran resultados, o
+   • Mensaje: "Ingrese término de búsqueda"
+
+6. INTENTAR AGREGAR CANTIDAD MAYOR AL STOCK
+   6.1. Buscar producto con stock bajo (ej: Stock=5)
+   6.2. Agregar al carrito
+   6.3. Intentar cambiar cantidad a: 10 (mayor al stock)
+   
+   ? RESULTADO ESPERADO:
+   • El input no permite ingresar cantidad > stock (max attribute), o
+   • Mensaje: "Stock insuficiente"
+ • Cantidad permanece en el máximo permitido
+
+7. INTENTAR VENTA CON EFECTIVO INSUFICIENTE
+   7.1. Agregar productos (Total: 50.00)
+   7.2. Seleccionar cliente
+   7.3. Tipo de pago: Efectivo
+   7.4. Efectivo recibido: 30.00 (menor al total)
+   7.5. Hacer clic en "Iniciar Venta"
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje: "Efectivo insuficiente" o "El monto no puede ser menor al total"
+   • El campo Vuelto puede mostrar valor negativo o error
+   • La venta NO se procesa
+
+8. INTENTAR AGREGAR CANTIDAD NEGATIVA O CERO
+   8.1. Agregar producto al carrito
+   8.2. Intentar cambiar cantidad a: 0 o -1
+   
+   ? RESULTADO ESPERADO:
+   • El input no permite valores ? 0 (min="1"), o
+   • Mensaje de validación
+ • Cantidad permanece en 1
+
+9. INTENTAR VENTA CON PRODUCTO INACTIVO
+   9.1. Buscar: "Producto Inactivo de Prueba"
+   
+   ? RESULTADO ESPERADO:
+   • No aparece en resultados de búsqueda
+   • Solo productos activos son visibles
+
+10. INTENTAR MODIFICAR CANTIDAD A TEXTO
+    10.1. Agregar producto
+    10.2. En campo cantidad, intentar escribir: "abc"
+    
+    ? RESULTADO ESPERADO:
+    • El campo no acepta letras (type="number")
+    • Si se ingresa, muestra error de validación
+
+11. VACIAR CARRITO ACCIDENTALMENTE
+    11.1. Agregar varios productos
+    11.2. Hacer clic en "Vaciar Carrito"
+    
+    ? RESULTADO ESPERADO:
+    • Aparece diálogo de confirmación: "¿Está seguro?"
+    • Si confirma: carrito se vacía, total=0.00
+    • Si cancela: carrito permanece intacto
+
+12. INTENTAR VENTA CON PAGO QR SIN CONFIRMAR
+    12.1. Agregar productos
+    12.2. Seleccionar "Pago QR"
+    12.3. NO completar el proceso de pago
+    12.4. Intentar confirmar venta
+    
+    ? RESULTADO ESPERADO:
+    • Mensaje: "Debe completar el pago" (si aplica validación)
+    • O la venta se registra dependiendo de la lógica del negocio
+
+RESULTADO FINAL:
+? Todas las validaciones funcionan
+? Sistema previene ventas inválidas
+? Mensajes de error claros
+? Datos permanecen consistentes
+???????????????????????????????????????????????????????????????????????????????
+
+
+???????????????????????????????????????????????????????????????????????????????
+5. NAVEGACIÓN Y PÁGINAS GENERALES
+???????????????????????????????????????????????????????????????????????????????
+
+? HAPPY PATH - Navegación General Exitosa
+???????????????????????????????????????????????????????????????????????????????
+Nombre: Navegacion_General_Exitosa
+Objetivo: Verificar que el usuario puede navegar correctamente por la aplicación
+
+PASOS:
+
+1. PÁGINA DE INICIO
+   1.1. Abrir navegador
+   1.2. Navegar a: https://localhost:7040
+   
+   ? RESULTADO ESPERADO:
+   • Página carga en menos de 3 segundos
+   • Aparece texto: "Bienvenido a MicroMercado" o similar
+   • Se muestra menú de navegación
+   • Botón/enlace "Ir al Punto de Venta" visible
+
+2. NAVEGAR A VENTAS DESDE INICIO
+   2.1. Hacer clic en "Ir al Punto de Venta"
+   
+   ? RESULTADO ESPERADO:
+   • URL cambia a: https://localhost:7040/Sales
+   • Página de ventas carga correctamente
+   • Elementos del punto de venta visibles
+
+3. NAVEGAR A PÁGINA DE PRIVACIDAD
+   3.1. En footer o menú, hacer clic en "Privacidad" o "Sobre Nosotros"
+   
+   ? RESULTADO ESPERADO:
+   • URL: https://localhost:7040/Privacy
+   • Aparece texto: "Sobre Nosotros"
+   • El contenido se renderiza correctamente
+
+4. REGRESAR A INICIO DESDE MENÚ
+   4.1. Hacer clic en logo o enlace "Inicio"
+   
+   ? RESULTADO ESPERADO:
+   • Vuelve a la página principal
+ • URL: https://localhost:7040/
+
+5. NAVEGAR ENTRE MÓDULOS
+   5.1. Probar navegación entre:
+        • Inicio ? Categorías ? Productos ? Clientes ? Ventas
+   
+   ? RESULTADO ESPERADO:
+   • Todas las páginas cargan correctamente
+   • No hay errores 404
+   • El menú resalta la sección activa
+
+RESULTADO FINAL:
+? Navegación fluida
+? Todas las páginas accesibles
+? URLs correctas
+???????????????????????????????????????????????????????????????????????????????
+
+
+? UNHAPPY PATH - Errores de Navegación
+???????????????????????????????????????????????????????????????????????????????
+Nombre: Navegacion_Errores
+Objetivo: Verificar manejo de errores de navegación
+
+ESCENARIOS:
+
+1. NAVEGAR A URL INEXISTENTE
+   1.1. Escribir en navegador: https://localhost:7040/PaginaQueNoExiste
+   
+   ? RESULTADO ESPERADO:
+   • Muestra página de error 404
+   • Mensaje: "Página no encontrada"
+   • Opción para volver al inicio
+
+2. NAVEGAR CON URL MALFORMADA
+   2.1. Intentar: https://localhost:7040/Sales/../../etc
+   
+   ? RESULTADO ESPERADO:
+   • Error 400 o redirige a página segura
+   • No expone información del sistema
+
+3. ACCEDER A RECURSO SIN PERMISOS (SI APLICA)
+   3.1. Si hay autenticación, intentar acceder sin login
+   
+   ? RESULTADO ESPERADO:
+   • Redirige a página de login
+   • Mensaje: "Debe iniciar sesión"
+
+4. TIMEOUT DE PÁGINA
+   4.1. Simular conexión lenta o servidor caído
+   
+   ? RESULTADO ESPERADO:
+   • Mensaje de error amigable
+   • No muestra stack traces
+   • Opción para reintentar
+
+RESULTADO FINAL:
+? Errores manejados correctamente
+? Mensajes claros
+? Seguridad apropiada
+???????????????????????????????????????????????????????????????????????????????
+
+
+???????????????????????????????????????????????????????????????????????????????
+FIN DEL DOCUMENTO - CASOS DE PRUEBA DE CAJA NEGRA MANUAL
+???????????????????????????????????????????????????????????????????????????????
+
+NOTAS FINALES:
+• Estos casos de prueba están diseñados para ejecutarse MANUALMENTE
+• NO requieren conocimiento de programación
+• Se prueban desde la perspectiva del usuario final
+• Solo se verifica comportamiento visible en la interfaz
+• Cualquier persona puede ejecutar estas pruebas siguiendo los pasos
+
+PRÓXIMOS PASOS:
+1. Ejecutar cada caso de prueba manualmente
+2. Documentar resultados (Pasó/Falló)
+3. Reportar defectos encontrados
+4. Verificar correcciones
+5. Re-ejecutar pruebas fallidas

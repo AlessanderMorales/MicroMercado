@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 using OpenQA.Selenium;
 using System.Threading;
 
@@ -15,7 +15,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         public void ErrorPage_ShowsRequestIdAndMessage()
         {
             var driver = _fixture.Driver;
-            driver.Navigate().GoToUrl("https://localhost:7040/Error");
+            driver.Navigate().GoToUrl("https://localhost:7155/Error");
             Thread.Sleep(500);
 
             Assert.Contains("Error", driver.PageSource);

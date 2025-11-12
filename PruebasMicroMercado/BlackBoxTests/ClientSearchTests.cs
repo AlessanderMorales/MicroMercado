@@ -25,7 +25,7 @@ namespace PruebasMicroMercado.BlackBoxTests
             const string existingTax = "9404687";
             const string expectedClientName = "Alessander";
 
-            _page.GoTo("https://localhost:7040/Sales");
+            _page.GoTo("https://localhost:7155/Sales");
             _page.SetClientTaxDocument(existingTax);
             _wait.Until(d =>
             {
@@ -44,7 +44,7 @@ namespace PruebasMicroMercado.BlackBoxTests
             var rnd = new Random();
             var randomTax = (10000000 + rnd.Next(0, 89999999)).ToString();
 
-            _page.GoTo("https://localhost:7040/Sales");
+            _page.GoTo("https://localhost:7155/Sales");
             _page.SetInputValue("idDocumentoRecibido", randomTax);
             var searchBtn = _fixture.Driver.FindElement(By.Id("btnBuscarCliente"));
             searchBtn.Click();

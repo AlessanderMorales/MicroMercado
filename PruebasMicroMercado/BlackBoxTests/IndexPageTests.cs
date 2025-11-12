@@ -1,4 +1,4 @@
-﻿using OpenQA.Selenium;
+using OpenQA.Selenium;
 using Xunit;
 
 namespace PruebasMicroMercado.BlackBoxTests
@@ -18,7 +18,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Index Page Loads Successfully")]
         public void IndexPage_Loads()
         {
-            _page.GoTo("https://localhost:7040/");
+            _page.GoTo("https://localhost:7155/");
 
             string welcomeText = _page.GetText("//h1[contains(text(),'Bienvenido a MicroMercado')]");
             Assert.Equal("Bienvenido a MicroMercado", welcomeText.Trim());
@@ -27,7 +27,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Navigate to Sales from Index")]
         public void NavigateToSales_FromIndex()
         {
-            _page.GoTo("https://localhost:7040/");
+            _page.GoTo("https://localhost:7155/");
 
             _page.ClickButtonByText("Ir al Punto de Venta");
 

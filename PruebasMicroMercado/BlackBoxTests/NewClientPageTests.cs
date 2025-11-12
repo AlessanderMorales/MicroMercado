@@ -1,4 +1,4 @@
-﻿using OpenQA.Selenium;
+using OpenQA.Selenium;
 using Xunit;
 
 namespace PruebasMicroMercado.BlackBoxTests
@@ -18,7 +18,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Create New Client Successfully")]
         public void CreateNewClient_Success()
         {
-            _page.GoTo("https://localhost:7040/NewClient");
+            _page.GoTo("https://localhost:7155/NewClient");
 
             string businessName = "Cliente de Prueba";
             var rnd = new System.Random();
@@ -48,7 +48,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Fail to Create Client with Empty Fields")]
         public void CreateNewClient_ValidationFails()
         {
-            _page.GoTo("https://localhost:7040/NewClient");
+            _page.GoTo("https://localhost:7155/NewClient");
 
             _page.ClickButtonByText("Guardar Cliente");
 

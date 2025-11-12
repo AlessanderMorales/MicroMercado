@@ -1,4 +1,4 @@
-﻿using OpenQA.Selenium;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Linq;
@@ -21,7 +21,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Add Product With Stock - Should Success")]
         public void AddProduct_WithStock_ShouldAddToCart()
         {
-            _page.GoTo("https://localhost:7040/Sales");
+            _page.GoTo("https://localhost:7155/Sales");
             _page.ClearCart();
 
             string productWithStock = "Yogurt";
@@ -39,7 +39,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Complete Sale With Cash Payment")]
         public void CompleteSale_WithCashPayment_ShouldSuccess()
         {
-            _page.GoTo("https://localhost:7040/Sales");
+            _page.GoTo("https://localhost:7155/Sales");
             _page.ClearCart();
 
             string clientTax = "9404687";
@@ -83,7 +83,7 @@ namespace PruebasMicroMercado.BlackBoxTests
                 string alertText = alert.Text;
                 alert.Accept();
 
-                saleSucceeded = alertText.ToLower().Contains("éxito") ||
+                saleSucceeded = alertText.ToLower().Contains("�xito") ||
                                alertText.ToLower().Contains("correctamente") ||
                                alertText.ToLower().Contains("completada");
 
@@ -110,7 +110,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Complete Sale With QR Payment")]
         public void CompleteSale_WithQRPayment_ShouldSuccess()
         {
-            _page.GoTo("https://localhost:7040/Sales");
+            _page.GoTo("https://localhost:7155/Sales");
             _page.ClearCart();
 
             string clientTax = "9404687";
@@ -144,7 +144,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Complete Sale With Card Payment")]
         public void CompleteSale_WithCardPayment_ShouldSuccess()
         {
-            _page.GoTo("https://localhost:7040/Sales");
+            _page.GoTo("https://localhost:7155/Sales");
             _page.ClearCart();
 
             string clientTax = "9404687";
@@ -178,7 +178,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Complete Sale With Multiple Products")]
         public void CompleteSale_WithMultipleProducts_ShouldSuccess()
         {
-            _page.GoTo("https://localhost:7040/Sales");
+            _page.GoTo("https://localhost:7155/Sales");
             _page.ClearCart();
 
             string clientTax = "9404687";
@@ -217,7 +217,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Attempt Sale Without Client - Should Show Error")]
         public void AttemptSale_WithoutClient_ShouldShowError()
         {
-            _page.GoTo("https://localhost:7040/Sales");
+            _page.GoTo("https://localhost:7155/Sales");
             _page.ClearCart();
 
             _page.AddProductToCart("Yogurt", 1);
@@ -253,7 +253,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Attempt Sale Without Products - Should Show Error")]
         public void AttemptSale_WithoutProducts_ShouldShowError()
         {
-            _page.GoTo("https://localhost:7040/Sales");
+            _page.GoTo("https://localhost:7155/Sales");
             _page.ClearCart();
 
             string clientTax = "9404687";
@@ -286,7 +286,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Add Multiple Products and Verify Total")]
         public void AddMultipleProducts_ShouldCalculateTotalCorrectly()
         {
-            _page.GoTo("https://localhost:7040/Sales");
+            _page.GoTo("https://localhost:7155/Sales");
             _page.ClearCart();
 
             try
@@ -320,7 +320,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Update Product Quantity and Verify Total")]
         public void UpdateQuantity_ShouldUpdateTotal()
         {
-            _page.GoTo("https://localhost:7040/Sales");
+            _page.GoTo("https://localhost:7155/Sales");
             _page.ClearCart();
 
             try
@@ -359,7 +359,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Clear Cart Should Remove All Products")]
         public void ClearCart_ShouldRemoveAllProducts()
         {
-            _page.GoTo("https://localhost:7040/Sales");
+            _page.GoTo("https://localhost:7155/Sales");
             try
             {
                 _page.SearchProduct("Yogurt");
@@ -385,7 +385,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         [Fact(DisplayName = "Sales Page Loads Correctly")]
         public void SalesPage_ShouldLoadWithAllElements()
         {
-            _page.GoTo("https://localhost:7040/Sales");
+            _page.GoTo("https://localhost:7155/Sales");
 
             var productSearch = _fixture.Driver.FindElement(By.Id("product_id"));
             Assert.NotNull(productSearch);
