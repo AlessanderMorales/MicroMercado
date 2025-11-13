@@ -44,7 +44,6 @@ namespace PruebasMicroMercado.BlackBoxTests
 
             string clientTax = "9404687";
             _page.SetClientTaxDocument(clientTax);
-
             _page.AddProductToCart("Yogurt", 2);
 
             decimal total = _page.GetTotal();
@@ -57,14 +56,14 @@ namespace PruebasMicroMercado.BlackBoxTests
 
             System.Threading.Thread.Sleep(1000);
 
-            var vueltoText = _fixture.Driver.FindElement(By.Id("Vuelto")).Text;
-
-            vueltoText = vueltoText.Replace(",", "").Replace(".", "").Trim();
+            var vueltoText = _fixture.Driver.FindElement(By.Id("Vuelto")).Text
+                .Replace(",", "")
+                .Replace(".", "")
+                .Trim();
 
             if (decimal.TryParse(vueltoText, out decimal vueltoRaw))
             {
                 decimal vuelto = vueltoRaw > 1000 ? vueltoRaw / 100 : vueltoRaw;
-
                 Assert.True(Math.Abs(vuelto - 50) < 1, $"Expected change around 50, but got {vuelto}");
             }
             else
@@ -73,7 +72,6 @@ namespace PruebasMicroMercado.BlackBoxTests
             }
 
             _page.ConfirmSale();
-
             System.Threading.Thread.Sleep(2000);
 
             bool saleSucceeded = false;
@@ -84,8 +82,8 @@ namespace PruebasMicroMercado.BlackBoxTests
                 alert.Accept();
 
                 saleSucceeded = alertText.ToLower().Contains("éxito") ||
-                               alertText.ToLower().Contains("correctamente") ||
-                               alertText.ToLower().Contains("completada");
+                                alertText.ToLower().Contains("correctamente") ||
+                                alertText.ToLower().Contains("completada");
 
                 Assert.False(string.IsNullOrEmpty(alertText), "Alert should have a message");
             }
@@ -95,10 +93,9 @@ namespace PruebasMicroMercado.BlackBoxTests
             }
 
             Assert.Contains("/Sales", _fixture.Driver.Url);
-
             System.Threading.Thread.Sleep(1000);
-            var cartRows = _fixture.Driver.FindElements(By.CssSelector("#lstProductosVenta tbody tr:not(.empty-cart-message)"));
 
+            var cartRows = _fixture.Driver.FindElements(By.CssSelector("#lstProductosVenta tbody tr:not(.empty-cart-message)"));
             if (cartRows.Count > 0 && !saleSucceeded)
             {
                 Assert.Fail("Sale appears to have failed - cart not cleared and no success message");
@@ -115,16 +112,13 @@ namespace PruebasMicroMercado.BlackBoxTests
 
             string clientTax = "9404687";
             _page.SetClientTaxDocument(clientTax);
-
             _page.AddProductToCart("Leche", 1);
 
             decimal total = _page.GetTotal();
             Assert.True(total > 0);
 
             _page.SetPaymentType(2);
-
             _page.SetCashReceived(total);
-
             _page.ConfirmSale();
 
             System.Threading.Thread.Sleep(2000);
@@ -137,7 +131,6 @@ namespace PruebasMicroMercado.BlackBoxTests
             catch (NoAlertPresentException) { }
 
             Assert.Contains("/Sales", _fixture.Driver.Url);
-
             Assert.True(true);
         }
 
@@ -149,16 +142,13 @@ namespace PruebasMicroMercado.BlackBoxTests
 
             string clientTax = "9404687";
             _page.SetClientTaxDocument(clientTax);
-
             _page.AddProductToCart("Mantequilla", 1);
 
             decimal total = _page.GetTotal();
             Assert.True(total > 0);
 
             _page.SetPaymentType(3);
-
             _page.SetCashReceived(total);
-
             _page.ConfirmSale();
 
             System.Threading.Thread.Sleep(2000);
@@ -171,7 +161,6 @@ namespace PruebasMicroMercado.BlackBoxTests
             catch (NoAlertPresentException) { }
 
             Assert.Contains("/Sales", _fixture.Driver.Url);
-
             Assert.True(true);
         }
 
@@ -198,7 +187,6 @@ namespace PruebasMicroMercado.BlackBoxTests
 
             _page.SetPaymentType(1);
             _page.SetCashReceived(total + 100);
-
             _page.ConfirmSale();
 
             System.Threading.Thread.Sleep(2000);
@@ -227,7 +215,6 @@ namespace PruebasMicroMercado.BlackBoxTests
 
             _page.SetPaymentType(1);
             _page.SetCashReceived(total + 10);
-
             _page.ConfirmSale();
 
             System.Threading.Thread.Sleep(1500);
@@ -239,13 +226,13 @@ namespace PruebasMicroMercado.BlackBoxTests
                 alert.Accept();
 
                 bool hasError = alertText.ToLower().Contains("cliente") ||
-                               alertText.ToLower().Contains("requerido") ||
-                               alertText.ToLower().Contains("error");
+                                alertText.ToLower().Contains("requerido") ||
+                                alertText.ToLower().Contains("error");
+
                 Assert.True(hasError, "Should show error about missing client");
             }
             catch (NoAlertPresentException)
             {
-
                 Assert.True(true);
             }
         }
@@ -258,10 +245,8 @@ namespace PruebasMicroMercado.BlackBoxTests
 
             string clientTax = "9404687";
             _page.SetClientTaxDocument(clientTax);
-
             _page.SetPaymentType(1);
             _page.SetCashReceived(100);
-
             _page.ConfirmSale();
 
             System.Threading.Thread.Sleep(1500);
@@ -273,8 +258,9 @@ namespace PruebasMicroMercado.BlackBoxTests
                 alert.Accept();
 
                 bool hasError = alertText.ToLower().Contains("producto") ||
-                               alertText.ToLower().Contains("venta") ||
-                               alertText.ToLower().Contains("error");
+                                alertText.ToLower().Contains("venta") ||
+                                alertText.ToLower().Contains("error");
+
                 Assert.True(hasError, "Should show error about empty cart");
             }
             catch (NoAlertPresentException)
@@ -360,6 +346,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         public void ClearCart_ShouldRemoveAllProducts()
         {
             _page.GoTo("https://localhost:7155/Sales");
+
             try
             {
                 _page.SearchProduct("Yogurt");

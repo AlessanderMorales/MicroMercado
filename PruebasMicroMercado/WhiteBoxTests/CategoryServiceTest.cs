@@ -483,11 +483,11 @@ namespace PruebasMicroMercado.WhiteBoxTests
 
         #endregion
 
-        #region DeleteCategoryAsync Tests (Borrado Lógico)
+        #region DeleteCategoryAsync Tests (Borrado Físico / Hard Delete)
 
-        // Test: DeleteCategoryAsync - ShouldReturnTrue_AndPerformLogicalDelete_WhenCategoryExists
-        // Propósito: Verifica que el borrado lógico de una categoría es exitoso para una categoría existente
-        //            (cambiando su Status a 0) y que retorna true. También verifica el log de información.
+        // Test: DeleteCategoryAsync - ShouldReturnTrue_AndPerformPhysicalDelete_WhenCategoryExists
+        // Propósito: Verifica que el borrado físico de una categoría es exitoso para una categoría existente
+        //            (eliminándola permanentemente de la BD) y que retorna true. También verifica el log de información.
         [Fact]
         public async Task DeleteCategoryAsync_ShouldReturnTrue_AndPerformLogicalDelete_WhenCategoryExists()
         {
@@ -501,25 +501,23 @@ namespace PruebasMicroMercado.WhiteBoxTests
 
             Assert.True(result);
 
-            // Verificar que el estado de la categoría en la DB ha cambiado a 0 (inactivo)
-            // Se usa IgnoreQueryFilters() para asegurarse de que si el Context tiene un filtro global por Status=1, aún encuentre la categoría.
+            // ✅ HARD DELETE: La categoría ya NO debe existir en la BD
             var categoryInDb = await context.Categories.IgnoreQueryFilters().FirstOrDefaultAsync(c => c.Id == (byte)1);
-            Assert.NotNull(categoryInDb);
-            Assert.Equal((byte)0, categoryInDb.Status);
+            Assert.Null(categoryInDb); // ← La categoría fue eliminada físicamente
 
             // Verificar Logger
             logger.Verify(
                 x => x.Log(
                     It.Is<LogLevel>(l => l == LogLevel.Information),
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Category with ID 1 logically deleted (Status set to 0).")),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Category with ID 1 permanently deleted")),
                     It.IsAny<Exception>(),
                     It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
                 Times.Once);
         }
 
         // Test: DeleteCategoryAsync - ShouldReturnFalse_WhenCategoryDoesNotExist
-        // Propósito: Verifica que el borrado lógico de una categoría retorna false
+        // Propósito: Verifica que el borrado físico de una categoría retorna false
         //            cuando la categoría no existe y registra un warning.
         [Fact]
         public async Task DeleteCategoryAsync_ShouldReturnFalse_WhenCategoryDoesNotExist()

@@ -17,9 +17,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         public WebDriverFixture()
         {
             var options = new ChromeOptions();
-
             options.AddArgument("--start-maximized");
-
             options.AddArgument("--disable-notifications");
             options.AddArgument("--disable-infobars");
             options.AddArgument("--no-sandbox");
@@ -27,7 +25,6 @@ namespace PruebasMicroMercado.BlackBoxTests
             options.AddArgument("--disable-gpu");
 
             Driver = new ChromeDriver(options);
-
             Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
         }
 
@@ -40,6 +37,7 @@ namespace PruebasMicroMercado.BlackBoxTests
             }
             catch
             {
+                // Ignorar errores de cierre del navegador
             }
         }
     }

@@ -27,14 +27,17 @@ namespace PruebasMicroMercado.BlackBoxTests
 
             _page.GoTo("https://localhost:7155/Sales");
             _page.SetClientTaxDocument(existingTax);
+
             _wait.Until(d =>
             {
                 var nombreEl = d.FindElement(By.Id("nombreCliente"));
                 var actualName = nombreEl.GetAttribute("value") ?? string.Empty;
                 return actualName.Equals(expectedClientName, StringComparison.OrdinalIgnoreCase);
             });
+
             var nombreElFinal = _fixture.Driver.FindElement(By.Id("nombreCliente"));
             var nombre = nombreElFinal.GetAttribute("value") ?? string.Empty;
+
             Assert.Equal(expectedClientName, nombre, StringComparer.OrdinalIgnoreCase);
         }
 
@@ -46,14 +49,18 @@ namespace PruebasMicroMercado.BlackBoxTests
 
             _page.GoTo("https://localhost:7155/Sales");
             _page.SetInputValue("idDocumentoRecibido", randomTax);
+
             var searchBtn = _fixture.Driver.FindElement(By.Id("btnBuscarCliente"));
             searchBtn.Click();
+
             System.Threading.Thread.Sleep(500);
+
             try
             {
                 var alert = _fixture.Driver.SwitchTo().Alert();
                 var text = alert.Text ?? string.Empty;
                 alert.Accept();
+
                 Assert.Contains("Cliente no encontrado", text);
             }
             catch (OpenQA.Selenium.NoAlertPresentException)
@@ -62,8 +69,10 @@ namespace PruebasMicroMercado.BlackBoxTests
                 var nombre = nombreEl.GetAttribute("value") ?? string.Empty;
                 Assert.True(string.IsNullOrEmpty(nombre));
             }
+
             var finalNombreEl = _fixture.Driver.FindElement(By.Id("nombreCliente"));
             var finalNombre = finalNombreEl.GetAttribute("value") ?? string.Empty;
+
             Assert.True(string.IsNullOrEmpty(finalNombre));
         }
     }

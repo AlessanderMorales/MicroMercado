@@ -28,9 +28,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         public void NavigateToSales_FromIndex()
         {
             _page.GoTo("https://localhost:7155/");
-
             _page.ClickButtonByText("Ir al Punto de Venta");
-
             _page.WaitForUrlContains("/Sales");
 
             string currentUrl = _fixture.Driver.Url;

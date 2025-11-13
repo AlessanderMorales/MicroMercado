@@ -44,7 +44,7 @@ namespace MicroMercado.Presentation.Pages
                 }
 
                 SuccessMessage = $"Categoría '{result.Name}' creada correctamente.";
-                return RedirectToPage("/Category");
+                return RedirectToPage("/CategoryPage");
             }
             catch (Exception ex)
             {

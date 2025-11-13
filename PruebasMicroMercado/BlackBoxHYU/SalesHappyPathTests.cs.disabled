@@ -1,0 +1,256 @@
+using OpenQA.Selenium;
+using Xunit;
+using PruebasMicroMercado.BlackBoxTests;
+
+namespace PruebasMicroMercado.BlackBoxHYU
+{
+    /// Pruebas Happy Path para el proceso completo de Ventas
+    /// Solo casos exitosos - flujo ideal sin errores
+    [Collection("SeleniumTests")]
+    public class SalesHappyPathTests
+    {
+        private readonly WebDriverFixture _fixture;
+        private readonly HappyPathHelpers _helper;
+        private const string BASE_URL = "https://localhost:7155";
+
+        public SalesHappyPathTests(WebDriverFixture fixture)
+        {
+            _fixture = fixture;
+            _helper = new HappyPathHelpers(_fixture.Driver);
+        }
+
+        [Fact(DisplayName = "HYU-S01: Complete Sale With Cash Payment - Happy Path")]
+        public void CompleteSaleWithCash_HappyPath()
+        {
+            _helper.GoTo($"{BASE_URL}/Sales");
+
+            // === PASO 1: Buscar y agregar cliente ===
+            _helper.SetClientByTaxDocument("9404687"); // Cliente existente en BD
+
+            // === PASO 2: Agregar productos al carrito ===
+            _helper.SearchAndAddProduct("Yogurt");
+            _helper.SearchAndAddProduct("Leche");
+
+            // Verificar que hay productos en el carrito
+            decimal total = _helper.GetTotal();
+            Assert.True(total > 0, "El total debe ser mayor a 0 después de agregar productos");
+
+            // === PASO 3: Completar la venta con efectivo ===
+            decimal cashReceived = total + 50; // Dar más efectivo del total
+            _helper.CompleteSale(paymentType: 1, cashReceived: cashReceived);
+
+            // Verificar que la venta se completó (redirige a Sales)
+            _helper.WaitForUrlContains("/Sales");
+            Assert.Contains("/Sales", _fixture.Driver.Url);
+        }
+
+        [Fact(DisplayName = "HYU-S02: Complete Sale With QR Payment - Happy Path")]
+        public void CompleteSaleWithQR_HappyPath()
+        {
+            _helper.GoTo($"{BASE_URL}/Sales");
+
+            // Buscar y agregar cliente
+            _helper.SetClientByTaxDocument("9404687");
+
+            // Agregar productos
+            _helper.SearchAndAddProduct("Mantequilla");
+
+            decimal total = _helper.GetTotal();
+            Assert.True(total > 0, "El total debe ser mayor a 0");
+
+            // Completar venta con QR
+            _helper.CompleteSale(paymentType: 2, cashReceived: total);
+
+            _helper.WaitForUrlContains("/Sales");
+            Assert.Contains("/Sales", _fixture.Driver.Url);
+        }
+
+        [Fact(DisplayName = "HYU-S03: Complete Sale With Card Payment - Happy Path")]
+        public void CompleteSaleWithCard_HappyPath()
+        {
+            _helper.GoTo($"{BASE_URL}/Sales");
+
+            // Buscar y agregar cliente
+            _helper.SetClientByTaxDocument("9404687");
+
+            // Agregar productos
+            _helper.SearchAndAddProduct("Arroz");
+            _helper.SearchAndAddProduct("Fideo");
+
+            decimal total = _helper.GetTotal();
+            Assert.True(total > 0, "El total debe ser mayor a 0");
+
+            // Completar venta con tarjeta
+            _helper.CompleteSale(paymentType: 3, cashReceived: total);
+
+            _helper.WaitForUrlContains("/Sales");
+            Assert.Contains("/Sales", _fixture.Driver.Url);
+        }
+
+        [Fact(DisplayName = "HYU-S04: Complete Sale With Multiple Products - Happy Path")]
+        public void CompleteSaleWithMultipleProducts_HappyPath()
+        {
+            _helper.GoTo($"{BASE_URL}/Sales");
+
+            // Cliente
+            _helper.SetClientByTaxDocument("9404687");
+
+            // Agregar múltiples productos
+            string[] products = { "Yogurt", "Leche", "Mantequilla", "Arroz", "Fideo" };
+            foreach (var product in products)
+                _helper.SearchAndAddProduct(product);
+
+            decimal total = _helper.GetTotal();
+            Assert.True(total > 0, "El total debe ser mayor a 0");
+
+            // Completar venta
+            _helper.CompleteSale(paymentType: 1, cashReceived: total + 100);
+
+            _helper.WaitForUrlContains("/Sales");
+            Assert.Contains("/Sales", _fixture.Driver.Url);
+        }
+
+        [Fact(DisplayName = "HYU-S05: Complete Sale With Exact Cash Amount - Happy Path")]
+        public void CompleteSaleWithExactCash_HappyPath()
+        {
+            _helper.GoTo($"{BASE_URL}/Sales");
+
+            // Cliente
+            _helper.SetClientByTaxDocument("9404687");
+
+            // Agregar producto
+            _helper.SearchAndAddProduct("Yogurt");
+
+            decimal total = _helper.GetTotal();
+            Assert.True(total > 0, "El total debe ser mayor a 0");
+
+            // Pagar con el monto exacto
+            _helper.CompleteSale(paymentType: 1, cashReceived: total);
+
+            _helper.WaitForUrlContains("/Sales");
+            Assert.Contains("/Sales", _fixture.Driver.Url);
+        }
+
+        [Fact(DisplayName = "HYU-S06: Complete Multiple Sales Consecutively - Happy Path")]
+        public void CompleteMultipleSales_HappyPath()
+        {
+            int salesCount = 3;
+            string[] products = { "Yogurt", "Leche", "Mantequilla" };
+
+            for (int i = 0; i < salesCount; i++)
+            {
+                _helper.GoTo($"{BASE_URL}/Sales");
+
+                // Cliente
+                _helper.SetClientByTaxDocument("9404687");
+
+                // Producto diferente en cada venta
+                _helper.SearchAndAddProduct(products[i]);
+
+                decimal total = _helper.GetTotal();
+                Assert.True(total > 0, $"El total de la venta {i + 1} debe ser mayor a 0");
+
+                // Completar venta
+                _helper.CompleteSale(paymentType: 1, cashReceived: total + 10);
+
+                _helper.WaitForUrlContains("/Sales");
+                Assert.Contains("/Sales", _fixture.Driver.Url);
+            }
+        }
+
+        [Fact(DisplayName = "HYU-S07: Sale With Same Product Multiple Times - Happy Path")]
+        public void SaleWithSameProductMultipleTimes_HappyPath()
+        {
+            _helper.GoTo($"{BASE_URL}/Sales");
+
+            // Cliente
+            _helper.SetClientByTaxDocument("9404687");
+
+            // Agregar el mismo producto varias veces
+            _helper.SearchAndAddProduct("Yogurt");
+            _helper.SearchAndAddProduct("Yogurt");
+            _helper.SearchAndAddProduct("Yogurt");
+
+            decimal total = _helper.GetTotal();
+            Assert.True(total > 0, "El total debe ser mayor a 0");
+
+            // Completar venta
+            _helper.CompleteSale(paymentType: 1, cashReceived: total + 50);
+
+            _helper.WaitForUrlContains("/Sales");
+            Assert.Contains("/Sales", _fixture.Driver.Url);
+        }
+
+        [Fact(DisplayName = "HYU-S08: Complete Sale With All Payment Types - Happy Path")]
+        public void CompleteSaleWithAllPaymentTypes_HappyPath()
+        {
+            var paymentTypes = new[] { (1, "Efectivo"), (2, "QR"), (3, "Tarjeta") };
+
+            foreach (var (paymentType, paymentName) in paymentTypes)
+            {
+                _helper.GoTo($"{BASE_URL}/Sales");
+
+                // Cliente
+                _helper.SetClientByTaxDocument("9404687");
+
+                // Producto
+                _helper.SearchAndAddProduct("Yogurt");
+
+                decimal total = _helper.GetTotal();
+                Assert.True(total > 0, $"El total para pago {paymentName} debe ser mayor a 0");
+
+                // Completar venta con tipo de pago específico
+                _helper.CompleteSale(paymentType: paymentType, cashReceived: total + 20);
+
+                _helper.WaitForUrlContains("/Sales");
+                Assert.Contains("/Sales", _fixture.Driver.Url);
+            }
+        }
+
+        [Fact(DisplayName = "HYU-S09: Sale With High Value Products - Happy Path")]
+        public void SaleWithHighValueProducts_HappyPath()
+        {
+            _helper.GoTo($"{BASE_URL}/Sales");
+
+            // Cliente
+            _helper.SetClientByTaxDocument("9404687");
+
+            // Agregar productos de alto valor
+            string[] highValueProducts = { "Tender", "Langostinos", "Chunchulines" };
+            foreach (var product in highValueProducts)
+                _helper.SearchAndAddProduct(product);
+
+            decimal total = _helper.GetTotal();
+            Assert.True(total > 100, "El total debe ser mayor a 100 (productos de alto valor)");
+
+            // Completar venta
+            _helper.CompleteSale(paymentType: 3, cashReceived: total);
+
+            _helper.WaitForUrlContains("/Sales");
+            Assert.Contains("/Sales", _fixture.Driver.Url);
+        }
+
+        [Fact(DisplayName = "HYU-S10: Sale With Mixed Category Products - Happy Path")]
+        public void SaleWithMixedCategoryProducts_HappyPath()
+        {
+            _helper.GoTo($"{BASE_URL}/Sales");
+
+            // Cliente
+            _helper.SetClientByTaxDocument("9404687");
+
+            // Productos de diferentes categorías
+            string[] mixedProducts = { "Yogurt", "Manzana", "Detergente", "Arroz" };
+            foreach (var product in mixedProducts)
+                _helper.SearchAndAddProduct(product);
+
+            decimal total = _helper.GetTotal();
+            Assert.True(total > 0, "El total debe ser mayor a 0");
+
+            // Completar venta
+            _helper.CompleteSale(paymentType: 1, cashReceived: total + 100);
+
+            _helper.WaitForUrlContains("/Sales");
+            Assert.Contains("/Sales", _fixture.Driver.Url);
+        }
+    }
+}

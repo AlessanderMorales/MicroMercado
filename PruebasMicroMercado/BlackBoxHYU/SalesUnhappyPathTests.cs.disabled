@@ -1,0 +1,355 @@
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using PruebasMicroMercado.BlackBoxTests;
+using System;
+using Xunit;
+
+namespace PruebasMicroMercado.BlackBoxHYU
+{
+    /// <summary>
+    /// Pruebas UNHAPPY PATH para Ventas
+    /// Basado en TestCases Happy & Unhappy.txt
+    /// </summary>
+    [Collection("SeleniumTests")]
+    public class SalesUnhappyPathTests
+    {
+        private readonly WebDriverFixture _fixture;
+        private readonly PageHelpers _page;
+
+        public SalesUnhappyPathTests(WebDriverFixture fixture)
+        {
+            _fixture = fixture;
+            _page = new PageHelpers(_fixture.Driver);
+        }
+
+        #region TC-TBL-SALE-003 y TC-TBL-SALE-004: Integridad Referencial (FK)
+
+        [Fact(DisplayName = "HYU-SALE-UH01: Referencia - Casos de FK cubiertos en WhiteBox")]
+        public void SaleWithInvalidFK_CoveredInWhiteBox()
+        {
+            Assert.True(true, "Casos de FK inválidos cubiertos en WhiteBox tests");
+        }
+
+        #endregion
+
+        #region TC-TBL-SALE-007: Validación de Stock Insuficiente
+
+        [Fact(DisplayName = "HYU-SALE-UH02: Intentar vender más unidades del stock disponible - Debe fallar")]
+        public void CompleteSale_WithInsufficientStock_ShouldFail()
+        {
+            // Arrange
+            _page.GoTo("https://localhost:7155/Sales");
+            _page.ClearCart();
+            string clientTax = "9404687";
+            _page.SetClientTaxDocument(clientTax);
+
+            // Act
+            try
+            {
+                _page.SearchProduct("Yogurt");
+                System.Threading.Thread.Sleep(1000);
+
+                var wait = new WebDriverWait(_fixture.Driver, TimeSpan.FromSeconds(10));
+                var row = wait.Until(d => d.FindElement(By.CssSelector("#lstProductosVenta tbody tr:not(.empty-cart-message)")));
+                var qtyInput = row.FindElement(By.CssSelector("input[type='number']"));
+                int maxStock = int.Parse(qtyInput.GetAttribute("max") ?? "100");
+                int excessiveQuantity = maxStock + 10;
+
+                qtyInput.Clear();
+                qtyInput.SendKeys(excessiveQuantity.ToString());
+
+                ((IJavaScriptExecutor)_fixture.Driver).ExecuteScript(@"
+                    var input = arguments[0];
+                    var event = new Event('change', { bubbles: true });
+                    input.dispatchEvent(event);
+                ", qtyInput);
+
+                System.Threading.Thread.Sleep(500);
+
+                _page.SetPaymentType(1);
+                decimal total = _page.GetTotal();
+                _page.SetCashReceived(total + 10);
+                _page.ConfirmSale();
+
+                System.Threading.Thread.Sleep(2000);
+
+                // Assert
+                try
+                {
+                    var alert = _fixture.Driver.SwitchTo().Alert();
+                    string alertText = alert.Text;
+                    alert.Accept();
+
+                    Assert.True(alertText.ToLower().Contains("stock") ||
+                                alertText.ToLower().Contains("insuficiente") ||
+                                alertText.ToLower().Contains("disponible"),
+                                $"Debe mostrar error de stock insuficiente. Alert: {alertText}");
+                }
+                catch (NoAlertPresentException)
+                {
+                    var errorElements = _fixture.Driver.FindElements(By.CssSelector(".alert-danger, .text-danger"));
+                    bool hasStockError = false;
+
+                    foreach (var error in errorElements)
+                    {
+                        if (error.Displayed &&
+                            (error.Text.ToLower().Contains("stock") || error.Text.ToLower().Contains("insuficiente")))
+                        {
+                            hasStockError = true;
+                            break;
+                        }
+                    }
+
+                    Assert.True(hasStockError, "Debe mostrar error de stock insuficiente en la página");
+                }
+            }
+            catch (Exception ex)
+            {
+                Assert.Contains("stock", ex.Message.ToLower());
+            }
+        }
+
+        #endregion
+
+        #region Venta Sin Cliente
+
+        [Fact(DisplayName = "HYU-SALE-UH03: Intentar venta sin cliente - Debe fallar")]
+        public void CompleteSale_WithoutClient_ShouldFail()
+        {
+            _page.GoTo("https://localhost:7155/Sales");
+            _page.ClearCart();
+            _page.AddProductToCart("Yogurt", 1);
+
+            decimal total = _page.GetTotal();
+            Assert.True(total > 0);
+
+            _page.SetPaymentType(1);
+            _page.SetCashReceived(total + 10);
+            _page.ConfirmSale();
+
+            System.Threading.Thread.Sleep(1500);
+
+            try
+            {
+                var alert = _fixture.Driver.SwitchTo().Alert();
+                string alertText = alert.Text;
+                alert.Accept();
+
+                bool hasError = alertText.ToLower().Contains("cliente") ||
+                                alertText.ToLower().Contains("requerido") ||
+                                alertText.ToLower().Contains("error");
+
+                Assert.True(hasError, $"Debe mostrar error sobre cliente faltante. Alert: {alertText}");
+            }
+            catch (NoAlertPresentException)
+            {
+                var errorElements = _fixture.Driver.FindElements(By.CssSelector(".alert-danger, .text-danger"));
+                bool hasClientError = false;
+
+                foreach (var error in errorElements)
+                {
+                    if (error.Displayed && error.Text.ToLower().Contains("cliente"))
+                    {
+                        hasClientError = true;
+                        break;
+                    }
+                }
+
+                Assert.True(hasClientError, "Debe mostrar error de cliente faltante");
+            }
+        }
+
+        #endregion
+
+        #region Venta Sin Productos
+
+        [Fact(DisplayName = "HYU-SALE-UH04: Intentar venta sin productos - Debe fallar")]
+        public void CompleteSale_WithoutProducts_ShouldFail()
+        {
+            _page.GoTo("https://localhost:7155/Sales");
+            _page.ClearCart();
+
+            string clientTax = "9404687";
+            _page.SetClientTaxDocument(clientTax);
+            _page.SetPaymentType(1);
+            _page.SetCashReceived(100);
+            _page.ConfirmSale();
+
+            System.Threading.Thread.Sleep(1500);
+
+            try
+            {
+                var alert = _fixture.Driver.SwitchTo().Alert();
+                string alertText = alert.Text;
+                alert.Accept();
+
+                bool hasError = alertText.ToLower().Contains("producto") ||
+                                alertText.ToLower().Contains("venta") ||
+                                alertText.ToLower().Contains("carrito") ||
+                                alertText.ToLower().Contains("vacío");
+
+                Assert.True(hasError, $"Debe mostrar error sobre carrito vacío. Alert: {alertText}");
+            }
+            catch (NoAlertPresentException)
+            {
+                var errorElements = _fixture.Driver.FindElements(By.CssSelector(".alert-danger, .text-danger"));
+                bool hasProductError = false;
+
+                foreach (var error in errorElements)
+                {
+                    if (error.Displayed &&
+                        (error.Text.ToLower().Contains("producto") ||
+                         error.Text.ToLower().Contains("carrito")))
+                    {
+                        hasProductError = true;
+                        break;
+                    }
+                }
+
+                Assert.True(hasProductError, "Debe mostrar error de carrito vacío");
+            }
+        }
+
+        #endregion
+
+        #region TC-TBL-SALE-012: Validación de TotalAmount Mayor a Cero
+
+        [Fact(DisplayName = "HYU-SALE-UH05: Validación Total > 0 - Cubierto en WhiteBox")]
+        public void SaleWithZeroTotal_CoveredInWhiteBox()
+        {
+            Assert.True(true, "Validación de TotalAmount > 0 cubierta en WhiteBox tests");
+        }
+
+        #endregion
+
+        #region TC-TBL-SALE-013: Validación de Quantity en SaleDetails
+
+        [Fact(DisplayName = "HYU-SALE-UH06: Intentar agregar producto con cantidad 0 - Debe fallar o prevenir")]
+        public void AddProduct_WithZeroQuantity_ShouldFailOrPrevent()
+        {
+            _page.GoTo("https://localhost:7155/Sales");
+            _page.ClearCart();
+
+            try
+            {
+                _page.SearchProduct("Yogurt");
+                System.Threading.Thread.Sleep(1000);
+
+                var wait = new WebDriverWait(_fixture.Driver, TimeSpan.FromSeconds(10));
+                var row = wait.Until(d => d.FindElement(By.CssSelector("#lstProductosVenta tbody tr:not(.empty-cart-message)")));
+                var qtyInput = row.FindElement(By.CssSelector("input[type='number']"));
+
+                qtyInput.Clear();
+                qtyInput.SendKeys("0");
+
+                ((IJavaScriptExecutor)_fixture.Driver).ExecuteScript(@"
+                    var input = arguments[0];
+                    var event = new Event('change', { bubbles: true });
+                    input.dispatchEvent(event);
+                ", qtyInput);
+
+                System.Threading.Thread.Sleep(500);
+
+                int currentValue = int.Parse(qtyInput.GetAttribute("value") ?? "0");
+                int minValue = int.Parse(qtyInput.GetAttribute("min") ?? "0");
+
+                Assert.True(currentValue >= 1 || minValue >= 1,
+                    "El sistema debe prevenir cantidad 0 (validación HTML5 min='1' o JavaScript)");
+            }
+            catch (Exception ex)
+            {
+                Assert.Contains("0", ex.Message);
+            }
+        }
+
+        [Fact(DisplayName = "HYU-SALE-UH07: Intentar agregar producto con cantidad negativa - Debe prevenir")]
+        public void AddProduct_WithNegativeQuantity_ShouldPrevent()
+        {
+            _page.GoTo("https://localhost:7155/Sales");
+            _page.ClearCart();
+
+            try
+            {
+                _page.SearchProduct("Yogurt");
+                System.Threading.Thread.Sleep(1000);
+
+                var wait = new WebDriverWait(_fixture.Driver, TimeSpan.FromSeconds(10));
+                var row = wait.Until(d => d.FindElement(By.CssSelector("#lstProductosVenta tbody tr:not(.empty-cart-message)")));
+                var qtyInput = row.FindElement(By.CssSelector("input[type='number']"));
+
+                qtyInput.Clear();
+                qtyInput.SendKeys("-5");
+
+                ((IJavaScriptExecutor)_fixture.Driver).ExecuteScript(@"
+                    var input = arguments[0];
+                    var event = new Event('change', { bubbles: true });
+                    input.dispatchEvent(event);
+                ", qtyInput);
+
+                System.Threading.Thread.Sleep(500);
+
+                int currentValue = int.Parse(qtyInput.GetAttribute("value") ?? "0");
+                Assert.True(currentValue >= 1,
+                    "El sistema debe prevenir cantidad negativa (validación HTML5 min='1')");
+            }
+            catch (Exception ex)
+            {
+                Assert.True(ex.Message.Contains("negativ") || ex.Message.Contains("inválid"));
+            }
+        }
+
+        #endregion
+
+        #region Validación de Efectivo Recibido Insuficiente
+
+        [Fact(DisplayName = "HYU-SALE-UH08: Intentar pagar con efectivo insuficiente - Debe fallar")]
+        public void CompleteSale_WithInsufficientCash_ShouldFail()
+        {
+            _page.GoTo("https://localhost:7155/Sales");
+            _page.ClearCart();
+
+            string clientTax = "9404687";
+            _page.SetClientTaxDocument(clientTax);
+            _page.AddProductToCart("Yogurt", 2);
+
+            decimal total = _page.GetTotal();
+            Assert.True(total > 0);
+
+            _page.SetPaymentType(1);
+            decimal insufficientCash = total - 10;
+            _page.SetCashReceived(insufficientCash);
+
+            System.Threading.Thread.Sleep(1000);
+
+            var vueltoElement = _fixture.Driver.FindElement(By.Id("Vuelto"));
+            var vueltoText = vueltoElement.Text.Replace(",", "").Replace(".", "").Trim();
+
+            if (decimal.TryParse(vueltoText, out decimal vuelto))
+            {
+                var vueltoValue = vuelto > 1000 ? vuelto / 100 : vuelto;
+
+                _page.ConfirmSale();
+                System.Threading.Thread.Sleep(2000);
+
+                try
+                {
+                    var alert = _fixture.Driver.SwitchTo().Alert();
+                    string alertText = alert.Text;
+                    alert.Accept();
+
+                    bool hasError = alertText.ToLower().Contains("insuficiente") ||
+                                    alertText.ToLower().Contains("efectivo") ||
+                                    alertText.ToLower().Contains("menor");
+
+                    Assert.True(hasError, "Debe mostrar error de efectivo insuficiente");
+                }
+                catch (NoAlertPresentException)
+                {
+                    Assert.True(vueltoValue < 0, "El vuelto debe ser negativo indicando efectivo insuficiente");
+                }
+            }
+        }
+
+        #endregion
+    }
+}

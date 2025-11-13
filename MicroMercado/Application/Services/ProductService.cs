@@ -299,20 +299,28 @@ namespace MicroMercado.Application.Services
 
         public async Task<bool> DeleteProductAsync(short id)
         {
-            var productToDelete = await _context.Products.FindAsync(id);
-            if (productToDelete == null)
+            try
             {
-                _logger.LogWarning("Product {ProductId} not found", id);
-                return false;
+                var productToDelete = await _context.Products.FindAsync(id);
+                if (productToDelete == null)
+                {
+                    _logger.LogWarning("Product {ProductId} not found", id);
+                    return false;
+                }
+                
+                // ✅ HARD DELETE - Eliminación física de la base de datos
+                _context.Products.Remove(productToDelete);
+                await _context.SaveChangesAsync();
+                
+                _logger.LogInformation("Product {ProductId} permanently deleted: {ProductName}", 
+                    id, productToDelete.Name);
+                return true;
             }
-            
-            productToDelete.Status = 0;
-            _context.Products.Update(productToDelete);
-            await _context.SaveChangesAsync();
-            
-            _logger.LogInformation("Product {ProductId} deleted (soft delete): {ProductName}", 
-                id, productToDelete.Name);
-            return true;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting product {ProductId}", id);
+                throw;
+            }
         }
     }
 }

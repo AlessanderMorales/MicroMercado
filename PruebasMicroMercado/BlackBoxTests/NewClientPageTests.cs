@@ -23,7 +23,7 @@ namespace PruebasMicroMercado.BlackBoxTests
             string businessName = "Cliente de Prueba";
             var rnd = new System.Random();
             string taxDocument = (10000000 + rnd.Next(0, 89999999)).ToString();
-            string email = $"test+{rnd.Next(1000,9999)}@example.com";
+            string email = $"test+{rnd.Next(1000, 9999)}@example.com";
 
             _page.SetInputValue("NewClient_BusinessName", businessName);
             _page.SetInputValue("NewClient_Email", email);
@@ -49,7 +49,6 @@ namespace PruebasMicroMercado.BlackBoxTests
         public void CreateNewClient_ValidationFails()
         {
             _page.GoTo("https://localhost:7155/NewClient");
-
             _page.ClickButtonByText("Guardar Cliente");
 
             string errorBusinessName = _page.GetValidationMessage("NewClient_BusinessName");

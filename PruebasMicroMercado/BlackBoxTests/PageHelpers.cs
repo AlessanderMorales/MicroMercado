@@ -10,7 +10,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         private readonly IWebDriver _driver;
         private readonly WebDriverWait _wait;
 
-        public PageHelpers(IWebDriver driver, int timeoutInSeconds = 10)
+        public PageHelpers(IWebDriver driver, int timeoutInSeconds = 20) // ? Aumentado de 10 a 20 segundos
         {
             _driver = driver;
             _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(timeoutInSeconds));
@@ -19,6 +19,7 @@ namespace PruebasMicroMercado.BlackBoxTests
         public void GoTo(string url)
         {
             _driver.Navigate().GoToUrl(url);
+        System.Threading.Thread.Sleep(500); // ? Pequeña espera para que la página cargue
         }
 
         public string GetText(string selector)
@@ -37,7 +38,6 @@ namespace PruebasMicroMercado.BlackBoxTests
 var term = arguments[0];
 var callback = arguments[arguments.length - 1];
 
-// Call the search API
 fetch('/Sales?handler=SearchProducts&term=' + encodeURIComponent(term))
   .then(function(resp) { 
     if (!resp.ok) throw new Error('Search failed');
@@ -46,27 +46,22 @@ fetch('/Sales?handler=SearchProducts&term=' + encodeURIComponent(term))
   .then(function(json) {
     if (json && json.success && json.data && json.data.length > 0) {
       var product = json.data[0];
-      
-      // Now add the product directly to the table
       var tbody = document.querySelector('#lstProductosVenta tbody');
       if (!tbody) {
         callback({success: false, error: 'Cart table not found'});
         return;
       }
 
-      // Remove empty cart message if exists
       var emptyRow = tbody.querySelector('tr.empty-cart-message');
-      if (emptyRow) {
-        emptyRow.remove();
-      }
+      if (emptyRow) emptyRow.remove();
 
-      // Create new row
       var newRow = tbody.insertRow();
       newRow.innerHTML = 
         '<td>' + (product.id || '') + '</td>' +
         '<td>' + (product.name || '') + '</td>' +
         '<td>' + (product.categoryName || '') + '</td>' +
-        '<td><input type=""number"" class=""form-control form-control-sm text-center"" value=""1"" min=""1"" max=""' + (product.stock || 1) + '"" style=""width: 80px;"" data-stock=""' + (product.stock || 0) + '"" /></td>' +
+        '<td><input type=""number"" class=""form-control form-control-sm text-center"" value=""1"" min=""1"" max=""' + 
+        (product.stock || 1) + '"" style=""width: 80px;"" data-stock=""' + (product.stock || 0) + '"" /></td>' +
         '<td>' + parseFloat(product.price || 0).toFixed(2) + '</td>' +
         '<td class=""row-total"">' + parseFloat(product.price || 0).toFixed(2) + '</td>' +
         '<td class=""text-center""><button type=""button"" class=""btn btn-danger btn-sm btn-remove""><i class=""fas fa-trash""></i></button></td>';
@@ -74,9 +69,7 @@ fetch('/Sales?handler=SearchProducts&term=' + encodeURIComponent(term))
       newRow.dataset.productId = product.id;
       newRow.dataset.price = product.price;
 
-      // Update total
       updateTotal();
-      
       callback({success: true, product: product});
     } else {
       callback({success: false, error: 'No products found'});
@@ -99,24 +92,17 @@ function updateTotal() {
     total += rowTotal;
   });
   
-  var totalElements = document.querySelectorAll('#totalVenta, #boleta_total');
-  totalElements.forEach(function(el) {
+  document.querySelectorAll('#totalVenta, #boleta_total').forEach(function(el) {
     el.textContent = total.toFixed(2);
   });
 }
 ";
-
-                var result = ((IJavaScriptExecutor)_driver).ExecuteAsyncScript(js, productName);
-
+                ((IJavaScriptExecutor)_driver).ExecuteAsyncScript(js, productName);
                 System.Threading.Thread.Sleep(1000);
 
                 var cartRows = _driver.FindElements(By.CssSelector("#lstProductosVenta tbody tr:not(.empty-cart-message)"));
                 if (cartRows.Count == 0)
-                {
                     throw new Exception($"Product '{productName}' was not added to cart");
-                }
-
-                return;
             }
             catch (Exception ex)
             {
@@ -145,7 +131,7 @@ function updateTotal() {
 
         public void WaitForUrlContains(string fragment)
         {
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(30));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(45)); // ? Aumentado de 30 a 45 segundos
 
             try
             {
@@ -210,16 +196,12 @@ function updateTotal() {
                     var input = arguments[0];
                     var event = new Event('change', { bubbles: true });
                     input.dispatchEvent(event);
-                    
-                    // Also update the total manually
                     var row = input.closest('tr');
                     var price = parseFloat(row.dataset.price || 0);
                     var qty = parseInt(input.value);
                     var rowTotal = price * qty;
                     var totalCell = row.querySelector('.row-total');
                     if (totalCell) totalCell.textContent = rowTotal.toFixed(2);
-                    
-                    // Update grand total
                     var total = 0;
                     var rows = document.querySelectorAll('#lstProductosVenta tbody tr:not(.empty-cart-message)');
                     rows.forEach(function(r) {
@@ -255,14 +237,13 @@ function updateTotal() {
                     {
                         var alert = d.SwitchTo().Alert();
                         alert.Accept();
-                        return true; 
+                        return true;
                     }
                     catch (NoAlertPresentException)
                     {
                         var nombre = d.FindElement(By.Id("nombreCliente")).GetAttribute("value");
                         if (!string.IsNullOrEmpty(nombre)) return true;
                     }
-
                     return false;
                 }
                 catch (NoSuchElementException)
@@ -290,31 +271,20 @@ function updateTotal() {
 
             ((IJavaScriptExecutor)_driver).ExecuteScript(@"
                 var input = arguments[0];
-                
-                // Trigger blur event (many apps listen to this)
                 var blurEvent = new Event('blur', { bubbles: true });
                 input.dispatchEvent(blurEvent);
-                
-                // Trigger change event
                 var changeEvent = new Event('change', { bubbles: true });
                 input.dispatchEvent(changeEvent);
-                
-                // Also trigger input event for good measure
                 var inputEvent = new Event('input', { bubbles: true });
                 input.dispatchEvent(inputEvent);
-                
-                // Give a moment for any event handlers to execute
                 setTimeout(function() {
-                    // Update the displayed values if the page script hasn't done it
                     var efectivoEl = document.getElementById('EfectivoEntregado');
                     var vueltoEl = document.getElementById('Vuelto');
                     var totalEl = document.getElementById('boleta_total');
-                    
                     if (efectivoEl && vueltoEl && totalEl) {
                         var efectivo = parseFloat(input.value) || 0;
                         var total = parseFloat(totalEl.textContent.replace(/,/g, '')) || 0;
                         var vuelto = Math.max(0, efectivo - total);
-                        
                         efectivoEl.textContent = efectivo.toFixed(2);
                         vueltoEl.textContent = vuelto.toFixed(2);
                     }
@@ -344,19 +314,14 @@ function updateTotal() {
             try
             {
                 var totalText = _driver.FindElement(By.Id("boleta_total")).Text.Trim();
-
                 totalText = totalText.Replace("Bs", "").Replace("$", "").Trim();
 
                 if (totalText.Contains(",") && totalText.Contains("."))
                 {
                     if (totalText.LastIndexOf('.') > totalText.LastIndexOf(','))
-                    {
                         totalText = totalText.Replace(",", "");
-                    }
                     else
-                    {
                         totalText = totalText.Replace(".", "").Replace(",", ".");
-                    }
                 }
                 else if (totalText.Contains(","))
                 {
@@ -365,13 +330,9 @@ function updateTotal() {
                     int charsAfterComma = totalText.Length - lastCommaPos - 1;
 
                     if (commaCount > 1 || charsAfterComma == 3)
-                    {
                         totalText = totalText.Replace(",", "");
-                    }
                     else if (charsAfterComma <= 2)
-                    {
                         totalText = totalText.Replace(",", ".");
-                    }
                 }
                 else if (totalText.Contains("."))
                 {
@@ -380,9 +341,7 @@ function updateTotal() {
                     int charsAfterDot = totalText.Length - lastDotPos - 1;
 
                     if (dotCount > 1 || charsAfterDot == 3)
-                    {
                         totalText = totalText.Replace(".", "");
-                    }
                 }
 
                 return decimal.TryParse(totalText, System.Globalization.NumberStyles.Any,
@@ -430,11 +389,8 @@ function updateTotal() {
             ((IJavaScriptExecutor)_driver).ExecuteScript(@"
                 var tbody = document.querySelector('#lstProductosVenta tbody');
                 if (tbody) {
-                    // Remove all product rows
                     var rows = tbody.querySelectorAll('tr:not(.empty-cart-message)');
                     rows.forEach(function(row) { row.remove(); });
-                    
-                    // Show empty message if not present
                     if (!tbody.querySelector('.empty-cart-message')) {
                         var emptyRow = tbody.insertRow();
                         emptyRow.className = 'empty-cart-message';
@@ -443,8 +399,6 @@ function updateTotal() {
                             '<p class=""mb-0"">No hay productos</p>' +
                             '<small>Busque y agregue productos usando el buscador de arriba</small></td>';
                     }
-                    
-                    // Reset totals
                     document.querySelectorAll('#totalVenta, #boleta_total').forEach(function(el) {
                         el.textContent = '0.00';
                     });

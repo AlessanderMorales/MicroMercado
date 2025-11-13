@@ -175,19 +175,28 @@ namespace MicroMercado.Application.Services
 
         public async Task<bool> DeleteClientAsync(int id)
         {
-            var clientToMarkAsInactive = await _context.Clients.FindAsync(id);
-            if (clientToMarkAsInactive == null)
+            try
             {
-                _logger.LogWarning("Attempted to logically delete client with ID {ClientId}, but client was not found.", id);
-                return false;
+                var clientToDelete = await _context.Clients.FindAsync(id);
+                if (clientToDelete == null)
+                {
+                    _logger.LogWarning("Attempted to delete client with ID {ClientId}, but client was not found.", id);
+                    return false;
+                }
+
+                // ✅ HARD DELETE - Eliminación física de la base de datos
+                _context.Clients.Remove(clientToDelete);
+                await _context.SaveChangesAsync();
+                
+                _logger.LogInformation("Client with ID {ClientId} permanently deleted: {BusinessName}", 
+                    id, clientToDelete.BusinessName);
+                return true;
             }
-
-            clientToMarkAsInactive.Status = 0;
-            clientToMarkAsInactive.LastUpdate = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified); 
-
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("Client with ID {ClientId} logically deleted (Status set to 0).", id);
-            return true;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting client {ClientId}", id);
+                throw;
+            }
         }
     }
 }

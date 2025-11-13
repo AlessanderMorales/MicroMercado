@@ -2,7 +2,6 @@ using FluentValidation;
 using MicroMercado.Application.DTOs.Product;
 using MicroMercado.Application.Services;
 using MicroMercado.Domain.Models;
-using MicroMercado.Domain.Models;
 using MicroMercado.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -25,7 +24,6 @@ namespace PruebasMicroMercado.BlackBoxTests
 
         public ProductServiceTests()
         {
-            // Setup in-memory database
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
@@ -35,7 +33,6 @@ namespace PruebasMicroMercado.BlackBoxTests
             _createValidatorMock = new Mock<IValidator<CreateProductDTO>>();
             _updateValidatorMock = new Mock<IValidator<UpdateProductDTO>>();
 
-            // Setup validators to always return valid by default
             _createValidatorMock
                 .Setup(v => v.ValidateAsync(It.IsAny<CreateProductDTO>(), default))
                 .ReturnsAsync(new FluentValidation.Results.ValidationResult());
@@ -51,7 +48,6 @@ namespace PruebasMicroMercado.BlackBoxTests
                 _updateValidatorMock.Object
             );
 
-            // Seed test data
             SeedTestData();
         }
 

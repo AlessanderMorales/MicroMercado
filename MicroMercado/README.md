@@ -33,3 +33,11 @@ dotnet ef database update
 ```bash
 dotnet run
 ```
+### 6. Ejecutar bd de pruebas en entorno Staging
+```bash
+dotnet run --launch-profile "MicroMercado-Staging"
+```
+### 7. Ejecutar pruebas de black box con selenium
+```bash
+dotnet test --filter "FullyQualifiedName~BlackBoxTestsHYU" --logger "console;verbosity=detailed"
+```

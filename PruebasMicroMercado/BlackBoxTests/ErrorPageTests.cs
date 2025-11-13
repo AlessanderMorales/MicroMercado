@@ -9,7 +9,10 @@ namespace PruebasMicroMercado.BlackBoxTests
     {
         private readonly WebDriverFixture _fixture;
 
-        public ErrorPageTests(WebDriverFixture fixture) => _fixture = fixture;
+        public ErrorPageTests(WebDriverFixture fixture)
+        {
+            _fixture = fixture;
+        }
 
         [Fact]
         public void ErrorPage_ShowsRequestIdAndMessage()

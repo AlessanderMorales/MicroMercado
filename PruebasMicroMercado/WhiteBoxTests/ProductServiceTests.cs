@@ -792,54 +792,54 @@ namespace PruebasMicroMercado.WhiteBoxTests
 
         #endregion
 
-        #region DeleteProductAsync Tests (Borrado Lógico)
+        #region DeleteProductAsync Tests (Borrado Físico / Hard Delete)
 
-        // Test: DeleteProductAsync_ShouldReturnExpectedResult_AndPerformLogicalDelete
-        // Propósito: Verifica que el borrado lógico de un producto es exitoso para un producto existente
-        //            (cambiando su Status a 0) y que falla (retornando false) para un producto inexistente.
+        // Test: DeleteProductAsync_ShouldReturnExpectedResult_AndPerformPhysicalDelete
+    // Propósito: Verifica que el borrado físico de un producto es exitoso para un producto existente
+   //        (eliminándolo permanentemente de la BD) y que falla (retornando false) para un producto inexistente.
         [Theory]
-        [InlineData(1, true)] 
-        [InlineData(999, false)] 
-        public async Task DeleteProductAsync_ShouldReturnExpectedResult_AndPerformLogicalDelete(short productId, bool expectedResult)
-        {
-            var context = GetInMemoryDbContext();
-            await SeedTestData(context);
-            var logger = GetMockLogger();
-            var validators = GetMockValidators();
+        [InlineData(1, true)] // Producto existente -> eliminado físicamente
+        [InlineData(999, false)] // Producto inexistente -> retorna false
+        public async Task DeleteProductAsync_ShouldReturnExpectedResult_AndPerformPhysicalDelete(short productId, bool expectedResult)
+      {
+   var context = GetInMemoryDbContext();
+       await SeedTestData(context);
+   var logger = GetMockLogger();
+       var validators = GetMockValidators();
             var service = new ProductService(context, logger.Object, validators.createValidator.Object, validators.updateValidator.Object);
 
-            var result = await service.DeleteProductAsync(productId);
+  var result = await service.DeleteProductAsync(productId);
 
-            Assert.Equal(expectedResult, result);
+   Assert.Equal(expectedResult, result);
 
-            if (expectedResult)
-            {
-                var productInDb = await context.Products.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.Id == productId);
-                Assert.NotNull(productInDb);
-                Assert.Equal((byte)0, productInDb.Status);
-            }
-        }
+         if (expectedResult)
+        {
+    // ✅ HARD DELETE: El producto ya NO debe existir en la BD
+          var productInDb = await context.Products.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.Id == productId);
+  Assert.Null(productInDb); // ← El producto fue eliminado físicamente
+         }
+    }
 
         // Test: DeleteProductAsync_ShouldThrowException_WhenDatabaseErrorOccurs
         // Propósito: Verifica que el método DeleteProductAsync lanza una excepción (y la registra)
-        //            cuando ocurre un error inesperado en la base de datos durante el borrado.
+        //    cuando ocurre un error inesperado en la base de datos durante el borrado.
         [Fact]
-        public async Task DeleteProductAsync_ShouldThrowException_WhenDatabaseErrorOccurs()
+   public async Task DeleteProductAsync_ShouldThrowException_WhenDatabaseErrorOccurs()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-            var context = new ApplicationDbContext(options);
-            await context.DisposeAsync();
+       .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+    .Options;
+   var context = new ApplicationDbContext(options);
+        await context.DisposeAsync();
 
             var logger = GetMockLogger();
             var validators = GetMockValidators();
             var service = new ProductService(context, logger.Object, validators.createValidator.Object, validators.updateValidator.Object);
 
-            await Assert.ThrowsAsync<ObjectDisposedException>(async () =>
-            {
-                await service.DeleteProductAsync(1);
-            });
+   await Assert.ThrowsAsync<ObjectDisposedException>(async () =>
+    {
+         await service.DeleteProductAsync(1);
+      });
         }
 
         #endregion

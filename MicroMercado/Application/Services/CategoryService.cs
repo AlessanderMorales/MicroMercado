@@ -134,18 +134,26 @@ public class CategoryService : ICategoryService
 
     public async Task<bool> DeleteCategoryAsync(byte id)
     {
-        var categoryToDelete = await _context.Categories.FindAsync(id);
-        if (categoryToDelete == null)
+        try
         {
-            _logger.LogWarning("Attempt to delete category ID {Id} but not found.", id);
+            var categoryToDelete = await _context.Categories.FindAsync(id);
+            if (categoryToDelete == null)
+        {
+                _logger.LogWarning("Attempt to delete category ID {Id} but not found.", id);
             return false;
+         }
+
+         // ✅ HARD DELETE - Eliminación física de la base de datos
+         _context.Categories.Remove(categoryToDelete);
+         await _context.SaveChangesAsync();
+        
+              _logger.LogInformation("Category with ID {Id} permanently deleted: {Name}", id, categoryToDelete.Name);
+             return true;
+            }
+         catch (Exception ex)
+            {
+         _logger.LogError(ex, "Error deleting category {CategoryId}", id);
+        throw;
+            }
         }
-
-        categoryToDelete.Status = 0;
-        categoryToDelete.LastUpdate = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
-
-        await _context.SaveChangesAsync();
-        _logger.LogInformation("Category with ID {Id} logically deleted (Status set to 0).", id);
-        return true;
     }
-}
