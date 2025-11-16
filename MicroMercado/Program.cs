@@ -11,6 +11,7 @@ using MicroMercado.Infrastructure.Data;
 using MicroMercado.Application.DTOs.Category;
 using MicroMercado.Application.Validators.Category;
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,9 +28,37 @@ if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
     builder.Configuration.AddUserSecrets<Program>();
 }
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+string connectionString;
+
+if (builder.Environment.IsStaging())
+    connectionString = builder.Configuration.GetConnectionString("StagingConnection");
+else
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+{
+    options.UseNpgsql(connectionString);
+
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableSensitiveDataLogging();
+        options.EnableDetailedErrors();
+    }
+});
+
+try
+{
+    var csBuilder = new NpgsqlConnectionStringBuilder(connectionString);
+
+    Console.WriteLine("=====================================");
+    Console.WriteLine($"🗄 Host: {csBuilder.Host}");
+    Console.WriteLine($"📚 Base de datos: {csBuilder.Database}");
+    Console.WriteLine("=====================================");
+}
+catch
+{
+    Console.WriteLine("No se pudo interpretar la cadena de conexión.");
+}
 
 
 // Configuración de Razor Pages
@@ -42,17 +71,6 @@ builder.Services.AddRazorPages(options =>
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
 });
 
-// Configuración de la base de datos PostgreSQL
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-
-    if (builder.Environment.IsDevelopment())
-    {
-        options.EnableSensitiveDataLogging();
-        options.EnableDetailedErrors();
-    }
-});
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {

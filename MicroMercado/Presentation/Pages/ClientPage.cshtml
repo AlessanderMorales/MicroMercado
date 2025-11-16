@@ -59,70 +59,40 @@
             </div>
         }
 
-        <div class="card shadow-lg">
-            <div class="card-header">
-                <h3 class="card-title mb-0">
-                    <i class="fas fa-table"></i>
-                    Detalles de Clientes
-                </h3>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table id="lstClients" class="table table-striped table-hover datatable mb-0">
-                        <thead class="bg-primary text-white">
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre/Razón Social</th>
-                                <th>Email</th>
-                                <th>NIT/CI</th>
-                                <th>Estado</th>
-                                <th>Última Actualización</th>
-                                <th class="text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.Clients == null || !Model.Clients.Any())
-                            {
-                                <tr>
-                                    <td colspan="7" class="text-center text-muted py-4">
-                                        <i class="fas fa-users-slash fa-3x mb-3 d-block"></i>
-                                        <p class="mb-0">No hay clientes registrados.</p>
-                                        <small>Haga clic en "Agregar Nuevo Cliente" para empezar.</small>
-                                    </td>
-                                </tr>
-                            }
-                            else
-                            {
-                                @foreach (var client in Model.Clients)
-                                {
-                                    <tr>
-                                        <td>@client.Id</td>
-                                        <td>@client.BusinessName</td>
-                                        <td>@client.Email</td>
-                                        <td>@client.TaxDocument</td>
-                                        <td>
-                                            <span class="badge @(client.Status == 1 ? "bg-success" : "bg-danger")">
-                                                @client.StatusText
-                                            </span>
-                                        </td>
-                                        <td>@client.LastUpdate.ToShortDateString()</td>
-                                        <td class="text-center">
-                                            <a asp-page="/EditClient" asp-route-id="@client.Id" class="btn btn-warning btn-sm me-1" title="Editar Cliente">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <button type="button" class="btn btn-danger btn-sm"
-                                                    onclick="confirmDeleteClient(@client.Id, '@client.BusinessName')"
-                                                    title="Eliminar Cliente">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+
+        <div class="table-responsive shadow-sm rounded-3">
+            <table id="categoryTable" class="table align-middle">
+                <thead class="table-dark text-center">
+                <tr>
+                    <th  style="width:5%; text-align:center;">#</th>
+                    <th  style="width:25%; text-align:center;">Nombre/Razón Social</th>
+                    <th  style="width:35%; text-align:center;">Email</th>
+                    <th  style="width:12%; text-align:center;">NIT/CI</th>
+                    <th  style="width:23%; text-align:center;">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var t in Model.Clients.Select((item, index) => new { item, index = index + 1 }))
+                {
+                    <tr>
+                        <td style="text-align:center;">@t.index</td>
+                        <td>@t.item.BusinessName</td>
+                        <td>@t.item.Email</td>
+                        <td>@t.item.TaxDocument</td>
+                        <td class="text-center">
+                            <a asp-page="/EditCategory" asp-route-id="@t.item.Id" class="btn btn-warning btn-sm me-1" title="Editar Categoría">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <button type="button" class="btn btn-danger btn-sm"
+                                    onclick="confirmDeleteCategory(@t.item.Id, '@t.item.BusinessName')"
+                                    title="Eliminar Categoría">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -151,29 +121,56 @@
 </div>
 
 @section Scripts {
-    <!-- DataTables JS -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-
     <script>
         $(document).ready(function () {
-            $('#lstClients').DataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+            $('#categoryTable').DataTable({
+                pageLength: 15,
+                language: {
+                    lengthMenu: `<div class="input-group input-group-sm">
+                                    <span class="input-group-text">Registros por página</span>
+                                    <span class="mx-2">_MENU_</span>
+                                </div>`,
+                    zeroRecords: 'No se encontraron resultados',
+                    info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+                    infoEmpty: 'Mostrando 0 a 0 de 0 registros',
+                    infoFiltered: '(filtrados de _MAX_ registros totales)',
+                    search: '',
+                    searchPlaceholder: 'Buscar...',
+                    paginate: {
+                        first: 'Primero',
+                        previous: 'Anterior',
+                        next: 'Siguiente',
+                        last: 'Último'
+                    }
                 },
-                "paging": true,
-                "lengthChange": true,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: 3 },
+                    { type: 'num', targets: 0 }
+                ],
+                order: [[0, 'asc']],
+                dom: '<"row align-items-center mb-3"' + 
+                     '<"col-12 col-sm-6"l>' + 
+                     '<"col-12 col-sm-6"f>>' + 
+                     '<"row"<"col-sm-12"tr>>' + 
+                     '<"row align-items-center mt-3"' + 
+                     '<"col-12 col-sm-5"i>' + 
+                     '<"col-12 col-sm-7"p>>',
+                classes: {
+                    sLengthSelect: 'form-select form-select-sm',
+                    sFilterInput: 'form-control form-control-sm',
+                    wrapper: 'dataTables_wrapper dt-bootstrap5'
+                }
             });
+            var searchInput = $('.dataTables_filter input');
+            searchInput.unwrap().wrap('<div class="input-group input-group-sm"></div>');
+            searchInput.before('<span class="input-group-text"><i class="fas fa-search"></i></span>');
+            searchInput.addClass('form-control');
         });
 
-        function confirmDeleteClient(clientId, clientName) {
-            document.getElementById('clientIdToDelete').value = clientId;
-            document.getElementById('clientNameToDelete').innerText = clientName;
+        function confirmDeleteCategory(categoryId, categoryName) {
+            document.getElementById('categoryIdToDelete').value = categoryId;
+            document.getElementById('categoryNameToDelete').innerText = categoryName;
             var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
             deleteModal.show();
         }
