@@ -71,17 +71,6 @@ builder.Services.AddRazorPages(options =>
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
 });
 
-// Configuración de la base de datos PostgreSQL
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-
-    if (builder.Environment.IsDevelopment())
-    {
-        options.EnableSensitiveDataLogging();
-        options.EnableDetailedErrors();
-    }
-});
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
