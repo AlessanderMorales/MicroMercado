@@ -129,3 +129,6 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 app.Run();
+
+// Declaración parcial para permitir acceso desde pruebas de integración
+public partial class Program { }
