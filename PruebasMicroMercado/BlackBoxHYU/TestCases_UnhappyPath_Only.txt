@@ -1,0 +1,406 @@
+# CASOS DE PRUEBA UNHAPPY PATH - MICROMERCADO
+## PRUEBAS DONDE TODO EL FLUJO ES INCORRECTO
+
+**Tipo de Prueba:** Caja Negra Manual - Unhappy Path  
+**Enfoque:** Validación de flujos donde todos los datos son incorrectos o inválidos
+
+---
+
+## 1. CATEGORÍAS - UNHAPPY PATH
+
+### Mk-11: Crear Categoría con Todos los Datos Inválidos
+
+**Resumen:**  
+Verifica que el sistema rechaza completamente la creación de una categoría cuando todos los campos están vacíos o son inválidos.
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- Usuario con acceso al módulo de Categorías
+- Sistema configurado para validar campos requeridos
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Navegar a "Categorías" | Se muestra lista de categorías | Manual |
+| 2 | Hacer clic en "Nueva Categoría" | Se abre formulario de nueva categoría | Manual |
+| 3 | Dejar campo Nombre vacío: "" | Campo permanece sin valor | Manual |
+| 4 | Dejar campo Descripción vacío: "" | Campo permanece sin valor | Manual |
+| 5 | Hacer clic en "Guardar" | Sistema muestra mensaje de error "El nombre es requerido" | Manual |
+| 6 | Verificar segundo mensaje de error | Sistema muestra "La descripción es requerida" | Manual |
+| 7 | Verificar que el formulario permanece abierto | Formulario sigue mostrando todos los errores de validación | Manual |
+| 8 | Verificar en base de datos | El registro NO se insertó en la tabla Categories | Manual |
+
+---
+
+### Mk-12: Actualizar Categoría con Datos Duplicados e Inválidos
+
+**Resumen:**  
+Verifica que el sistema impide actualizar una categoría cuando se intenta usar un nombre duplicado de otra categoría y datos inválidos.
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- Existe categoría "Alimentos" (ID=1) activa
+- Existe categoría "Electrónica" (ID=2) activa
+- Sistema valida restricción UNIQUE en nombres
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Verificar que existe categoría "Alimentos" (ID=1) | Categoría existe y está activa | Manual |
+| 2 | Verificar que existe categoría "Electrónica" (ID=2) | Categoría existe y está activa | Manual |
+| 3 | Hacer clic en "Editar" de categoría "Alimentos" | Se abre formulario con datos actuales | Manual |
+| 4 | Cambiar Nombre a "Electrónica" (nombre de otra categoría) | Campo acepta el valor temporalmente | Manual |
+| 5 | Cambiar Descripción a "" (vacío) | Campo queda vacío | Manual |
+| 6 | Hacer clic en "Guardar" | Sistema muestra error "Ya existe otra categoría con ese nombre" | Manual |
+| 7 | Verificar segundo mensaje de error | Sistema muestra "La descripción es requerida" | Manual |
+| 8 | Verificar que la actualización NO se realizó | Categoría "Alimentos" mantiene sus valores originales | Manual |
+
+---
+
+## 2. PRODUCTOS - UNHAPPY PATH
+
+### Mk-13: Crear Producto con Todos los Datos Inválidos
+
+**Resumen:**  
+Verifica que el sistema rechaza completamente la creación de un producto cuando todos los campos tienen valores inválidos (nombre duplicado, precio negativo, stock negativo, categoría inexistente).
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- Existe producto con nombre "Yogurt Natural"
+- Sistema valida restricciones UNIQUE, CHECK y FK
+- No existe categoría con ID=999
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Navegar a "Productos" y hacer clic en "Nuevo Producto" | Se abre formulario de nuevo producto | Manual |
+| 2 | Ingresar Nombre duplicado: "Yogurt Natural" | Campo acepta valor temporalmente | Manual |
+| 3 | Dejar Descripción y Marca vacías: "" | Campos vacíos | Manual |
+| 4 | Ingresar Precio negativo: -50.00 | Campo acepta valor temporalmente | Manual |
+| 5 | Ingresar Stock negativo: -10 | Campo acepta valor temporalmente | Manual |
+| 6 | Seleccionar Categoría inexistente ID=999 | Categoría inválida | Manual |
+| 7 | Hacer clic en "Guardar" | Sistema muestra múltiples errores de validación | Manual |
+| 8 | Verificar que NO se insertó registro | Tabla Products NO contiene el nuevo registro | Manual |
+
+---
+
+### Mk-14: Actualizar Producto con Todos los Datos Inválidos
+
+**Resumen:**  
+Verifica que el sistema impide actualizar un producto cuando todos los datos nuevos son inválidos (nombre duplicado, valores negativos, categoría inactiva).
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- Existe producto "Yogurt Natural" (ID=1, Stock=50) activo
+- Existe producto "Leche Entera" (ID=2) activo
+- Existe categoría inactiva (ID=7) o no existe categoría ID=999
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Editar producto "Yogurt Natural" (ID=1) | Se abre formulario con datos actuales | Manual |
+| 2 | Cambiar a nombre duplicado: "Leche Entera" | Campo acepta valor temporalmente | Manual |
+| 3 | Cambiar Precio a 0.00 y Stock a -5 | Campos aceptan valores temporalmente | Manual |
+| 4 | Seleccionar Categoría inactiva (ID=7) | Categoría inválida | Manual |
+| 5 | Hacer clic en "Guardar" | Sistema muestra múltiples errores de validación | Manual |
+| 6 | Verificar que la actualización NO se realizó | Producto mantiene sus datos originales | Manual |
+
+---
+
+## 3. CLIENTES - UNHAPPY PATH
+
+### Mk-15: Crear Cliente con Todos los Datos Inválidos
+
+**Resumen:**  
+Verifica que el sistema rechaza completamente la creación de un cliente cuando todos los campos están vacíos, tienen formato inválido o son duplicados.
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- Existe cliente con Email="cliente@email.com"
+- Existe cliente con DocumentNumber="12345678"
+- Sistema valida formato de email y restricciones UNIQUE
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Navegar a "Nuevo Cliente" | Se abre formulario | Manual |
+| 2 | Dejar Nombre vacío: "" | Campo vacío | Manual |
+| 3 | Ingresar Email con formato inválido | Campo acepta valor temporalmente | Manual |
+| 4 | Ingresar Documento duplicado: "12345678" | Campo acepta valor temporalmente | Manual |
+| 5 | Dejar Dirección vacía: "" | Campo vacío | Manual |
+| 6 | Hacer clic en "Guardar" | Sistema muestra múltiples errores de validación | Manual |
+| 7 | Verificar que NO se insertó registro | Tabla Clients NO contiene el nuevo registro | Manual |
+
+---
+
+### Mk-16: Actualizar Cliente con Datos Duplicados de Otro Cliente
+
+**Resumen:**  
+Verifica que el sistema impide actualizar un cliente cuando se intenta usar el email o documento de otro cliente existente.
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- Existe Cliente A con Email="clienteA@email.com" y Documento="11111111"
+- Existe Cliente B con Email="clienteB@email.com" y Documento="22222222"
+- Sistema valida restricciones UNIQUE en email y documento
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Editar Cliente A | Se abre formulario con datos actuales | Manual |
+| 2 | Cambiar Email a email de Cliente B: "clienteB@email.com" | Campo acepta valor temporalmente | Manual |
+| 3 | Cambiar Documento a documento de Cliente B: "22222222" | Campo acepta valor temporalmente | Manual |
+| 4 | Hacer clic en "Guardar" | Sistema muestra errores de duplicados | Manual |
+| 5 | Verificar que la actualización NO se realizó | Cliente A mantiene sus datos originales | Manual |
+
+---
+
+## 4. VENTAS - UNHAPPY PATH
+
+### Mk-17: Venta con Cliente Inexistente y Productos Inválidos
+
+**Resumen:**  
+Verifica que el sistema rechaza completamente una venta cuando el cliente no existe, los productos son inexistentes o tienen stock insuficiente.
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- NO existe cliente con documento "99999999"
+- NO existe producto con ID=999
+- Producto "Yogurt" tiene Stock=2 (insuficiente para cantidad solicitada)
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Buscar cliente con documento inexistente "99999999" | Sistema muestra error "Cliente no encontrado" | Manual |
+| 2 | Intentar agregar producto inexistente ID=999 | Sistema muestra error "Producto no encontrado" | Manual |
+| 3 | Intentar agregar producto con stock insuficiente | Sistema muestra error de stock | Manual |
+| 4 | Intentar confirmar venta | Sistema impide confirmar venta | Manual |
+| 5 | Verificar que la venta NO se registró | Tabla Sales NO contiene nuevo registro | Manual |
+
+---
+
+### Mk-18: Venta con Carrito Vacío y Monto Negativo
+
+**Resumen:**  
+Verifica que el sistema impide confirmar una venta cuando el carrito está vacío y el monto recibido es negativo.
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- Cliente válido existe en el sistema
+- Carrito de compras inicialmente vacío
+- Sistema valida monto recibido mayor a cero
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Seleccionar cliente válido | Cliente se carga correctamente | Manual |
+| 2 | NO agregar productos al carrito | Carrito permanece vacío | Manual |
+| 3 | Ingresar monto negativo: -100.00 | Campo acepta valor temporalmente | Manual |
+| 4 | Intentar confirmar venta | Sistema muestra error "El carrito está vacío" | Manual |
+| 5 | Verificar error de monto | Sistema muestra "El monto debe ser mayor a 0" | Manual |
+| 6 | Verificar que NO se crean registros | No hay registros en Sales ni SaleDetails | Manual |
+
+---
+
+## 5. BÚSQUEDAS Y FILTROS - UNHAPPY PATH
+
+### Mk-19: Búsqueda con Términos que No Existen
+
+**Resumen:**  
+Verifica que el sistema maneja correctamente búsquedas con términos inexistentes sin generar errores del sistema.
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- NO existen productos con términos "XYZ123ABC" o "@@@@####"
+- Sistema maneja correctamente ausencia de resultados
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Buscar por término inexistente "XYZ123ABC" | Sistema muestra "No se encontraron productos" | Manual |
+| 2 | Buscar por término vacío "" | Sistema maneja correctamente término vacío | Manual |
+| 3 | Buscar por caracteres especiales "@@@@####" | Sistema muestra "No se encontraron productos" | Manual |
+| 4 | Verificar que NO se generó error del sistema | No hay excepciones ni crashes | Manual |
+
+---
+
+### Mk-20: Filtrado con Categoría Inválida o Inactiva
+
+**Resumen:**  
+Verifica que el sistema rechaza el filtrado cuando se intenta usar una categoría inexistente o inactiva.
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- NO existe categoría con ID=999
+- Existe al menos una categoría inactiva (Status=false)
+- Sistema valida FKs antes de aplicar filtros
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Intentar filtrar por Categoría inexistente ID=999 | Sistema muestra error "Categoría no válida" | Manual |
+| 2 | Intentar filtrar por categoría inactiva | Sistema muestra error "Categoría no válida" | Manual |
+| 3 | Verificar que el filtro NO se aplica | Lista permanece sin filtrar o muestra error | Manual |
+
+---
+
+## 6. VALIDACIONES DE INTEGRIDAD - UNHAPPY PATH
+
+### Mk-21: Eliminar Categoría con Productos Asociados
+
+**Resumen:**  
+Verifica que el sistema impide eliminar una categoría que tiene productos activos asociados.
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- Categoría "Lácteos" (ID=6) existe y está activa
+- Categoría "Lácteos" tiene 5 productos activos asociados
+- Sistema valida integridad referencial
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Seleccionar categoría "Lácteos" que tiene 5 productos asociados | Categoría seleccionada | Manual |
+| 2 | Hacer clic en "Eliminar" y confirmar | Sistema muestra error "No se puede eliminar porque tiene productos asociados" | Manual |
+| 3 | Verificar que la categoría NO se eliminó | Categoría permanece en tabla | Manual |
+| 4 | Verificar que los productos asociados permanecen intactos | Productos mantienen CategoryId=6 | Manual |
+
+---
+
+### Mk-22: Eliminar Cliente con Ventas Registradas
+
+**Resumen:**  
+Verifica que el sistema impide eliminar un cliente que tiene historial de ventas.
+
+**Precondiciones:**
+	- Aplicación corriendo en https://localhost:7155
+	- Cliente (ID=1) existe en el sistema
+	- Cliente (ID=1) tiene 3 ventas registradas en tabla Sales
+	- Sistema valida integridad referencial y preserva historial
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Seleccionar cliente que tiene 3 ventas registradas | Cliente seleccionado | Manual |
+| 2 | Hacer clic en "Eliminar" y confirmar | Sistema muestra error "No se puede eliminar porque tiene ventas registradas" | Manual |
+| 3 | Verificar que el cliente NO se eliminó | Cliente permanece en tabla | Manual |
+| 4 | Verificar que las ventas permanecen intactas | Ventas mantienen ClientId correcto | Manual |
+
+---
+
+## 7. TRANSACCIONES FALLIDAS - UNHAPPY PATH
+
+### Mk-23: Venta con Error en Medio de Transacción (ROLLBACK)
+
+**Resumen:**  
+Verifica que si ocurre un error en medio de la transacción de venta, se realiza ROLLBACK completo.
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- Cliente válido seleccionado
+- Producto A con Stock=10, Producto B con Stock=5
+- Producto C con Stock=1 (insuficiente para cantidad 5)
+- Sistema implementa transacciones con ROLLBACK
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Agregar 3 productos al carrito | Productos agregados | Manual |
+| 2 | El tercer producto tiene stock insuficiente | Error detectado | Manual |
+| 3 | Intentar confirmar venta | Sistema muestra error de stock | Manual |
+| 4 | Verificar tabla Sales | NINGÚN registro se insertó | Manual |
+| 5 | Verificar tabla SaleDetails | NINGÚN registro se insertó | Manual |
+| 6 | Verificar stock de productos | Stock NO se modificó para ningún producto | Manual |
+| 7 | Verificar ROLLBACK completo | Todos los cambios revertidos | Manual |
+
+---
+
+### Mk-24: Actualización con Múltiples Violaciones de Constraints
+
+**Resumen:**  
+Verifica que cuando se violan múltiples constraints (UNIQUE, CHECK, FK), el sistema detecta y reporta TODAS las violaciones.
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- Existe Producto A con nombre único
+- Existe Producto B con nombre "Producto B"
+- NO existe categoría con ID=999
+- Sistema valida todos los constraints
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Editar producto | Se abre formulario | Manual |
+| 2 | Cambiar a nombre duplicado (VIOLACIÓN UNIQUE) | Campo acepta temporalmente | Manual |
+| 3 | Cambiar Precio a -50.00 (VIOLACIÓN CHECK) | Campo acepta temporalmente | Manual |
+| 4 | Cambiar CategoryId a 999 (VIOLACIÓN FK) | Campo acepta temporalmente | Manual |
+| 5 | Cambiar Stock a -10 (VIOLACIÓN CHECK) | Campo acepta temporalmente | Manual |
+| 6 | Hacer clic en "Guardar" | Sistema muestra TODOS los errores simultáneamente | Manual |
+| 7 | Verificar que la operación se canceló completamente | NO se realizó actualización parcial | Manual |
+| 8 | Verificar integridad de datos | Producto mantiene datos originales | Manual |
+
+---
+
+## 8. LÍMITES Y EDGE CASES - UNHAPPY PATH
+
+### Mk-25: Valores Extremos Fuera de Rango en Campos Numéricos
+
+**Resumen:**  
+Verifica que el sistema rechaza valores numéricos extremadamente altos o fuera de los rangos permitidos.
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- Sistema valida rangos de tipos de datos (decimal, short, int)
+- Límites definidos: Precio < 999999999, Stock < 32767
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Ingresar Precio extremadamente alto: 999999999999.99 | Campo acepta temporalmente | Manual |
+| 2 | Ingresar Stock que excede límite: 32768 | Campo acepta temporalmente | Manual |
+| 3 | Intentar guardar | Sistema muestra error "Valor excede rango permitido" | Manual |
+| 4 | Intentar agregar producto con Cantidad: 0 | Sistema muestra error "Cantidad debe ser mayor a 0" | Manual |
+| 5 | Intentar agregar producto con Cantidad: -1 | Sistema muestra error "Cantidad debe ser mayor a 0" | Manual |
+| 6 | Verificar que NO se insertan valores fuera de límites | Base de datos mantiene integridad | Manual |
+
+---
+
+### Mk-26: Strings Excesivamente Largos
+
+**Resumen:**  
+Verifica que el sistema rechaza strings que exceden la longitud máxima permitida sin truncar automáticamente.
+
+**Precondiciones:**
+- Aplicación corriendo en https://localhost:7155
+- Límites definidos: Nombre max 100 caracteres, Descripción max 500 caracteres
+- Sistema valida longitud antes de insertar
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Ingresar string de 500 caracteres en campo Nombre (límite 100) | Campo acepta temporalmente | Manual |
+| 2 | Ingresar string de 2000 caracteres en Descripción (límite 500) | Campo acepta temporalmente | Manual |
+| 3 | Hacer clic en "Guardar" | Sistema muestra error "Nombre excede longitud máxima" | Manual |
+| 4 | Verificar error de Descripción | Sistema muestra error "Descripción excede longitud máxima" | Manual |
+| 5 | Verificar que NO se truncan datos automáticamente | Sistema NO trunca, muestra error y pide corrección | Manual |
+| 6 | Verificar que NO se insertó registro | Tabla NO contiene registro con datos truncados | Manual |
+
+---
+
+**Total Casos Unhappy Path:** 16

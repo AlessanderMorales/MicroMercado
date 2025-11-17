@@ -1,0 +1,272 @@
+﻿# CASOS DE PRUEBA HAPPY PATH - MICROMERCADO
+## PRUEBAS DONDE TODO EL FLUJO ES CORRECTO
+
+**Tipo de Prueba:** Caja Negra Manual - Happy Path  
+**Enfoque:** Validación de flujos exitosos donde todos los datos son correctos
+
+---
+
+## 1. CATEGORÍAS - HAPPY PATH
+
+### Mk-01: CRUD Completo de Categoría - Flujo Exitoso
+
+**Resumen:**  
+Verifica que se puede crear, leer, actualizar y eliminar una categoría cuando todos los datos son válidos.
+
+**Precondiciones:**
+- Usuario con acceso al módulo de Categorías
+- No existe categoría con nombre "Bebidas Alcohólicas"
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Navegar a "Categorías" y hacer clic en "Nueva Categoría" | Se abre formulario de nueva categoría | Manual |
+| 2 | Completar: Nombre="Bebidas Alcohólicas", Descripción="Vinos, cervezas y licores de calidad" | Campos aceptan los valores sin error | Manual |
+| 3 | Hacer clic en "Guardar" | Sistema muestra mensaje "Categoría creada exitosamente" | Manual |
+| 4 | Verificar en lista de categorías | La categoría aparece con Status=Activo y todos los datos correctos | Manual |
+| 5 | Hacer clic en "Editar" de la categoría creada | Se abre formulario con datos pre-cargados | Manual |
+| 6 | Modificar: Nombre="Bebidas y Licores Premium", Descripción="Bebidas alcohólicas de alta calidad" | Campos aceptan los cambios | Manual |
+| 7 | Guardar cambios | Sistema muestra "Categoría actualizada exitosamente" | Manual |
+| 8 | Verificar en lista | Los cambios se reflejan correctamente | Manual |
+| 9 | Hacer clic en "Eliminar" y confirmar | Sistema muestra "Categoría eliminada exitosamente" | Manual |
+| 10 | Verificar en lista | La categoría ya no aparece en lista activa | Manual |
+
+---
+
+## 2. PRODUCTOS - HAPPY PATH
+
+### Mk-02: CRUD Completo de Producto - Flujo Exitoso
+
+**Resumen:**  
+Verifica que se puede crear, leer, actualizar y eliminar un producto con todos los datos válidos y relación correcta con categoría.
+
+**Precondiciones:**
+- Existe categoría activa "Alimentos" (ID=2)
+- No existe producto con nombre "Quinua Orgánica Premium"
+- Usuario con acceso al módulo de Productos
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Navegar a "Productos" y hacer clic en "Nuevo Producto" | Se abre formulario de nuevo producto | Manual |
+| 2 | Completar: Nombre="Quinua Orgánica Premium", Descripción="Quinua orgánica de exportación", Marca="Bolivia Natural", Precio=28.50, Stock=100, Categoría="Alimentos" | Todos los campos aceptan valores sin error | Manual |
+| 3 | Hacer clic en "Guardar" | Sistema muestra "Producto creado exitosamente" | Manual |
+| 4 | Verificar en lista de productos | El producto aparece con Status=Activo, todos los datos y categoría "Alimentos" | Manual |
+| 5 | Hacer clic en "Editar" del producto | Se abre formulario con datos pre-cargados | Manual |
+| 6 | Modificar: Precio=32.00, Stock=120, Descripción="Quinua orgánica certificada de exportación" | Campos aceptan los cambios | Manual |
+| 7 | Guardar cambios | Sistema muestra "Producto actualizado exitosamente" | Manual |
+| 8 | Verificar en lista | Datos actualizados correctamente | Manual |
+| 9 | Hacer clic en "Eliminar" y confirmar | Sistema muestra "Producto eliminado exitosamente" | Manual |
+| 10 | Verificar en búsquedas activas | El producto ya no aparece | Manual |
+
+---
+
+## 3. CLIENTES - HAPPY PATH
+
+### Mk-03: CRUD Completo de Cliente - Flujo Exitoso
+
+**Resumen:**  
+Verifica que se puede crear, leer, actualizar y eliminar un cliente con todos los datos válidos y únicos.
+
+**Precondiciones:**
+- No existe cliente con Email="roberto.vargas@empresa.com"
+- No existe cliente con DocumentNumber="87654321"
+- Usuario con acceso al módulo de Clientes
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Navegar a "Nuevo Cliente" | Se abre formulario de nuevo cliente | Manual |
+| 2 | Completar: Nombre="Roberto Vargas Méndez", Email="roberto.vargas@empresa.com", Documento="87654321", Dirección="Calle Comercio 789, Zona Centro" | Todos los campos aceptan valores sin error | Manual |
+| 3 | Hacer clic en "Guardar" | Sistema muestra "Cliente creado exitosamente" | Manual |
+| 4 | Verificar en lista de clientes | Cliente aparece con Status=Activo y todos los datos | Manual |
+| 5 | Buscar cliente por documento "87654321" | Cliente se encuentra correctamente | Manual |
+| 6 | Hacer clic en "Editar" del cliente | Se abre formulario con datos pre-cargados | Manual |
+| 7 | Modificar: Nombre="Roberto Vargas Méndez - Empresa XYZ", Dirección="Av. Principal 456, Edificio Empresarial" | Campos aceptan los cambios | Manual |
+| 8 | Guardar cambios | Sistema muestra "Cliente actualizado exitosamente" | Manual |
+| 9 | Verificar en lista | Cambios reflejados correctamente | Manual |
+| 10 | Hacer clic en "Eliminar" y confirmar | Sistema muestra "Cliente eliminado exitosamente", Status cambia a inactivo | Manual |
+
+---
+
+## 4. VENTAS - HAPPY PATH
+
+### Mk-04: Venta Completa con Stock Suficiente - Flujo Exitoso
+
+**Resumen:**  
+Verifica el flujo completo de una venta con cliente válido, productos con stock suficiente, cálculos correctos y actualización de inventario.
+
+**Precondiciones:**
+- Existe cliente activo con DocumentNumber="12345678"
+- Existen productos activos con stock:
+  - "Yogurt Natural" (Stock=50, Precio=10.00)
+  - "Leche Entera 1L" (Stock=100, Precio=8.50)
+  - "Mantequilla 200g" (Stock=30, Precio=15.00)
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Navegar a "Punto de Venta" | Se abre interfaz de ventas | Manual |
+| 2 | Buscar cliente por documento "12345678" | Cliente se carga correctamente con todos sus datos | Manual |
+| 3 | Buscar y agregar "Yogurt Natural", cantidad 3 (Stock=50, Precio=10.00) | Producto se agrega al carrito, subtotal=30.00 | Manual |
+| 4 | Buscar y agregar "Leche Entera 1L", cantidad 5 (Stock=100, Precio=8.50) | Producto se agrega al carrito, subtotal=42.50 | Manual |
+| 5 | Buscar y agregar "Mantequilla 200g", cantidad 2 (Stock=30, Precio=15.00) | Producto se agrega al carrito, subtotal=30.00 | Manual |
+| 6 | Verificar Total | Total = 102.50 calculado correctamente | Manual |
+| 7 | Seleccionar método de pago "Efectivo" | Opción seleccionada correctamente | Manual |
+| 8 | Ingresar monto recibido: 150.00 | Sistema calcula cambio = 47.50 | Manual |
+| 9 | Hacer clic en "Confirmar Venta" | Sistema muestra "Venta registrada exitosamente" | Manual |
+| 10 | Verificar stock actualizado | Yogurt=47, Leche=95, Mantequilla=28 | Manual |
+| 11 | Verificar registro en base de datos | 1 registro en Sales, 3 en SaleDetails, fecha registrada | Manual |
+
+---
+
+## 5. BÚSQUEDAS Y FILTROS - HAPPY PATH
+
+### Mk-05: Búsqueda de Productos por Término Válido
+
+**Resumen:**  
+Verifica que la búsqueda de productos funciona correctamente cuando se ingresa un término válido existente.
+
+**Precondiciones:**
+- Existen productos de categoría "Lácteos": Yogurt, Leche, Mantequilla, Queso
+- Todos los productos están activos
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Ir al módulo de búsqueda de productos | Se abre interfaz de búsqueda | Manual |
+| 2 | Buscar por término: "Lácteos" | Sistema ejecuta búsqueda sin error | Manual |
+| 3 | Verificar resultados | Se muestran todos los productos de categoría "Lácteos" (Yogurt, Leche, Mantequilla, Queso) | Manual |
+| 4 | Verificar información mostrada | Cada producto muestra: nombre, precio, stock y categoría | Manual |
+| 5 | Verificar ordenamiento | Resultados ordenados correctamente | Manual |
+
+---
+
+### Mk-06: Filtrado por Categoría Válida
+
+**Resumen:**  
+Verifica que el filtro por categoría funciona correctamente y muestra solo productos de la categoría seleccionada.
+
+**Precondiciones:**
+- Existen múltiples categorías activas con productos
+- Categoría "Alimentos" existe y tiene productos asociados
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Ir a lista de productos | Se muestra lista completa de productos | Manual |
+| 2 | Seleccionar filtro de categoría: "Alimentos" | Filtro se aplica correctamente | Manual |
+| 3 | Verificar resultados | Solo se muestran productos de categoría "Alimentos" | Manual |
+| 4 | Verificar que productos de otras categorías no aparecen | Productos de "Lácteos", "Electrónica", etc. no se muestran | Manual |
+| 5 | Verificar relación FK | La relación entre Products y Categories funciona correctamente | Manual |
+
+---
+
+## 6. VALIDACIONES POSITIVAS - HAPPY PATH
+
+### Mk-07: Actualización Manteniendo Nombre Único Propio
+
+**Resumen:**  
+Verifica que se puede actualizar un registro manteniendo su propio nombre único (el sistema reconoce que es el mismo registro).
+
+**Precondiciones:**
+- Existe categoría "Electrónica" con descripción "Artículos electrónicos"
+- No existen otras categorías con nombre "Electrónica"
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Ir a lista de categorías | Se muestra lista de categorías | Manual |
+| 2 | Editar categoría "Electrónica" | Se abre formulario con datos actuales | Manual |
+| 3 | Mantener nombre: "Electrónica" (sin cambiar) | Campo mantiene valor | Manual |
+| 4 | Cambiar descripción: "Dispositivos electrónicos modernos" | Campo acepta nuevo valor | Manual |
+| 5 | Hacer clic en "Guardar" | Sistema muestra "Categoría actualizada exitosamente" | Manual |
+| 6 | Verificar que NO hay error de "nombre duplicado" | Sistema reconoce que es el mismo registro | Manual |
+| 7 | Verificar en lista | Descripción actualizada correctamente | Manual |
+
+---
+
+### Mk-08: Creación con Todos los Campos Completos
+
+**Resumen:**  
+Verifica que se puede crear un producto completando todos los campos incluyendo los opcionales con descripciones largas.
+
+**Precondiciones:**
+- Categoría "Electrónica" existe y está activa
+- No existe producto con nombre "Smart TV 55 pulgadas"
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Ir a "Nuevo Producto" | Se abre formulario | Manual |
+| 2 | Completar TODOS los campos: Nombre="Smart TV 55 pulgadas", Descripción="Televisor inteligente 4K UHD con HDR, sistema operativo Android TV, WiFi integrado", Marca="Samsung", Precio=3500.00, Stock=15, Categoría="Electrónica" | Todos los campos aceptan valores sin error | Manual |
+| 3 | Hacer clic en "Guardar" | Sistema muestra "Producto creado exitosamente" | Manual |
+| 4 | Verificar en lista | Producto aparece con toda la información | Manual |
+| 5 | Ver detalle del producto | Descripción larga se almacena completa sin truncar | Manual |
+
+---
+
+## 7. TRANSACCIONES COMPLETAS - HAPPY PATH
+
+### Mk-09: Venta con Múltiples Productos y Relaciones Completas
+
+**Resumen:**  
+Verifica que una transacción completa con múltiples productos genera correctamente todos los registros relacionados y actualiza el stock.
+
+**Precondiciones:**
+- Cliente registrado y activo
+- Existen 5 productos activos (A, B, C, D, E) con stock suficiente
+- Todos los productos tienen precio definido
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Seleccionar cliente válido registrado | Cliente se carga correctamente | Manual |
+| 2 | Agregar Producto A, cantidad 2 | Se agrega al carrito con subtotal correcto | Manual |
+| 3 | Agregar Producto B, cantidad 3 | Se agrega al carrito con subtotal correcto | Manual |
+| 4 | Agregar Producto C, cantidad 1 | Se agrega al carrito con subtotal correcto | Manual |
+| 5 | Agregar Producto D, cantidad 5 | Se agrega al carrito con subtotal correcto | Manual |
+| 6 | Agregar Producto E, cantidad 4 | Se agrega al carrito con subtotal correcto | Manual |
+| 7 | Verificar cálculos totales | Total calculado correctamente sumando todos los subtotales | Manual |
+| 8 | Confirmar venta con pago en efectivo | Sistema muestra "Venta registrada exitosamente" | Manual |
+| 9 | Verificar tabla Sales | 1 registro creado con ClientId, Total, Fecha correctos | Manual |
+| 10 | Verificar tabla SaleDetails | 5 registros creados, cada uno con SaleId, ProductId, Quantity, UnitPrice correctos | Manual |
+| 11 | Verificar stock actualizado | Stock de los 5 productos disminuido según cantidades vendidas | Manual |
+| 12 | Verificar FKs | Todas las Foreign Keys establecidas correctamente | Manual |
+
+---
+
+### Mk-10: Validación de Cálculo de Cambio en Venta
+
+**Resumen:**  
+Verifica que el sistema calcula correctamente el cambio cuando el efectivo recibido es mayor al total de la venta.
+
+**Precondiciones:**
+- Cliente válido registrado
+- Productos disponibles con stock suficiente
+- Total de venta: 75.50
+
+**Pasos y Resultados Esperados:**
+
+| Nº | Pasos | Resultados Esperados | Ejecución |
+|----|-------|---------------------|-----------|
+| 1 | Agregar productos al carrito (Total: 75.50) | Carrito muestra total correcto | Manual |
+| 2 | Seleccionar cliente válido | Cliente cargado correctamente | Manual |
+| 3 | Seleccionar "Efectivo" como método de pago | Opción seleccionada | Manual |
+| 4 | En "Efectivo Recibido", ingresar 100.00 | Campo acepta valor | Manual |
+| 5 | Verificar cálculo de cambio | Sistema muestra Cambio = 24.50 | Manual |
+| 6 | Confirmar venta | Venta registrada exitosamente | Manual |
+| 7 | Verificar en ticket/comprobante | Muestra: Total=75.50, Recibido=100.00, Cambio=24.50 | Manual |
+
+---
+
+**Total Casos Happy Path:** 10
