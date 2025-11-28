@@ -256,7 +256,10 @@ namespace PruebasMicroMercado.WhiteBoxTests
 
             if (expectedResult)
             {
-                Assert.Null(await context.Clients.FindAsync(clientId));
+                // Logical delete: client should still exist but with Status = 0
+                var deletedClient = await context.Clients.FindAsync(clientId);
+                Assert.NotNull(deletedClient);
+                Assert.Equal((byte)0, deletedClient.Status);
             }
         }
     }

@@ -129,3 +129,6 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 app.Run();
+
+// Hacer la clase Program accesible para las pruebas de integración
+public partial class Program { }
