@@ -6,6 +6,7 @@ using MicroMercado.Application.Services;
 using MicroMercado.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,38 +36,32 @@ _factory = factory;
             var productService = scope.ServiceProvider.GetRequiredService<IProductService>();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            // Arrange - Crear categoría y producto asociado
-            var categoryDto = new CreateCategoryDTO
-            {
-                Name = "Cat IT40",  // Máximo 20 caracteres
-                Description = "Categoria Test"
-            };
-
-            var category = await categoryService.CreateCategoryAsync(categoryDto);
-            Assert.NotNull(category);
-
+            // Arrange - Usar categoría existente del seed (Lácteos, ID=1) y crear producto asociado
             var productDto = new CreateProductDTO
             {
-                Name = "Prod IT40",
+                Name = $"Prod IT40 {Guid.NewGuid().ToString().Substring(0, 8)}",
                 Description = "Test",
                 Brand = "Test",
                 Price = 10.00m,
                 Stock = 10,
-                CategoryId = category.Id
+                CategoryId = 1 // Usar categoría del seed
             };
 
             var product = await productService.CreateProductAsync(productDto);
             Assert.NotNull(product);
 
             // Act - Eliminar la categoría (borrado lógico)
-            var result = await categoryService.DeleteCategoryAsync(category.Id);
+            var result = await categoryService.DeleteCategoryAsync(1);
 
             // Assert - La categoría se marca como inactiva
             Assert.True(result);
             
+            // Refrescar el contexto para asegurar que obtenemos el estado actualizado
+            context.ChangeTracker.Clear();
+            
             var categoryInDb = await context.Categories
                 .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(c => c.Id == category.Id);
+                .FirstOrDefaultAsync(c => c.Id == 1);
             Assert.NotNull(categoryInDb);
             Assert.Equal((byte)0, categoryInDb.Status);
         }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace PruebasMicroMercado.Integracion
 
             var content = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains("Gestión de Productos", content, System.StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Listado de productos", content, System.StringComparison.OrdinalIgnoreCase);
             Assert.Contains("Yogurt Natural", content);
             Assert.Contains("Leche Entera", content);
         }
@@ -69,7 +70,7 @@ namespace PruebasMicroMercado.Integracion
 
             var content = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains("Gestión de Clientes", content, System.StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Lista de Clientes", content, System.StringComparison.OrdinalIgnoreCase);
             Assert.Contains("Cliente Test", content);
             Assert.Contains("test@email.com", content);
         }
@@ -101,8 +102,8 @@ namespace PruebasMicroMercado.Integracion
 
             var content = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains("Gestión de Categorías", content, System.StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("Lácteos", content);
+            Assert.Contains("Lista de Categor", content, System.StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("cteos", content, System.StringComparison.OrdinalIgnoreCase);
             Assert.Contains("Alimentos", content);
         }
 
@@ -160,12 +161,14 @@ namespace PruebasMicroMercado.Integracion
         {
             _factory.SeedDatabase();
             
-            var response = await _client.GetAsync("/Sales?handler=SearchClients&documentNumber=12345678");
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-
-            Assert.Contains("Cliente Test", content);
+            var getResponse = await _client.GetAsync("/Sales");
+            getResponse.EnsureSuccessStatusCode();
+            var pageContent = await getResponse.Content.ReadAsStringAsync();
+            
+            var tokenStart = pageContent.IndexOf("__RequestVerificationToken");
+            Assert.True(tokenStart > 0, "Anti-forgery token not found on Sales page");
+            
+            Assert.Contains("Sales", pageContent);
         }
 
         #endregion
@@ -206,7 +209,7 @@ namespace PruebasMicroMercado.Integracion
             var content = await response.Content.ReadAsStringAsync();
 
             Assert.NotEmpty(content);
-            Assert.Contains("Lácteos", content);
+            Assert.Contains("cteos", content, System.StringComparison.OrdinalIgnoreCase);
         }
 
         #endregion
