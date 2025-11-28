@@ -28,36 +28,53 @@ if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
     builder.Configuration.AddUserSecrets<Program>();
 }
 
-string connectionString;
+string? connectionString = null;
 
-if (builder.Environment.IsStaging())
-    connectionString = builder.Configuration.GetConnectionString("StagingConnection");
-else
-    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+// Configurar base de datos según el entorno
+if (builder.Environment.EnvironmentName == "Testing")
 {
-    options.UseNpgsql(connectionString);
-
-    if (builder.Environment.IsDevelopment())
+    // Usar InMemory database para pruebas de integración
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
     {
-        options.EnableSensitiveDataLogging();
-        options.EnableDetailedErrors();
-    }
-});
-
-try
+        options.UseInMemoryDatabase("IntegrationTestDb");
+    });
+    
+    connectionString = "InMemory-Testing";
+}
+else
 {
-    var csBuilder = new NpgsqlConnectionStringBuilder(connectionString);
+    if (builder.Environment.IsStaging())
+        connectionString = builder.Configuration.GetConnectionString("StagingConnection");
+    else
+        connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    {
+        options.UseNpgsql(connectionString);
+
+        if (builder.Environment.IsDevelopment())
+        {
+            options.EnableSensitiveDataLogging();
+            options.EnableDetailedErrors();
+        }
+    });
+}
+
+if (connectionString != "InMemory-Testing")
+{
+    try
+    {
+        var csBuilder = new NpgsqlConnectionStringBuilder(connectionString);
 
     Console.WriteLine("=====================================");
     Console.WriteLine($"🗄 Host: {csBuilder.Host}");
     Console.WriteLine($"📚 Base de datos: {csBuilder.Database}");
     Console.WriteLine("=====================================");
 }
-catch
-{
-    Console.WriteLine("No se pudo interpretar la cadena de conexión.");
+    catch
+    {
+        Console.WriteLine("No se pudo interpretar la cadena de conexión.");
+    }
 }
 
 

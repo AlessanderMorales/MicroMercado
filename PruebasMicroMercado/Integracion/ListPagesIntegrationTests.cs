@@ -26,6 +26,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-43: ProductPage debe cargar exitosamente con lista de productos")]
         public async Task ProductPage_ShouldLoadSuccessfullyWithProductList()
         {
+            _factory.SeedDatabase();
+            
             var response = await _client.GetAsync("/ProductPage");
 
             response.EnsureSuccessStatusCode();
@@ -41,6 +43,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-43b: ProductPage debe contener enlaces de edición")]
         public async Task ProductPage_ShouldContainEditLinks()
         {
+            _factory.SeedDatabase();
+            
             var response = await _client.GetAsync("/ProductPage");
             response.EnsureSuccessStatusCode();
 
@@ -56,6 +60,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-44: ClientPage debe cargar exitosamente con lista de clientes")]
         public async Task ClientPage_ShouldLoadSuccessfullyWithClientList()
         {
+            _factory.SeedDatabase();
+            
             var response = await _client.GetAsync("/ClientPage");
 
             response.EnsureSuccessStatusCode();
@@ -86,6 +92,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-45: CategoryPage debe cargar exitosamente con lista de categorías")]
         public async Task CategoryPage_ShouldLoadSuccessfullyWithCategoryList()
         {
+            _factory.SeedDatabase();
+            
             var response = await _client.GetAsync("/CategoryPage");
 
             response.EnsureSuccessStatusCode();
@@ -101,6 +109,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-45b: CategoryPage debe contener enlaces de gestión")]
         public async Task CategoryPage_ShouldContainManagementLinks()
         {
+            _factory.SeedDatabase();
+            
             var response = await _client.GetAsync("/CategoryPage");
             response.EnsureSuccessStatusCode();
 
@@ -117,6 +127,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-46: Búsqueda de productos con caracteres especiales")]
         public async Task SearchProducts_WithSpecialCharacters_ShouldReturnResults()
         {
+            _factory.SeedDatabase();
+            
             var response1 = await _client.GetAsync("/Sales?handler=SearchProducts&term=Yogurt%20Natural");
             response1.EnsureSuccessStatusCode();
             var content1 = await response1.Content.ReadAsStringAsync();
@@ -146,6 +158,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-47: Búsqueda de clientes solo debe retornar activos")]
         public async Task SearchClients_ShouldOnlyReturnActiveClients()
         {
+            _factory.SeedDatabase();
+            
             var response = await _client.GetAsync("/Sales?handler=SearchClients&documentNumber=12345678");
             response.EnsureSuccessStatusCode();
 
@@ -170,6 +184,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-44c: ClientPage debe mostrar información de contacto")]
         public async Task ClientPage_ShouldDisplayContactInformation()
         {
+            _factory.SeedDatabase();
+            
             var response = await _client.GetAsync("/ClientPage");
             response.EnsureSuccessStatusCode();
 
@@ -182,6 +198,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-45c: CategoryPage debe mostrar conteo de productos")]
         public async Task CategoryPage_ShouldDisplayProductCount()
         {
+            _factory.SeedDatabase();
+            
             var response = await _client.GetAsync("/CategoryPage");
             response.EnsureSuccessStatusCode();
 

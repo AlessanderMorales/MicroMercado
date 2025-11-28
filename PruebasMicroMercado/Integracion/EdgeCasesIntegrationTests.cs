@@ -35,6 +35,8 @@ namespace PruebasMicroMercado.Integracion
             var saleService = scope.ServiceProvider.GetRequiredService<ISaleService>();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
+            _factory.SeedDatabase();
+
             var product = new MicroMercado.Domain.Models.Product
             {
                 Name = "Producto Stock Limitado",
@@ -74,6 +76,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-52: Actualizaciones secuenciales del mismo producto deben ser exitosas")]
         public async Task UpdateProduct_Sequentially_ShouldSucceed()
         {
+            _factory.SeedDatabase();
+
             using var scope1 = _factory.Services.CreateScope();
             using var scope2 = _factory.Services.CreateScope();
 
@@ -145,6 +149,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-51b: Venta con cantidad cero debe fallar")]
         public async Task CreateSale_WithZeroQuantity_ShouldFail()
         {
+            _factory.SeedDatabase();
+
             using var scope = _factory.Services.CreateScope();
             var saleService = scope.ServiceProvider.GetRequiredService<ISaleService>();
 
@@ -168,6 +174,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-52b: Crear múltiples productos con mismo nombre secuencialmente debe fallar")]
         public async Task CreateProducts_WithDuplicateNames_ShouldFailSecond()
         {
+            _factory.SeedDatabase();
+
             using var scope = _factory.Services.CreateScope();
             var productService = scope.ServiceProvider.GetRequiredService<IProductService>();
 
@@ -214,6 +222,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-51c: Venta con producto eliminado debe fallar")]
         public async Task CreateSale_WithDeletedProduct_ShouldFail()
         {
+            _factory.SeedDatabase();
+
             using var scope = _factory.Services.CreateScope();
             var saleService = scope.ServiceProvider.GetRequiredService<ISaleService>();
             var productService = scope.ServiceProvider.GetRequiredService<IProductService>();
@@ -254,6 +264,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-52c: Reducir stock a negativo mediante ventas debe fallar")]
         public async Task CreateSale_ThatWouldMakeStockNegative_ShouldFail()
         {
+            _factory.SeedDatabase();
+
             using var scope = _factory.Services.CreateScope();
             var saleService = scope.ServiceProvider.GetRequiredService<ISaleService>();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

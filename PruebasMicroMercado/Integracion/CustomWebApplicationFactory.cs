@@ -2,6 +2,7 @@ using MicroMercado.Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,10 +12,19 @@ namespace PruebasMicroMercado.Integracion
 {
     public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
     {
+        private readonly string _databaseName;
+
+        public CustomWebApplicationFactory()
+        {
+            // Cada instancia de factory tiene su propia base de datos única
+            _databaseName = $"IntegrationTestDb_{Guid.NewGuid()}";
+        }
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureServices(services =>
             {
+                // Remover el DbContext configurado en Program.cs
                 var descriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
 
@@ -23,34 +33,36 @@ namespace PruebasMicroMercado.Integracion
                     services.Remove(descriptor);
                 }
 
+                // Agregar DbContext con base de datos única para esta prueba
                 services.AddDbContext<ApplicationDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase("IntegrationTestDb_" + Guid.NewGuid());
-                    options.EnableSensitiveDataLogging();
+                    options.UseInMemoryDatabase(_databaseName);
+                    // Ignorar advertencias de transacciones no soportadas en InMemory
+                    options.ConfigureWarnings(w => 
+                        w.Ignore(InMemoryEventId.TransactionIgnoredWarning));
                 });
-
-                var sp = services.BuildServiceProvider();
-
-                using (var scope = sp.CreateScope())
-                {
-                    var scopedServices = scope.ServiceProvider;
-                    var db = scopedServices.GetRequiredService<ApplicationDbContext>();
-                    var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory<TProgram>>>();
-
-                    db.Database.EnsureCreated();
-
-                    try
-                    {
-                        SeedTestData(db);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.LogError(ex, "Error al inicializar la base de datos de pruebas.");
-                    }
-                }
             });
 
             builder.UseEnvironment("Testing");
+        }
+
+        public void SeedDatabase()
+        {
+            using var scope = Services.CreateScope();
+            var services = scope.ServiceProvider;
+            var context = services.GetRequiredService<ApplicationDbContext>();
+            var logger = services.GetRequiredService<ILogger<CustomWebApplicationFactory<TProgram>>>();
+
+            try
+            {
+                context.Database.EnsureCreated();
+                SeedTestData(context);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error al inicializar la base de datos de pruebas.");
+                throw;
+            }
         }
 
         private void SeedTestData(ApplicationDbContext context)

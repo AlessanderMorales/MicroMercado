@@ -39,6 +39,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-02: Sales Page - Debe cargar exitosamente")]
         public async Task SalesPage_ShouldLoadSuccessfully()
         {
+            _factory.SeedDatabase();
+            
             var response = await _client.GetAsync("/Sales");
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -106,6 +108,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-08: SearchProducts Handler - Debe retornar JSON")]
         public async Task SearchProductsHandler_ShouldReturnJson()
         {
+            _factory.SeedDatabase();
+            
             var term = "Yogurt";
             var response = await _client.GetAsync($"/Sales?handler=SearchProducts&term={term}");
 
@@ -127,6 +131,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-10: SearchClients Handler - Debe retornar JSON")]
         public async Task SearchClientsHandler_ShouldReturnJson()
         {
+            _factory.SeedDatabase();
+            
             var document = "12345678";
             var response = await _client.GetAsync($"/Sales?handler=SearchClients&documentNumber={document}");
 

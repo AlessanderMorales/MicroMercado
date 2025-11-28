@@ -36,6 +36,8 @@ namespace PruebasMicroMercado.Integracion
             var productService = scope.ServiceProvider.GetRequiredService<IProductService>();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
+            _factory.SeedDatabase();
+
             var createDto = new CreateProductDTO
             {
                 Name = "Producto para actualizar",
@@ -77,6 +79,8 @@ namespace PruebasMicroMercado.Integracion
             using var scope = _factory.Services.CreateScope();
             var productService = scope.ServiceProvider.GetRequiredService<IProductService>();
 
+            _factory.SeedDatabase();
+
             var updateDto = new UpdateProductDTO
             {
                 Id = 2,
@@ -99,6 +103,8 @@ namespace PruebasMicroMercado.Integracion
             using var scope = _factory.Services.CreateScope();
             var productService = scope.ServiceProvider.GetRequiredService<IProductService>();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            _factory.SeedDatabase();
 
             var inactiveCategory = new MicroMercado.Domain.Models.Category
             {
@@ -125,16 +131,18 @@ namespace PruebasMicroMercado.Integracion
             Assert.Null(result);
         }
 
-        [Fact(DisplayName = "IT-34: Eliminar producto debe realizar eliminación física")]
-        public async Task DeleteProduct_ShouldPerformPhysicalDelete()
+        [Fact(DisplayName = "IT-34: Eliminar producto debe realizar eliminación lógica")]
+        public async Task DeleteProduct_ShouldPerformLogicalDelete()
         {
             using var scope = _factory.Services.CreateScope();
             var productService = scope.ServiceProvider.GetRequiredService<IProductService>();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
+            _factory.SeedDatabase();
+
             var createDto = new CreateProductDTO
             {
-                Name = "Producto a eliminar",
+                Name = "Producto a eliminar IT34",
                 Description = "Test",
                 Brand = "Test",
                 Price = 10.00m,
@@ -152,7 +160,8 @@ namespace PruebasMicroMercado.Integracion
             var productInDb = await context.Products
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(p => p.Id == createdProduct.Id);
-            Assert.Null(productInDb);
+            Assert.NotNull(productInDb);
+            Assert.Equal((byte)0, productInDb.Status);
         }
 
         #endregion
@@ -164,6 +173,8 @@ namespace PruebasMicroMercado.Integracion
         {
             using var scope = _factory.Services.CreateScope();
             var clientService = scope.ServiceProvider.GetRequiredService<IClientService>();
+
+            _factory.SeedDatabase();
 
             var updateDto = new UpdateClientDTO
             {
@@ -188,6 +199,8 @@ namespace PruebasMicroMercado.Integracion
             using var scope = _factory.Services.CreateScope();
             var clientService = scope.ServiceProvider.GetRequiredService<IClientService>();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            _factory.SeedDatabase();
 
             var client2 = new MicroMercado.Domain.Models.Client
             {
@@ -215,19 +228,21 @@ namespace PruebasMicroMercado.Integracion
             Assert.Null(result);
         }
 
-        [Fact(DisplayName = "IT-37: Eliminar cliente debe realizar eliminación física")]
-        public async Task DeleteClient_ShouldPerformPhysicalDelete()
+        [Fact(DisplayName = "IT-37: Eliminar cliente debe realizar eliminación lógica")]
+        public async Task DeleteClient_ShouldPerformLogicalDelete()
         {
             using var scope = _factory.Services.CreateScope();
             var clientService = scope.ServiceProvider.GetRequiredService<IClientService>();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
+            _factory.SeedDatabase();
+
             var createDto = new CreateClientDTO
             {
-                BusinessName = "Cliente a eliminar",
-                Email = "eliminar@test.com",
-                TaxDocument = "11111111",
-                Address = "Test"
+                BusinessName = "Cliente IT37",
+                Email = "eliminar37@test.com",
+                TaxDocument = "1111137",  // 7 dígitos válidos (6-8 permitidos)
+                Address = "Calle Test 123"  // Mínimo 5 caracteres
             };
 
             var createdClient = await clientService.CreateClientAsync(createDto);
@@ -240,7 +255,8 @@ namespace PruebasMicroMercado.Integracion
             var clientInDb = await context.Clients
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(c => c.Id == createdClient.Id);
-            Assert.Null(clientInDb);
+            Assert.NotNull(clientInDb);
+            Assert.Equal((byte)0, clientInDb.Status);
         }
 
         #endregion
@@ -252,6 +268,8 @@ namespace PruebasMicroMercado.Integracion
         {
             using var scope = _factory.Services.CreateScope();
             var categoryService = scope.ServiceProvider.GetRequiredService<ICategoryService>();
+
+            _factory.SeedDatabase();
 
             var updateDto = new UpdateCategoryDTO
             {
@@ -267,17 +285,19 @@ namespace PruebasMicroMercado.Integracion
             Assert.Equal("Lácteos Actualizados", result.Name);
         }
 
-        [Fact(DisplayName = "IT-39: Eliminar categoría debe realizar eliminación física")]
-        public async Task DeleteCategory_ShouldPerformPhysicalDelete()
+        [Fact(DisplayName = "IT-39: Eliminar categoría debe realizar eliminación lógica")]
+        public async Task DeleteCategory_ShouldPerformLogicalDelete()
         {
             using var scope = _factory.Services.CreateScope();
             var categoryService = scope.ServiceProvider.GetRequiredService<ICategoryService>();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
+            _factory.SeedDatabase();
+
             var createDto = new CreateCategoryDTO
             {
-                Name = "Categoría a eliminar",
-                Description = "Test"
+                Name = "Cat IT39",  // Máximo 20 caracteres, solo alfanuméricos
+                Description = "Categoria Test"  // Máximo 80 caracteres
             };
 
             var createdCategory = await categoryService.CreateCategoryAsync(createDto);
@@ -290,7 +310,8 @@ namespace PruebasMicroMercado.Integracion
             var categoryInDb = await context.Categories
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(c => c.Id == createdCategory.Id);
-            Assert.Null(categoryInDb);
+            Assert.NotNull(categoryInDb);
+            Assert.Equal((byte)0, categoryInDb.Status);
         }
 
         #endregion

@@ -265,16 +265,18 @@ Assert.Null(result);
    [Fact(DisplayName = "IT-50c: Crear categoría con nombre duplicado debe fallar")]
         public async Task CreateCategory_WithDuplicateName_ShouldFail()
         {
-        using var scope = _factory.Services.CreateScope();
+            _factory.SeedDatabase();
+            
+            using var scope = _factory.Services.CreateScope();
             var categoryService = scope.ServiceProvider.GetRequiredService<ICategoryService>();
 
-      var invalidCategory = new CreateCategoryDTO
-     {
-       Name = "Lácteos", // Nombre duplicado del seed
-       Description = "Test"
-};
+            var invalidCategory = new CreateCategoryDTO
+            {
+                Name = "Lácteos", // Nombre duplicado del seed
+                Description = "Test"
+            };
 
-   var result = await categoryService.CreateCategoryAsync(invalidCategory);
+            var result = await categoryService.CreateCategoryAsync(invalidCategory);
 
             Assert.Null(result);
         }
@@ -328,22 +330,24 @@ Assert.Null(result);
 
   [Fact(DisplayName = "IT-50d: Actualizar categoría con nombre duplicado debe fallar")]
         public async Task UpdateCategory_WithDuplicateName_ShouldFail()
-     {
-   using var scope = _factory.Services.CreateScope();
-       var categoryService = scope.ServiceProvider.GetRequiredService<ICategoryService>();
+        {
+            _factory.SeedDatabase();
+            
+            using var scope = _factory.Services.CreateScope();
+            var categoryService = scope.ServiceProvider.GetRequiredService<ICategoryService>();
 
-     var invalidUpdate = new UpdateCategoryDTO
-   {
-      Id = 1,
-   Name = "Alimentos", // Nombre de otra categoría existente
-  Description = "Test",
-       Status = 1
-     };
+            var invalidUpdate = new UpdateCategoryDTO
+            {
+                Id = 1,
+                Name = "Alimentos", // Nombre de otra categoría existente
+                Description = "Test",
+                Status = 1
+            };
 
-    var result = await categoryService.UpdateCategoryAsync(invalidUpdate);
+            var result = await categoryService.UpdateCategoryAsync(invalidUpdate);
 
             Assert.Null(result);
-  }
+        }
 
   #endregion
     }

@@ -47,6 +47,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-17: ProductService - Buscar productos existentes")]
         public async Task ProductService_SearchProducts_ShouldReturnResults()
         {
+            _factory.SeedDatabase();
+            
             using var scope = _factory.Services.CreateScope();
             var productService = scope.ServiceProvider.GetRequiredService<IProductService>();
 
@@ -61,6 +63,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-18: ProductService - Verificar stock de producto")]
         public async Task ProductService_CheckStock_ShouldReturnCorrectAvailability()
         {
+            _factory.SeedDatabase();
+            
             using var scope = _factory.Services.CreateScope();
             var productService = scope.ServiceProvider.GetRequiredService<IProductService>();
 
@@ -78,6 +82,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-19: ClientService - Buscar cliente por documento")]
         public async Task ClientService_SearchByDocument_ShouldReturnClient()
         {
+            _factory.SeedDatabase();
+            
             using var scope = _factory.Services.CreateScope();
             var clientService = scope.ServiceProvider.GetRequiredService<IClientService>();
 
@@ -106,6 +112,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-21: CategoryService - Obtener todas las categorías activas")]
         public async Task CategoryService_GetAllActive_ShouldReturnCategories()
         {
+            _factory.SeedDatabase();
+            
             using var scope = _factory.Services.CreateScope();
             var categoryService = scope.ServiceProvider.GetRequiredService<ICategoryService>();
 
@@ -121,6 +129,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-22: CategoryService - Obtener categoría por ID")]
         public async Task CategoryService_GetById_ShouldReturnCategory()
         {
+            _factory.SeedDatabase();
+            
             using var scope = _factory.Services.CreateScope();
             var categoryService = scope.ServiceProvider.GetRequiredService<ICategoryService>();
 
@@ -137,6 +147,8 @@ namespace PruebasMicroMercado.Integracion
         [Fact(DisplayName = "IT-23: ApplicationDbContext - Verificar conexión y datos iniciales")]
         public void DbContext_ShouldContainSeedData()
         {
+            _factory.SeedDatabase();
+            
             using var scope = _factory.Services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
