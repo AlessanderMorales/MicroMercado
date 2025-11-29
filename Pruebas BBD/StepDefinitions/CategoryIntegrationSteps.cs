@@ -13,6 +13,7 @@ using Reqnroll;
 namespace Pruebas_BBD.StepDefinitions
 {
     [Binding]
+    [Scope(Feature = "Integracion CRUD de Categorias")]
     public class CategoryIntegrationSteps
     {
         private readonly ScenarioContext _scenarioContext;
@@ -28,12 +29,6 @@ namespace Pruebas_BBD.StepDefinitions
             _scenarioContext = scenarioContext;
             _nextCategoryId = 1; // Reset para cada escenario
             SetupTestDatabase();
-        }
-
-        [When(@"intento actualizar ""(.*)"" con nombre ""(.*)""")]
-        public async Task WhenIntentoActualizarConNombre_Alt(string categoriaActual, string nuevoNombre)
-        {
-            await WhenIntentoActualizarConElNombre(categoriaActual, nuevoNombre);
         }
 
         private void SetupTestDatabase()
@@ -60,11 +55,13 @@ namespace Pruebas_BBD.StepDefinitions
 
             _context = serviceProvider.GetRequiredService<ApplicationDbContext>();
             _categoryService = serviceProvider.GetRequiredService<ICategoryService>();
-            
 
             _context.Database.EnsureCreated();
         }
 
+        // ---------------------------------------------------
+        // SCENARIO: CREATE
+        // ---------------------------------------------------
         [When(@"creo una categoria con los siguientes datos:")]
         public async Task WhenCreoUnaCategoria(Table table)
         {
@@ -105,6 +102,27 @@ namespace Pruebas_BBD.StepDefinitions
             }
         }
 
+        [When(@"intento crear una categoria con nombre ""(.*)""")]
+        public async Task WhenIntentoCrearUnaCategoriaConNombre(string nombre)
+        {
+            try
+            {
+                var dto = new CreateCategoryDTO
+                {
+                    Name = nombre,
+                    Description = "Descripción duplicada"
+                };
+
+                _resultCategory = await _categoryService.CreateCategoryAsync(dto);
+                _scenarioContext["CreationResult"] = _resultCategory;
+            }
+            catch (Exception ex)
+            {
+                _exception = ex;
+                _scenarioContext["CreationResult"] = null;
+            }
+        }
+
         [Then(@"la categoria debe crearse exitosamente")]
         public void ThenLaCategoriDebeCrearseExitosamente()
         {
@@ -131,11 +149,20 @@ namespace Pruebas_BBD.StepDefinitions
             Assert.True(_resultCategory.Id > 0);
         }
 
+        [Then(@"debe mostrar error de nombre duplicado")]
+        public void ThenDebeMostrarErrorDeNombreDuplicado()
+        {
+            Assert.Null(_resultCategory);
+        }
+
+        // ---------------------------------------------------
+        // SCENARIO: UPDATE
+        // ---------------------------------------------------
         [Given(@"existe una categoria con nombre ""(.*)""")]
         public async Task GivenExisteUnaCategoriaConNombre(string nombre)
         {
             _context.ChangeTracker.Clear();
-            
+
             var category = new Category
             {
                 Id = _nextCategoryId++,
@@ -144,41 +171,36 @@ namespace Pruebas_BBD.StepDefinitions
                 Status = 1,
                 LastUpdate = DateTime.Now
             };
-            
+
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
             _context.ChangeTracker.Clear();
-            
+
             Console.WriteLine($"? Created category '{nombre}' with ID: {category.Id}");
             _scenarioContext[$"Category_{nombre}"] = category.Id;
             _scenarioContext["LastCategoryId"] = category.Id;
         }
 
-        [When(@"intento crear una categoria con nombre ""(.*)""")]
-        public async Task WhenIntentoCrearUnaCategoriaConNombre(string nombre)
+        [Given(@"existen las siguientes categorias:")]
+        public async Task GivenExistenLasSiguientesCategorias(Table table)
         {
-            try
+            _context.ChangeTracker.Clear();
+
+            foreach (var row in table.Rows)
             {
-                var dto = new CreateCategoryDTO
+                var category = new Category
                 {
-                    Name = nombre,
-                    Description = "Descripción duplicada"
+                    Id = _nextCategoryId++,
+                    Name = row["Name"],
+                    Description = row.ContainsKey("Description") ? row["Description"] : "Descripción de prueba",
+                    Status = row.ContainsKey("Status") ? byte.Parse(row["Status"]) : (byte)1,
+                    LastUpdate = DateTime.Now
                 };
 
-                _resultCategory = await _categoryService.CreateCategoryAsync(dto);
-                _scenarioContext["CreationResult"] = _resultCategory;
+                _context.Categories.Add(category);
             }
-            catch (Exception ex)
-            {
-                _exception = ex;
-                _scenarioContext["CreationResult"] = null;
-            }
-        }
-
-        [Then(@"debe mostrar error de nombre duplicado")]
-        public void ThenDebeMostrarErrorDeNombreDuplicado()
-        {
-            Assert.Null(_resultCategory);
+            await _context.SaveChangesAsync();
+            _context.ChangeTracker.Clear();
         }
 
         [When(@"actualizo la categoria con:")]
@@ -187,9 +209,9 @@ namespace Pruebas_BBD.StepDefinitions
             try
             {
                 _context.ChangeTracker.Clear();
-                
+
                 byte categoryId = 0;
-                
+
                 if (_scenarioContext.ContainsKey("LastCategoryId"))
                 {
                     categoryId = (byte)_scenarioContext["LastCategoryId"];
@@ -202,12 +224,12 @@ namespace Pruebas_BBD.StepDefinitions
                         categoryId = (byte)_scenarioContext[categoryKey];
                     }
                 }
-                
+
                 if (categoryId == 0)
                     throw new InvalidOperationException("No category found in scenario context");
-                
+
                 Console.WriteLine($"Retrieved categoryId from context: {categoryId}");
-                
+
                 var existingCategory = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == categoryId);
                 if (existingCategory == null)
                     throw new InvalidOperationException($"Category with ID {categoryId} not found in database");
@@ -244,11 +266,11 @@ namespace Pruebas_BBD.StepDefinitions
                 };
 
                 Console.WriteLine($"Attempting update - ID: {categoryId}, Name: '{dto.Name}', Description: '{dto.Description}', Status: {dto.Status}");
-                
+
                 _resultCategory = await _categoryService.UpdateCategoryAsync(dto);
                 _scenarioContext["UpdateResult"] = _resultCategory;
                 _scenarioContext["UpdateException"] = null;
-                
+
                 if (_resultCategory == null)
                 {
                     Console.WriteLine($"? Update returned null!");
@@ -271,36 +293,10 @@ namespace Pruebas_BBD.StepDefinitions
             }
         }
 
-        [Then(@"los datos deben reflejarse en la base de datos")]
-        public async Task ThenLosDatosDebenReflejarseEnLaBaseDeDatos()
+        [When(@"intento actualizar ""(.*)"" con nombre ""(.*)""")]
+        public async Task WhenIntentoActualizarConNombre_Alt(string categoriaActual, string nuevoNombre)
         {
-            Assert.NotNull(_resultCategory);
-            _context.ChangeTracker.Clear();
-            var dbCategory = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == _resultCategory.Id);
-            Assert.NotNull(dbCategory);
-            Assert.Equal(_resultCategory.Name, dbCategory.Name);
-        }
-
-        [Given(@"existen las siguientes categorias:")]
-        public async Task GivenExistenLasSiguientesCategorias(Table table)
-        {
-            _context.ChangeTracker.Clear();
-            
-            foreach (var row in table.Rows)
-            {
-                var category = new Category
-                {
-                    Id = _nextCategoryId++,
-                    Name = row["Name"],
-                    Description = row.ContainsKey("Description") ? row["Description"] : "Descripción de prueba",
-                    Status = row.ContainsKey("Status") ? byte.Parse(row["Status"]) : (byte)1,
-                    LastUpdate = DateTime.Now
-                };
-
-                _context.Categories.Add(category);
-            }
-            await _context.SaveChangesAsync();
-            _context.ChangeTracker.Clear();
+            await WhenIntentoActualizarConElNombre(categoriaActual, nuevoNombre);
         }
 
         [When(@"intento actualizar ""(.*)"" con el nombre ""(.*)""")]
@@ -329,13 +325,26 @@ namespace Pruebas_BBD.StepDefinitions
             }
         }
 
+        [Then(@"los datos deben reflejarse en la base de datos")]
+        public async Task ThenLosDatosDebenReflejarseEnLaBaseDeDatos()
+        {
+            Assert.NotNull(_resultCategory);
+            _context.ChangeTracker.Clear();
+            var dbCategory = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == _resultCategory.Id);
+            Assert.NotNull(dbCategory);
+            Assert.Equal(_resultCategory.Name, dbCategory.Name);
+        }
+
+        // ---------------------------------------------------
+        // SCENARIO: DELETE
+        // ---------------------------------------------------
         [When(@"elimino la categoria")]
         public async Task WhenEliminoLaCategoria()
         {
             var categoryKey = _scenarioContext.Keys.FirstOrDefault(k => k.StartsWith("Category_"));
             if (categoryKey == null)
                 throw new InvalidOperationException("No category found in scenario context");
-            
+
             var categoryId = (byte)_scenarioContext[categoryKey];
             await _categoryService.DeleteCategoryAsync(categoryId);
 
@@ -362,6 +371,9 @@ namespace Pruebas_BBD.StepDefinitions
             Assert.False(activeCategories.Any(c => c.Id == _resultCategory?.Id));
         }
 
+        // ---------------------------------------------------
+        // SCENARIO: SELECT ALL
+        // ---------------------------------------------------
         [Given(@"existen las siguientes categorias activas:")]
         public async Task GivenExistenLasSiguientesCategoriasActivas(Table table)
         {
@@ -402,6 +414,9 @@ namespace Pruebas_BBD.StepDefinitions
             Assert.True(_categoriesList?.All(c => c.Status == 1));
         }
 
+        // ---------------------------------------------------
+        // CLEANUP
+        // ---------------------------------------------------
         [AfterScenario]
         public void CleanupDatabase()
         {

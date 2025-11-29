@@ -13,6 +13,7 @@ using Reqnroll;
 namespace Pruebas_BBD.StepDefinitions
 {
     [Binding]
+    [Scope(Feature = "Integracion CRUD de Clientes")]
     public class ClientIntegrationSteps
     {
         private readonly ScenarioContext _scenarioContext;
@@ -52,8 +53,13 @@ namespace Pruebas_BBD.StepDefinitions
             _clientService = serviceProvider.GetRequiredService<IClientService>();
         }
 
+
+        // ---------------------------------------------------
+        // SCENARIO: CREATE
+        // ---------------------------------------------------
+
         [When(@"creo un cliente con los siguientes datos:")]
-        public async Task WhenCreoUnCliente(Table table)
+        public async Task WhenCreoUnCliente(Table table)    
         {
             try
             {
@@ -151,6 +157,10 @@ namespace Pruebas_BBD.StepDefinitions
         {
             Assert.Null(_resultClient);
         }
+
+        // ---------------------------------------------------
+        // SCENARIO: UPDATE
+        // ---------------------------------------------------
 
         [Given(@"existe un cliente con TaxDocument ""(.*)""")]
         public async Task GivenExisteUnClienteConTaxDocument(string taxDocument)
@@ -361,6 +371,11 @@ namespace Pruebas_BBD.StepDefinitions
             Assert.Null(_resultClient);
         }
 
+
+        // ---------------------------------------------------
+        // SCENARIO: DELETE
+        // ---------------------------------------------------
+
         [When(@"elimino el cliente")]
         public async Task WhenEliminoElCliente()
         {
@@ -375,6 +390,10 @@ namespace Pruebas_BBD.StepDefinitions
                 Status = deletedClient.Status
             } : null;
         }
+
+        // ---------------------------------------------------
+        // SCENARIO: SELECT
+        // ---------------------------------------------------
 
         [Given(@"existe un cliente ""(.*)"" con TaxDocument ""(.*)""")]
         public async Task GivenExisteUnClienteConNombreYTaxDocument(string nombre, string taxDocument)
@@ -436,6 +455,10 @@ namespace Pruebas_BBD.StepDefinitions
             var activeClients = await _clientService.GetAllClientsAsync();
             Assert.DoesNotContain(activeClients, c => c.Id == _resultClient?.Id);
         }
+
+        // ---------------------------------------------------
+        // CLEANUP
+        // ---------------------------------------------------
 
         [AfterScenario]
         public void CleanupDatabase()

@@ -13,6 +13,7 @@ using Reqnroll;
 namespace Pruebas_BBD.StepDefinitions
 {
     [Binding]
+    [Scope(Feature = "Integracion CRUD de Productos")] 
     public class ProductIntegrationSteps
     {
         private readonly ScenarioContext _scenarioContext;
@@ -55,11 +56,21 @@ namespace Pruebas_BBD.StepDefinitions
             _productService = serviceProvider.GetRequiredService<IProductService>();
         }
 
+        // ---------------------------------------------------
+        // BACKGROUND
+        // ---------------------------------------------------
+        [Given(@"la base de datos esta limpia")]
+        public void GivenLaBaseDeDatosEstaLimpia()
+        {
+            _context.Database.EnsureDeleted();
+            _context.Database.EnsureCreated();
+        }
+
         [Given(@"existe una categoria ""(.*)"" con id (.*)")]
         public async Task GivenExisteUnaCategoria(string nombre, byte id)
         {
             _context.ChangeTracker.Clear();
-            
+
             var category = new Category
             {
                 Id = id,
@@ -76,6 +87,9 @@ namespace Pruebas_BBD.StepDefinitions
             _nextCategoryId = (byte)(id + 1);
         }
 
+        // ---------------------------------------------------
+        // SCENARIO: CREATE
+        // ---------------------------------------------------
         [When(@"creo un producto con los siguientes datos:")]
         public async Task WhenCreoUnProducto(Table table)
         {
@@ -95,24 +109,12 @@ namespace Pruebas_BBD.StepDefinitions
 
                     switch (campo)
                     {
-                        case "Name":
-                            name = valor;
-                            break;
-                        case "Description":
-                            description = valor;
-                            break;
-                        case "Brand":
-                            brand = valor;
-                            break;
-                        case "Price":
-                            price = decimal.Parse(valor);
-                            break;
-                        case "Stock":
-                            stock = short.Parse(valor);
-                            break;
-                        case "CategoryId":
-                            categoryId = byte.Parse(valor);
-                            break;
+                        case "Name": name = valor; break;
+                        case "Description": description = valor; break;
+                        case "Brand": brand = valor; break;
+                        case "Price": price = decimal.Parse(valor); break;
+                        case "Stock": stock = short.Parse(valor); break;
+                        case "CategoryId": categoryId = byte.Parse(valor); break;
                     }
                 }
 
@@ -132,26 +134,6 @@ namespace Pruebas_BBD.StepDefinitions
             {
                 _exception = ex;
             }
-        }
-
-        [Then(@"el producto debe crearse exitosamente")]
-        public void ThenElProductoDebeCrearseExitosamente()
-        {
-            Assert.NotNull(_resultProduct);
-            Assert.Null(_exception);
-            _scenarioContext["CreationResult"] = _resultProduct;
-        }
-
-        [Then(@"debe tener Stock (.*)")]
-        public void ThenDebeTenerStock(short expectedStock)
-        {
-            Assert.Equal(expectedStock, _resultProduct?.Stock);
-        }
-
-        [Then(@"debe estar asociado a la categoria (.*)")]
-        public void ThenDebeEstarAsociadoALaCategoria(byte categoryId)
-        {
-            Assert.Equal(categoryId, _resultProduct?.CategoryId);
         }
 
         [When(@"intento crear un producto con precio (.*)")]
@@ -179,17 +161,40 @@ namespace Pruebas_BBD.StepDefinitions
             }
         }
 
+        [Then(@"el producto debe crearse exitosamente")]
+        public void ThenElProductoDebeCrearseExitosamente()
+        {
+            Assert.NotNull(_resultProduct);
+            Assert.Null(_exception);
+            _scenarioContext["CreationResult"] = _resultProduct;
+        }
+
+        [Then(@"debe tener Stock (.*)")]
+        public void ThenDebeTenerStock(short expectedStock)
+        {
+            Assert.Equal(expectedStock, _resultProduct?.Stock);
+        }
+
+        [Then(@"debe estar asociado a la categoria (.*)")]
+        public void ThenDebeEstarAsociadoALaCategoria(byte categoryId)
+        {
+            Assert.Equal(categoryId, _resultProduct?.CategoryId);
+        }
+
         [Then(@"debe mostrar error de validacion de precio")]
         public void ThenDebeMostrarErrorDeValidacionDePrecio()
         {
             Assert.Null(_resultProduct);
         }
 
+        // ---------------------------------------------------
+        // SCENARIO: UPDATE
+        // ---------------------------------------------------
         [Given(@"existe un producto ""(.*)"" con precio (.*) y stock (.*)")]
         public async Task GivenExisteUnProducto(string nombre, decimal precio, short stock)
         {
             _context.ChangeTracker.Clear();
-            
+
             var product = new Product
             {
                 Id = _nextProductId++,
@@ -197,6 +202,30 @@ namespace Pruebas_BBD.StepDefinitions
                 Description = "Descripción de prueba",
                 Brand = "Marca Test",
                 Price = precio,
+                Stock = stock,
+                CategoryId = 1,
+                Status = 1,
+                LastUpdate = DateTime.Now
+            };
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+            _context.ChangeTracker.Clear();
+            _scenarioContext["ProductId"] = product.Id;
+        }
+
+        [Given(@"existe un producto ""(.*)"" con stock (.*)")]
+        public async Task GivenExisteUnProductoConStock(string nombre, short stock)
+        {
+            _context.ChangeTracker.Clear();
+
+            var product = new Product
+            {
+                Id = _nextProductId++,
+                Name = nombre,
+                Description = "Descripción",
+                Brand = "Marca",
+                Price = 10.00m,
                 Stock = stock,
                 CategoryId = 1,
                 Status = 1,
@@ -217,7 +246,7 @@ namespace Pruebas_BBD.StepDefinitions
                 _context.ChangeTracker.Clear();
                 var productId = (short)_scenarioContext["ProductId"];
                 var existingProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == productId);
-                
+
                 if (existingProduct == null)
                     throw new InvalidOperationException($"Product with ID {productId} not found");
 
@@ -236,27 +265,13 @@ namespace Pruebas_BBD.StepDefinitions
 
                     switch (campo)
                     {
-                        case "Name":
-                            name = valor;
-                            break;
-                        case "Description":
-                            description = valor;
-                            break;
-                        case "Brand":
-                            brand = valor;
-                            break;
-                        case "Price":
-                            price = decimal.Parse(valor);
-                            break;
-                        case "Stock":
-                            stock = short.Parse(valor);
-                            break;
-                        case "CategoryId":
-                            categoryId = byte.Parse(valor);
-                            break;
-                        case "Status":
-                            status = byte.Parse(valor);
-                            break;
+                        case "Name": name = valor; break;
+                        case "Description": description = valor; break;
+                        case "Brand": brand = valor; break;
+                        case "Price": price = decimal.Parse(valor); break;
+                        case "Stock": stock = short.Parse(valor); break;
+                        case "CategoryId": categoryId = byte.Parse(valor); break;
+                        case "Status": status = byte.Parse(valor); break;
                     }
                 }
 
@@ -282,50 +297,6 @@ namespace Pruebas_BBD.StepDefinitions
                 _scenarioContext["UpdateResult"] = null;
                 _scenarioContext["UpdateException"] = ex;
             }
-        }
-
-        [Then(@"el precio debe ser (.*)")]
-        public void ThenElPrecioDebeSer(decimal expectedPrice)
-        {
-            Assert.Equal(expectedPrice, _resultProduct?.Price);
-        }
-
-        [Then(@"el stock debe ser (.*)")]
-        public void ThenElStockDebeSer(short expectedStock)
-        {
-            Assert.Equal(expectedStock, _resultProduct?.Stock);
-        }
-
-        [Then(@"los nuevos datos deben estar guardados")]
-        public async Task ThenLosNuevosDatosDebenEstarGuardados()
-        {
-            var dbProduct = await _context.Products.FindAsync(_resultProduct?.Id);
-            Assert.NotNull(dbProduct);
-            Assert.Equal(_resultProduct?.Name, dbProduct.Name);
-        }
-
-        [Given(@"existe un producto ""(.*)"" con stock (.*)")]
-        public async Task GivenExisteUnProductoConStock(string nombre, short stock)
-        {
-            _context.ChangeTracker.Clear();
-            
-            var product = new Product
-            {
-                Id = _nextProductId++,
-                Name = nombre,
-                Description = "Descripción",
-                Brand = "Marca",
-                Price = 10.00m,
-                Stock = stock,
-                CategoryId = 1,
-                Status = 1,
-                LastUpdate = DateTime.Now
-            };
-
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-            _context.ChangeTracker.Clear();
-            _scenarioContext["ProductId"] = product.Id;
         }
 
         [When(@"intento actualizar el stock a (.*)")]
@@ -359,17 +330,53 @@ namespace Pruebas_BBD.StepDefinitions
             }
         }
 
+        [Then(@"la actualizacion debe ser exitosa")]
+        public void ThenLaActualizacionDebeSerExitosa()
+        {
+            Assert.NotNull(_resultProduct);
+            Assert.Null(_exception);
+        }
+
+        [Then(@"la actualizacion debe fallar")]
+        public void ThenLaActualizacionDebeFallar()
+        {
+            Assert.True(_resultProduct == null || _exception != null);
+        }
+
+        [Then(@"el precio debe ser (.*)")]
+        public void ThenElPrecioDebeSer(decimal expectedPrice)
+        {
+            Assert.Equal(expectedPrice, _resultProduct?.Price);
+        }
+
+        [Then(@"el stock debe ser (.*)")]
+        public void ThenElStockDebeSer(short expectedStock)
+        {
+            Assert.Equal(expectedStock, _resultProduct?.Stock);
+        }
+
+        [Then(@"los nuevos datos deben estar guardados")]
+        public async Task ThenLosNuevosDatosDebenEstarGuardados()
+        {
+            var dbProduct = await _context.Products.FindAsync(_resultProduct?.Id);
+            Assert.NotNull(dbProduct);
+            Assert.Equal(_resultProduct?.Name, dbProduct.Name);
+        }
+
         [Then(@"debe mostrar error de validacion de stock")]
         public void ThenDebeMostrarErrorDeValidacionDeStock()
         {
             Assert.Null(_resultProduct);
         }
 
+        // ---------------------------------------------------
+        // SCENARIO: DELETE
+        // ---------------------------------------------------
         [Given(@"existe un producto ""(.*)""")]
         public async Task GivenExisteUnProducto(string nombre)
         {
             _context.ChangeTracker.Clear();
-            
+
             var product = new Product
             {
                 Id = _nextProductId++,
@@ -399,6 +406,13 @@ namespace Pruebas_BBD.StepDefinitions
             _resultProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == productId);
         }
 
+        [Then(@"el Status del producto debe cambiar a 0")]
+        public void ThenElStatusDelProductoDebeCambiarA()
+        {
+            Assert.NotNull(_resultProduct);
+            Assert.Equal((byte)0, _resultProduct.Status);
+        }
+
         [Then(@"el producto no debe aparecer en busquedas activas")]
         public async Task ThenElProductoNoDebeAparecerEnBusquedasActivas()
         {
@@ -406,12 +420,14 @@ namespace Pruebas_BBD.StepDefinitions
             Assert.False(activeProducts.Any(p => p.Id == _resultProduct?.Id));
         }
 
-        [Given(@"existen los siguientes productos activos en categoria (.*):")
-]
+        // ---------------------------------------------------
+        // SCENARIO: SELECT
+        // ---------------------------------------------------
+        [Given(@"existen los siguientes productos activos en categoria (.*):")]
         public async Task GivenExistenLosSiguientesProductosActivos(int categoryId, Table table)
         {
             _context.ChangeTracker.Clear();
-            
+
             foreach (var row in table.Rows)
             {
                 var product = new Product
@@ -452,13 +468,9 @@ namespace Pruebas_BBD.StepDefinitions
             Assert.True(_productsList?.All(p => p.Status == 1));
         }
 
-        [Then(@"el Status del producto debe cambiar a 0")]
-        public void ThenElStatusDelProductoDebeCambiarA()
-        {
-            Assert.NotNull(_resultProduct);
-            Assert.Equal((byte)0, _resultProduct.Status);
-        }
-
+        // ---------------------------------------------------
+        // CLEANUP
+        // ---------------------------------------------------
         [AfterScenario]
         public void CleanupDatabase()
         {
@@ -467,4 +479,3 @@ namespace Pruebas_BBD.StepDefinitions
         }
     }
 }
-

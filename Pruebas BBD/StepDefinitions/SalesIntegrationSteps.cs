@@ -13,6 +13,7 @@ using Reqnroll;
 namespace Pruebas_BBD.StepDefinitions
 {
     [Binding]
+    [Scope(Feature = "Integracion del Proceso Principal de Ventas")]
     public class SalesIntegrationSteps
     {
         private readonly ScenarioContext _scenarioContext;
@@ -57,9 +58,39 @@ namespace Pruebas_BBD.StepDefinitions
             };
         }
 
+        // ---------------------------------------------------
+        // BACKGROUND
+        // ---------------------------------------------------
+        [Given(@"la base de datos esta limpia")]
+        public void GivenLaBaseDeDatosEstaLimpia()
+        {
+            _context.Database.EnsureDeleted();
+            _context.Database.EnsureCreated();
+        }
+
+        [Given(@"existe una categoria ""(.*)"" con id (.*)")]
+        public async Task GivenExisteUnaCategoria(string nombre, byte id)
+        {
+            _context.ChangeTracker.Clear();
+
+            var category = new Category
+            {
+                Id = id,
+                Name = nombre,
+                Description = "Descripción",
+                Status = 1,
+                LastUpdate = DateTime.Now
+            };
+
+            _context.Categories.Add(category);
+            await _context.SaveChangesAsync();
+            _context.ChangeTracker.Clear();
+        }
+
         [Given(@"existen los siguientes productos:")]
         public async Task GivenExistenLosSiguientesProductos(Table table)
         {
+            _context.ChangeTracker.Clear();
             foreach (var row in table.Rows)
             {
                 var product = new Product
@@ -76,10 +107,11 @@ namespace Pruebas_BBD.StepDefinitions
 
                 _context.Products.Add(product);
                 await _context.SaveChangesAsync();
-                
+
                 _productIds[row["Name"]] = product.Id;
                 _scenarioContext[$"Product_{row["Name"]}"] = product.Id;
             }
+            _context.ChangeTracker.Clear();
         }
 
         [Given(@"existe un cliente ""(.*)"" con TaxDocument ""(.*)"" para ventas")]
@@ -100,6 +132,9 @@ namespace Pruebas_BBD.StepDefinitions
             _scenarioContext["ClientId"] = client.Id;
         }
 
+        // ---------------------------------------------------
+        // SCENARIO: PROCESO DE VENTA
+        // ---------------------------------------------------
         [Given(@"tengo los siguientes productos en el carrito:")]
         public void GivenTengoLosSiguientesProductosEnElCarrito(Table table)
         {
@@ -113,7 +148,7 @@ namespace Pruebas_BBD.StepDefinitions
                 if (_productIds.TryGetValue(productName, out var productId))
                 {
                     var product = _context.Products.Find(productId);
-                    
+
                     _saleDto.Items.Add(new SaleDTO.SaleItemDTO
                     {
                         ProductId = productId,
@@ -134,6 +169,7 @@ namespace Pruebas_BBD.StepDefinitions
                 var valor = row["Valor"].Trim();
                 if (campo.Equals("ClientId", StringComparison.OrdinalIgnoreCase))
                 {
+                    // Si viene en la tabla, lo usamos (aunque ya lo tomamos del contexto)
                     _saleDto.ClientId = int.Parse(valor);
                 }
                 else if (campo.Equals("PaymentType", StringComparison.OrdinalIgnoreCase))
@@ -148,14 +184,18 @@ namespace Pruebas_BBD.StepDefinitions
 
             _saleDto.TotalAmount = _saleDto.Items.Sum(i => i.Quantity * i.Price);
             _saleDto.Change = _saleDto.CashReceived - _saleDto.TotalAmount;
+
             _saleResult = await _saleService.CreateSaleAsync(_saleDto);
         }
 
+        // ---------------------------------------------------
+        // VALIDACIONES (THEN)
+        // ---------------------------------------------------
         [Then(@"la venta debe registrarse exitosamente")]
         public void ThenLaVentaDebeRegistrarseExitosamente()
         {
             Assert.NotNull(_saleResult);
-            Assert.True(_saleResult.Success);
+            Assert.True(_saleResult.Success, "La venta falló: " + _saleResult?.Message);
         }
 
         [Then(@"el total debe ser (.*)")]
@@ -177,7 +217,7 @@ namespace Pruebas_BBD.StepDefinitions
             {
                 _context.ChangeTracker.Clear();
                 var product = await _context.Products.FindAsync(productId);
-                
+
                 Assert.NotNull(product);
                 Assert.Equal(expectedStock, product.Stock);
             }
@@ -206,11 +246,14 @@ namespace Pruebas_BBD.StepDefinitions
         {
             var sale = _context.Sales.FirstOrDefault();
             Assert.NotNull(sale);
-            
+
             var differenceInMinutes = Math.Abs((DateTime.Now - sale.SaleDate).TotalMinutes);
-            Assert.True(differenceInMinutes < 5);
+            Assert.True(differenceInMinutes < 5, "La fecha de venta difiere demasiado de la actual.");
         }
 
+        // ---------------------------------------------------
+        // CLEANUP
+        // ---------------------------------------------------
         [AfterScenario]
         public void CleanupDatabase()
         {
