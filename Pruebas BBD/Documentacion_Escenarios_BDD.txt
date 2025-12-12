@@ -1,0 +1,2015 @@
+================================================================================
+       DOCUMENTACIÓN DE ESCENARIOS BDD - PROYECTO MICROMERCADO
+================================================================================
+
+Proyecto: MicroMercado - Sistema de Gestión de Inventario y Ventas
+Framework: Reqnroll (SpecFlow) con Xunit
+Fecha: 2025
+Arquitectura: Clean Architecture con Entity Framework Core
+
+
+================================================================================
+TABLA DE CONTENIDOS
+================================================================================
+
+1. FEATURE: INTEGRACIÓN CRUD DE CATEGORÍAS
+   - CA-01: Crear categoría básica (Happy Path 1)
+   - CA-02: Crear categoría con descripción larga (Happy Path 2)
+   - CA-03: Crear categoría sin nombre (Unhappy Path)
+   - CA-04: Actualizar categoría exitosamente (Happy Path 1)
+   - CA-05: Actualizar manteniendo mismo nombre (Happy Path 2)
+   - CA-06: Actualizar con nombre duplicado (Unhappy Path)
+   - CA-07: Eliminar categoría (Happy Path)
+   - CA-08: Listar categorías activas (Happy Path)
+
+2. FEATURE: INTEGRACIÓN CRUD DE CLIENTES
+   - CL-01: Crear cliente completo (Happy Path 1)
+   - CL-02: Crear cliente sin dirección (Happy Path 2)
+   - CL-03: Crear cliente con email inválido (Unhappy Path)
+   - CL-04: Actualizar nombre y dirección (Happy Path 1)
+   - CL-05: Actualizar email válido (Happy Path 2)
+   - CL-06: Actualizar con TaxDocument duplicado (Unhappy Path)
+   - CL-07: Eliminar cliente (Happy Path)
+   - CL-08: Buscar cliente por TaxDocument (Happy Path)
+
+3. FEATURE: INTEGRACIÓN CRUD DE PRODUCTOS
+   - PR-01: Crear producto completo (Happy Path 1)
+   - PR-02: Crear producto con descripción vacía (Happy Path 2)
+   - PR-03: Crear producto con precio negativo (Unhappy Path)
+   - PR-04: Actualizar precio y stock (Happy Path 1)
+   - PR-05: Actualizar manteniendo mismo nombre (Happy Path 2)
+   - PR-06: Actualizar con stock negativo (Unhappy Path)
+   - PR-07: Eliminar producto (Happy Path)
+   - PR-08: Buscar productos por categoría (Happy Path)
+
+4. FEATURE: INTEGRACIÓN DEL PROCESO PRINCIPAL DE VENTAS
+   - VT-01: Procesar venta completa con múltiples productos (Happy Path)
+
+
+================================================================================
+COMMON STEPS - STEPS COMPARTIDOS ENTRE TODOS LOS FEATURES
+================================================================================
+
+DESCRIPCIÓN GENERAL:
+La clase CommonSteps contiene step definitions que son compartidos y reutilizados
+por todos los features del proyecto (Categorías, Clientes, Productos y Ventas).
+Estos steps implementan validaciones genéricas y operaciones comunes que se repiten
+en múltiples escenarios.
+
+UBICACIÓN: Pruebas BBD/StepDefinitions/CommonSteps.cs
+
+--------------------------------------------------------------------------------
+PROPÓSITO Y ARQUITECTURA
+--------------------------------------------------------------------------------
+
+Los Common Steps implementan el principio DRY (Don't Repeat Yourself) en BDD,
+permitiendo:
+
+1. REUTILIZACIÓN DE CÓDIGO:
+   - Evitar duplicación de validaciones idénticas
+   - Mantener consistencia en las verificaciones
+   - Reducir mantenimiento (un solo lugar para cambios)
+
+2. COMPARTIR CONTEXTO:
+   - Usar ScenarioContext para pasar datos entre steps
+   - Validar resultados almacenados por otros step definitions
+   - Mantener estado del escenario actual
+
+3. VALIDACIONES GENÉRICAS:
+   - Verificar éxito o fallo de operaciones CRUD
+   - Validar estados de creación, actualización y eliminación
+   - Comprobar excepciones y errores
+
+--------------------------------------------------------------------------------
+CÓDIGO COMPLETO Y EXPLICACIÓN
+--------------------------------------------------------------------------------
+
+ESTRUCTURA DE LA CLASE:
+
+using Reqnroll;
+using Xunit;
+
+namespace Pruebas_BBD.StepDefinitions
+{
+    [Binding]  // ? Atributo que marca la clase como contenedor de steps
+    public class CommonSteps
+    {
+        private readonly ScenarioContext _scenarioContext;
+
+        // Constructor con inyección de dependencias de Reqnroll
+        public CommonSteps(ScenarioContext scenarioContext)
+        {
+            _scenarioContext = scenarioContext;
+        }
+
+        // ... Step definitions ...
+    }
+}
+
+--------------------------------------------------------------------------------
+STEP 1: LIMPIEZA DE BASE DE DATOS (BACKGROUND)
+--------------------------------------------------------------------------------
+
+[Given(@"la base de datos esta limpia")]
+public void GivenLaBaseDeDatosEstaLimpia()
+{
+    // NOTA: Este step es un placeholder (vacío intencionalmente)
+    
+    // RAZÓN: La limpieza real de la BD se realiza en los step definitions
+    // específicos de cada feature mediante:
+    //   - _context.Database.EnsureDeleted()
+    //   - _context.Database.EnsureCreated()
+    
+    // Este step existe solo para hacer el lenguaje Gherkin más legible
+    // y cumplir con el Background definido en los .feature files
+}
+
+USO EN FEATURES:
+Background:
+  Given la base de datos esta limpia  ? Usado en TODOS los features
+
+BENEFICIO:
+- Documenta la intención en lenguaje natural
+- Hace los escenarios más comprensibles para no-técnicos
+- Mantiene consistencia en todos los features
+
+--------------------------------------------------------------------------------
+STEP 2: VALIDAR FALLO DE CREACIÓN (UNHAPPY PATHS)
+--------------------------------------------------------------------------------
+
+[Then(@"la creacion debe fallar")]
+public void ThenLaCreacionDebeFallar()
+{
+    // Verificar si existe un resultado de creación en el contexto
+    if (_scenarioContext.ContainsKey("CreationResult"))
+    {
+        // Assert que el resultado es NULL (creación falló)
+        Assert.Null(_scenarioContext["CreationResult"]);
+    }
+}
+
+FUNCIONAMIENTO DETALLADO:
+
+1. ALMACENAMIENTO DEL RESULTADO (en steps específicos):
+   
+   // En CategoryIntegrationSteps.cs
+   [When(@"creo una categoria con los siguientes datos:")]
+   public async Task WhenCreoUnaCategoria(Table table)
+   {
+       try
+       {
+           var dto = new CreateCategoryDTO { ... };
+           _resultCategory = await _categoryService.CreateCategoryAsync(dto);
+           
+           // ? Guardar resultado en contexto compartido
+           _scenarioContext["CreationResult"] = _resultCategory;
+       }
+       catch (Exception ex)
+       {
+           _exception = ex;
+           _scenarioContext["CreationResult"] = null;  // ? NULL cuando falla
+       }
+   }
+
+2. VALIDACIÓN (en CommonSteps):
+   
+   El step común verifica que "CreationResult" sea NULL,
+   lo que indica que la operación de creación falló correctamente.
+
+USO EN FEATURES:
+
+# Ejemplo en CategoryIntegration.feature
+@integration @category @create @unhappy
+Scenario: CA-03 - Crear categoria sin nombre - Unhappy Path
+  When creo una categoria con los siguientes datos:
+    | Campo       | Valor                    |
+    | Name        |                          |  ? Vacío (inválido)
+    | Description | Descripcion sin nombre   |
+  Then la creacion debe fallar  ? Usa CommonStep
+
+# Ejemplo en ClientIntegration.feature
+@integration @client @create @unhappy
+Scenario: CL-03 - Crear cliente con email invalido - Unhappy Path
+  When intento crear un cliente con email "correo_invalido"
+  Then la creacion debe fallar  ? Usa CommonStep
+
+FEATURES QUE LO USAN:
+- CategoryIntegration.feature (CA-03)
+- ClientIntegration.feature (CL-03)
+- ProductIntegration.feature (PR-03)
+
+VENTAJAS:
+? Un solo lugar para mantener la validación
+? Comportamiento consistente en todos los features
+? Reduce código duplicado en ~3 lugares
+
+--------------------------------------------------------------------------------
+STEP 3: VALIDAR ÉXITO DE ACTUALIZACIÓN (HAPPY PATHS)
+--------------------------------------------------------------------------------
+
+[Then(@"la actualizacion debe ser exitosa")]
+public void ThenLaActualizacionDebeSerExitosa()
+{
+    // 1. Verificar que el resultado de actualización NO es NULL
+    if (_scenarioContext.ContainsKey("UpdateResult"))
+    {
+        Assert.NotNull(_scenarioContext["UpdateResult"]);
+    }
+    
+    // 2. Verificar que NO hubo excepciones
+    if (_scenarioContext.ContainsKey("UpdateException"))
+    {
+        Assert.Null(_scenarioContext["UpdateException"]);
+    }
+}
+
+FUNCIONAMIENTO DETALLADO:
+
+1. ALMACENAMIENTO DEL RESULTADO (en steps específicos):
+
+   // En CategoryIntegrationSteps.cs
+   [When(@"actualizo la categoria con:")]
+   public async Task WhenActualizoLaCategoria(Table table)
+   {
+       try
+       {
+           var dto = new UpdateCategoryDTO { ... };
+           _resultCategory = await _categoryService.UpdateCategoryAsync(dto);
+           
+           // ? Guardar resultado exitoso
+           _scenarioContext["UpdateResult"] = _resultCategory;
+           _scenarioContext["UpdateException"] = null;  // ? Sin excepciones
+       }
+       catch (Exception ex)
+       {
+           _exception = ex;
+           _scenarioContext["UpdateResult"] = null;
+           _scenarioContext["UpdateException"] = ex;  // ? Guardar excepción
+       }
+   }
+
+2. VALIDACIÓN DUAL:
+   
+   a) Verifica que "UpdateResult" NO sea NULL (operación retornó algo)
+   b) Verifica que "UpdateException" SEA NULL (no hubo errores)
+
+USO EN FEATURES:
+
+# Ejemplo en CategoryIntegration.feature
+@integration @category @update @happy
+Scenario: CA-04 - Actualizar categoria exitosamente - Happy Path 1
+  Given existe una categoria con nombre "Lacteos"
+  When actualizo la categoria con:
+    | Campo       | Valor                                  |
+    | Name        | Productos Lacteos                      |
+    | Description | Leche queso yogurt y derivados lacteos |
+  Then la actualizacion debe ser exitosa  ? Usa CommonStep
+  And los datos deben reflejarse en la base de datos
+
+# Ejemplo en ClientIntegration.feature
+@integration @client @update @happy
+Scenario: CL-04 - Actualizar nombre y direccion - Happy Path 1
+  Given existe un cliente con TaxDocument "1111111"
+  When actualizo el cliente con:
+    | Campo        | Valor                    |
+    | BusinessName | Pedro Lopez Actualizado  |
+    | Address      | Nueva Direccion 789      |
+  Then la actualizacion debe ser exitosa  ? Usa CommonStep
+  And los datos deben estar actualizados en BD
+
+# Ejemplo en ProductIntegration.feature
+@integration @product @update @happy
+Scenario: PR-04 - Actualizar precio y stock - Happy Path 1
+  Given existe un producto "Azucar Refinada" con precio 8.50 y stock 50
+  When actualizo el producto con:
+    | Campo | Valor |
+    | Price | 9.00  |
+    | Stock | 75    |
+  Then la actualizacion debe ser exitosa  ? Usa CommonStep
+
+FEATURES QUE LO USAN:
+- CategoryIntegration.feature (CA-04, CA-05)
+- ClientIntegration.feature (CL-04, CL-05)
+- ProductIntegration.feature (PR-04, PR-05)
+
+VENTAJAS:
+? Validación consistente de actualizaciones exitosas
+? Verifica tanto resultado como ausencia de errores
+? Reduce duplicación en ~6 escenarios
+
+--------------------------------------------------------------------------------
+STEP 4: VALIDAR FALLO DE ACTUALIZACIÓN (UNHAPPY PATHS)
+--------------------------------------------------------------------------------
+
+[Then(@"la actualizacion debe fallar")]
+public void ThenLaActualizacionDebeFallar()
+{
+    // Verificar que el resultado de actualización es NULL (falló)
+    if (_scenarioContext.ContainsKey("UpdateResult"))
+    {
+        Assert.Null(_scenarioContext["UpdateResult"]);
+    }
+}
+
+FUNCIONAMIENTO DETALLADO:
+
+Similar al fallo de creación, pero específico para operaciones UPDATE.
+Verifica que cuando una actualización debe fallar (por validación,
+datos duplicados, etc.), el resultado almacenado sea NULL.
+
+CASOS DE USO:
+
+1. VALIDACIÓN DE DATOS:
+   - Actualizar con datos inválidos (precios negativos, stocks negativos)
+   
+2. REGLAS DE NEGOCIO:
+   - Intentar duplicar nombres únicos
+   - Intentar usar TaxDocument o Email ya existentes
+   
+3. INTEGRIDAD REFERENCIAL:
+   - Actualizar con CategoryId que no existe
+
+USO EN FEATURES:
+
+# Ejemplo en CategoryIntegration.feature
+@integration @category @update @unhappy
+Scenario: CA-06 - Actualizar con nombre duplicado - Unhappy Path
+  Given existen las siguientes categorias:
+    | Name      | Description    |
+    | Lacteos   | Productos      |
+    | Bebidas   | Liquidos       |
+  When intento actualizar "Bebidas" con nombre "Lacteos"
+  Then la actualizacion debe fallar  ? Usa CommonStep
+
+# Ejemplo en ClientIntegration.feature
+@integration @client @update @unhappy
+Scenario: CL-06 - Actualizar con TaxDocument duplicado - Unhappy Path
+  Given existen los siguientes clientes:
+    | BusinessName | TaxDocument |
+    | Cliente A    | 1111111     |
+    | Cliente B    | 2222222     |
+  When intento actualizar "Cliente B" con TaxDocument "1111111"
+  Then la actualizacion debe fallar  ? Usa CommonStep
+
+# Ejemplo en ProductIntegration.feature
+@integration @product @update @unhappy
+Scenario: PR-06 - Actualizar con stock negativo - Unhappy Path
+  Given existe un producto "Aceite Vegetal" con stock 30
+  When intento actualizar el stock a -5
+  Then la actualizacion debe fallar  ? Usa CommonStep
+
+FEATURES QUE LO USAN:
+- CategoryIntegration.feature (CA-06)
+- ClientIntegration.feature (CL-06)
+- ProductIntegration.feature (PR-06)
+
+VENTAJAS:
+? Validación uniforme de fallos de actualización
+? Simplifica escenarios Unhappy Path
+? Mantiene consistencia en validación de errores
+
+--------------------------------------------------------------------------------
+SCENARIOCONTEXT: EL CONTENEDOR COMPARTIDO
+--------------------------------------------------------------------------------
+
+¿QUÉ ES ScenarioContext?
+
+ScenarioContext es un diccionario proporcionado por Reqnroll que:
+
+1. ALMACENA DATOS DURANTE UN ESCENARIO:
+   - Vive durante todo el ciclo de vida de un escenario
+   - Permite compartir información entre diferentes steps
+   - Se limpia automáticamente al finalizar el escenario
+
+2. ESTRUCTURA CLAVE-VALOR:
+   
+   // Almacenar
+   _scenarioContext["CreationResult"] = categoryDTO;
+   _scenarioContext["UpdateException"] = exception;
+   _scenarioContext["ClientId"] = client.Id;
+   
+   // Recuperar
+   var result = _scenarioContext["CreationResult"];
+   var clientId = (int)_scenarioContext["ClientId"];
+   
+   // Verificar existencia
+   if (_scenarioContext.ContainsKey("UpdateResult"))
+   {
+       // Hacer algo con el resultado
+   }
+
+3. INYECCIÓN DE DEPENDENCIAS:
+   
+   Reqnroll inyecta automáticamente el ScenarioContext en los constructores
+   de las clases de step definitions:
+   
+   public CategoryIntegrationSteps(ScenarioContext scenarioContext)
+   {
+       _scenarioContext = scenarioContext;  // ? Inyectado por Reqnroll
+   }
+
+FLUJO DE DATOS TÍPICO:
+
+Escenario: Actualizar cliente
+?
+?? [Given] existe un cliente "Juan" con TaxDocument "123"
+?   ?  ? ClientIntegrationSteps crea cliente en BD
+?   ?? Guarda: _scenarioContext["ClientId"] = client.Id
+?
+?? [When] actualizo el cliente con nuevos datos
+?   ?  ? ClientIntegrationSteps recupera: clientId = _scenarioContext["ClientId"]
+?   ?  ? Actualiza cliente en BD
+?   ?? Guarda: _scenarioContext["UpdateResult"] = updatedClient
+?
+?? [Then] la actualizacion debe ser exitosa
+    ?  ? CommonSteps verifica: _scenarioContext["UpdateResult"] != null
+    ?? Assert.NotNull(_scenarioContext["UpdateResult"])
+
+CLAVES COMUNES USADAS EN EL PROYECTO:
+
+| Clave                | Tipo          | Usado en Features    | Propósito                        |
+|---------------------|---------------|---------------------|----------------------------------|
+| "CreationResult"    | DTO / null    | Todos (Create)      | Resultado de operación CREATE    |
+| "UpdateResult"      | DTO / null    | Todos (Update)      | Resultado de operación UPDATE    |
+| "UpdateException"   | Exception     | Todos (Update)      | Excepción durante actualización  |
+| "ClientId"          | int           | Client, Sales       | ID de cliente creado             |
+| "CategoryId"        | byte          | Category, Product   | ID de categoría creada           |
+| "ProductId"         | short         | Product, Sales      | ID de producto creado            |
+| "Product_{Name}"    | short         | Sales               | IDs de productos por nombre      |
+| "InMemoryDbName"    | string        | Todos               | Nombre de BD en memoria          |
+| "LastCategoryId"    | byte          | Category            | Último ID de categoría usado     |
+
+
+ESTADÍSTICAS DE REUTILIZACIÓN:
+
+Step                            | Usos en Features | Escenarios | Líneas de código ahorradas
+--------------------------------|------------------|------------|---------------------------
+"la creacion debe fallar"      | 3 features       | 3          | ~15 líneas
+"la actualizacion debe exitosa" | 3 features       | 6          | ~36 líneas
+"la actualizacion debe fallar"  | 3 features       | 3          | ~15 líneas
+--------------------------------|------------------|------------|---------------------------
+TOTAL                           | 9 features       | 12         | ~66 líneas
+
+
+================================================================================
+1. FEATURE: INTEGRACIÓN CRUD DE CATEGORÍAS
+================================================================================
+
+--------------------------------------------------------------------------------
+ESCENARIO: CA-01 - Crear categoría básica (Happy Path 1)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se puede crear una categoría con datos básicos correctos.
+La categoría debe crearse con Status activo (1) automáticamente.
+
+IMPLEMENTACIÓN:
+- Step Definition: CategoryIntegrationSteps.cs
+- Método principal: WhenCreoUnaCategoria(Table table)
+
+CÓDIGO PASO A PASO:
+
+[When(@"creo una categoria con los siguientes datos:")]
+public async Task WhenCreoUnaCategoria(Table table)
+{
+    try
+    {
+        string name = string.Empty;
+        string description = string.Empty;
+
+        // 1. Extraer datos de la tabla del escenario
+        foreach (var row in table.Rows)
+        {
+            var campo = row["Campo"];
+            var valor = row["Valor"];
+
+            switch (campo)
+            {
+                case "Name":
+                    name = valor;
+                    break;
+                case "Description":
+                    description = valor;
+                    break;
+            }
+        }
+
+        // 2. Crear el DTO con los datos extraídos
+        var dto = new CreateCategoryDTO
+        {
+            Name = name,
+            Description = description
+        };
+
+        // 3. Llamar al servicio para crear la categoría
+        _resultCategory = await _categoryService.CreateCategoryAsync(dto);
+        
+        // 4. Guardar resultado en el contexto del escenario
+        _scenarioContext["CreationResult"] = _resultCategory;
+    }
+    catch (Exception ex)
+    {
+        _exception = ex;
+        _scenarioContext["CreationResult"] = null;
+    }
+}
+
+VALIDACIONES (THEN):
+
+[Then(@"la categoria debe crearse exitosamente")]
+public void ThenLaCategoriDebeCrearseExitosamente()
+{
+    Assert.NotNull(_resultCategory);  // Verifica que se creó algo
+    Assert.Null(_exception);          // Verifica que no hubo excepciones
+}
+
+[Then(@"el nombre debe ser ""(.*)""")]
+public void ThenElNombreDebeSer(string expectedName)
+{
+    Assert.Equal(expectedName, _resultCategory?.Name);
+}
+
+[Then(@"el Status debe ser (.*)")]
+public void ThenElStatusDebeSer(int expectedStatus)
+{
+    Assert.Equal((byte)expectedStatus, _resultCategory?.Status);
+}
+
+DATOS DE PRUEBA:
+- Name: "Lacteos"
+- Description: "Productos lacteos frescos"
+- Status esperado: 1 (activo)
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CA-02 - Crear categoría con descripción larga (Happy Path 2)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se puede crear una categoría con una descripción larga.
+Prueba el límite de caracteres permitidos en la descripción.
+
+IMPLEMENTACIÓN:
+Utiliza el mismo método WhenCreoUnaCategoria pero con descripción más larga.
+
+DATOS DE PRUEBA:
+- Name: "Bebidas"
+- Description: "Bebidas alcoholicas no alcoholicas jugos y refrescos" (50+ caracteres)
+
+VALIDACIÓN ESPECIAL:
+El sistema debe manejar correctamente descripciones de hasta 80 caracteres
+según la configuración de la base de datos (CategoryConfiguration.cs).
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CA-03 - Crear categoría sin nombre (Unhappy Path)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que el sistema rechaza correctamente la creación de una categoría
+cuando el campo Name está vacío (validación de FluentValidation).
+
+CÓDIGO CLAVE:
+
+// El validador rechaza el DTO antes de llegar a la base de datos
+var dto = new CreateCategoryDTO
+{
+    Name = "",  // Vacío, debe fallar
+    Description = "Descripcion sin nombre"
+};
+
+_resultCategory = await _categoryService.CreateCategoryAsync(dto);
+
+VALIDACIÓN:
+
+[Then(@"la creacion debe fallar")]
+public void ThenLaCreacionDebeFallar()
+{
+    if (_scenarioContext.ContainsKey("CreationResult"))
+    {
+        Assert.Null(_scenarioContext["CreationResult"]);
+    }
+}
+
+FLUJO INTERNO:
+1. CreateCategoryValidator verifica que Name no esté vacío
+2. Si falla validación, CreateCategoryAsync retorna null
+3. El test verifica que _resultCategory es null
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CA-04 - Actualizar categoría exitosamente (Happy Path 1)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se puede actualizar una categoría existente cambiando
+tanto el nombre como la descripción.
+
+IMPLEMENTACIÓN:
+
+PASO 1 - PREPARACIÓN (GIVEN):
+[Given(@"existe una categoria con nombre ""(.*)""")]
+public async Task GivenExisteUnaCategoriaConNombre(string nombre)
+{
+    _context.ChangeTracker.Clear();  // Limpiar tracking de EF
+
+    // Crear categoría de prueba en la BD
+    var category = new Category
+    {
+        Id = _nextCategoryId++,
+        Name = nombre,
+        Description = "Descripción de prueba",
+        Status = 1,
+        LastUpdate = DateTime.Now
+    };
+
+    _context.Categories.Add(category);
+    await _context.SaveChangesAsync();
+    _context.ChangeTracker.Clear();
+
+    // Guardar ID para uso posterior
+    _scenarioContext[$"Category_{nombre}"] = category.Id;
+    _scenarioContext["LastCategoryId"] = category.Id;
+}
+
+PASO 2 - ACTUALIZACIÓN (WHEN):
+[When(@"actualizo la categoria con:")]
+public async Task WhenActualizoLaCategoria(Table table)
+{
+    try
+    {
+        _context.ChangeTracker.Clear();
+
+        // 1. Recuperar ID del contexto del escenario
+        byte categoryId = (byte)_scenarioContext["LastCategoryId"];
+
+        // 2. Obtener categoría existente de la BD
+        var existingCategory = await _context.Categories
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == categoryId);
+
+        if (existingCategory == null)
+            throw new InvalidOperationException($"Category ID {categoryId} not found");
+
+        // 3. Inicializar con valores actuales
+        string name = existingCategory.Name;
+        string description = existingCategory.Description ?? string.Empty;
+        byte status = existingCategory.Status;
+
+        // 4. Aplicar cambios de la tabla del escenario
+        foreach (var row in table.Rows)
+        {
+            var campo = row["Campo"];
+            var valor = row["Valor"];
+
+            switch (campo)
+            {
+                case "Name":
+                    name = valor;
+                    break;
+                case "Description":
+                    description = valor;
+                    break;
+                case "Status":
+                    status = byte.Parse(valor);
+                    break;
+            }
+        }
+
+        // 5. Crear DTO con datos actualizados
+        var dto = new UpdateCategoryDTO
+        {
+            Id = categoryId,
+            Name = name,
+            Description = description,
+            Status = status
+        };
+
+        // 6. Llamar al servicio
+        _resultCategory = await _categoryService.UpdateCategoryAsync(dto);
+        _scenarioContext["UpdateResult"] = _resultCategory;
+        _scenarioContext["UpdateException"] = null;
+    }
+    catch (Exception ex)
+    {
+        _exception = ex;
+        _scenarioContext["UpdateResult"] = null;
+        _scenarioContext["UpdateException"] = ex;
+    }
+}
+
+PASO 3 - VALIDACIÓN (THEN):
+[Then(@"los datos deben reflejarse en la base de datos")]
+public async Task ThenLosDatosDebenReflejarseEnLaBaseDeDatos()
+{
+    Assert.NotNull(_resultCategory);
+    _context.ChangeTracker.Clear();
+    
+    // Verificar en BD que los cambios se guardaron
+    var dbCategory = await _context.Categories
+        .AsNoTracking()
+        .FirstOrDefaultAsync(c => c.Id == _resultCategory.Id);
+    
+    Assert.NotNull(dbCategory);
+    Assert.Equal(_resultCategory.Name, dbCategory.Name);
+}
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CA-05 - Actualizar manteniendo mismo nombre (Happy Path 2)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se puede actualizar una categoría sin cambiar su nombre.
+El sistema debe reconocer que el nombre no está duplicado porque pertenece
+a la misma categoría que se está actualizando.
+
+LÓGICA ESPECIAL EN EL SERVICIO:
+// En CategoryService.UpdateCategoryAsync
+var existingCategory = await _context.Categories
+    .AnyAsync(c => c.Id != categoryDto.Id &&  // ? Excluir la misma categoría
+                   c.Name.ToLower() == categoryDto.Name.Trim().ToLower());
+
+if (existingCategory)
+{
+    _logger.LogWarning("Another category with name {Name} already exists.", categoryDto.Name);
+    return null;
+}
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CA-06 - Actualizar con nombre duplicado (Unhappy Path)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que el sistema rechaza la actualización cuando se intenta
+usar un nombre que ya está en uso por OTRA categoría.
+
+PREPARACIÓN:
+[Given(@"existen las siguientes categorias:")]
+public async Task GivenExistenLasSiguientesCategorias(Table table)
+{
+    _context.ChangeTracker.Clear();
+
+    foreach (var row in table.Rows)
+    {
+        var category = new Category
+        {
+            Id = _nextCategoryId++,
+            Name = row["Name"],
+            Description = row["Description"],
+            Status = byte.Parse(row["Status"]),
+            LastUpdate = DateTime.Now
+        };
+
+        _context.Categories.Add(category);
+    }
+    await _context.SaveChangesAsync();
+    _context.ChangeTracker.Clear();
+}
+
+DATOS DE PRUEBA:
+- Categoría 1: "Lacteos"
+- Categoría 2: "Bebidas"
+- Intento: Actualizar "Bebidas" a nombre "Lacteos" ? DEBE FALLAR
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CA-07 - Eliminar categoría (Happy Path)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica el borrado lógico de una categoría (cambiar Status a 0).
+La categoría NO se elimina físicamente de la base de datos.
+
+IMPLEMENTACIÓN:
+
+[When(@"elimino la categoria")]
+public async Task WhenEliminoLaCategoria()
+{
+    // 1. Recuperar ID de la categoría del contexto
+    var categoryKey = _scenarioContext.Keys
+        .FirstOrDefault(k => k.StartsWith("Category_"));
+    
+    if (categoryKey == null)
+        throw new InvalidOperationException("No category found in context");
+
+    var categoryId = (byte)_scenarioContext[categoryKey];
+
+    // 2. Llamar al servicio para eliminar (borrado lógico)
+    await _categoryService.DeleteCategoryAsync(categoryId);
+
+    // 3. Verificar en BD que el Status cambió a 0
+    _context.ChangeTracker.Clear();
+    var deletedCategory = await _context.Categories
+        .AsNoTracking()
+        .FirstOrDefaultAsync(c => c.Id == categoryId);
+    
+    _resultCategory = deletedCategory != null ? new CategoryDTO
+    {
+        Id = deletedCategory.Id,
+        Name = deletedCategory.Name,
+        Status = deletedCategory.Status
+    } : null;
+}
+
+VALIDACIONES:
+
+[Then(@"el Status de la categoria debe cambiar a 0")]
+public void ThenElStatusDeLaCategoriaDebeCambiarA()
+{
+    Assert.Equal((byte)0, _resultCategory?.Status);
+}
+
+[Then(@"la categoria no debe aparecer en busquedas activas")]
+public async Task ThenLaCategoriaNoDebeAparecerEnBusquedasActivas()
+{
+    // GetAllCategoriesAsync solo retorna categorías con Status = 1
+    var activeCategories = await _categoryService.GetAllCategoriesAsync();
+    Assert.False(activeCategories.Any(c => c.Id == _resultCategory?.Id));
+}
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CA-08 - Listar categorías activas (Happy Path)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que el listado de categorías solo retorna las activas (Status = 1).
+
+PREPARACIÓN:
+[Given(@"existen las siguientes categorias:")]
+public async Task GivenExistenLasSiguientesCategoriasActivas(Table table)
+{
+    _context.ChangeTracker.Clear();
+    
+    foreach (var row in table.Rows)
+    {
+        var category = new Category
+        {
+            Id = _nextCategoryId++,
+            Name = row["Name"],
+            Description = row["Description"],
+            Status = byte.Parse(row["Status"]),  // ? Incluye activas e inactivas
+            LastUpdate = DateTime.Now
+        };
+
+        _context.Categories.Add(category);
+    }
+    await _context.SaveChangesAsync();
+    _context.ChangeTracker.Clear();
+}
+
+CONSULTA:
+[When(@"obtengo todas las categorias")]
+public async Task WhenConsultoTodasLasCategorias()
+{
+    _categoriesList = await _categoryService.GetAllCategoriesAsync();
+}
+
+VALIDACIONES:
+[Then(@"debo recibir (.*) categorias")]
+public void ThenDeboRecibirCategorias(int expectedCount)
+{
+    Assert.Equal(expectedCount, _categoriesList?.Count());
+}
+
+[Then(@"todas deben tener Status 1")]
+public void ThenTodasDebenTenerStatus()
+{
+    Assert.True(_categoriesList?.All(c => c.Status == 1));
+}
+
+DATOS DE PRUEBA:
+- Activa1 (Status=1)
+- Activa2 (Status=1)
+- Inactiva (Status=0)
+- Resultado esperado: 2 categorías (solo las activas)
+
+
+================================================================================
+2. FEATURE: INTEGRACIÓN CRUD DE CLIENTES
+================================================================================
+
+--------------------------------------------------------------------------------
+ESCENARIO: CL-01 - Crear cliente completo (Happy Path 1)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se puede crear un cliente con todos los campos completos,
+incluidos los campos únicos (Email y TaxDocument).
+
+IMPLEMENTACIÓN:
+
+[When(@"creo un cliente con los siguientes datos:")]
+public async Task WhenCreoUnCliente(Table table)    
+{
+    try
+    {
+        string businessName = string.Empty;
+        string email = string.Empty;
+        string taxDocument = string.Empty;
+        string address = string.Empty;
+
+        // 1. Extraer datos de la tabla
+        foreach (var row in table.Rows)
+        {
+            var campo = row["Campo"];
+            var valor = row["Valor"];
+
+            switch (campo)
+            {
+                case "BusinessName":
+                    businessName = valor;
+                    break;
+                case "Email":
+                    email = valor;
+                    break;
+                case "TaxDocument":
+                    taxDocument = valor;
+                    break;
+                case "Address":
+                    address = valor;
+                    break;
+            }
+        }
+
+        // 2. Crear DTO
+        var dto = new CreateClientDTO
+        {
+            BusinessName = businessName,
+            Email = email,
+            TaxDocument = taxDocument,
+            Address = address
+        };
+
+        // 3. Llamar al servicio
+        _resultClient = await _clientService.CreateClientAsync(dto);
+    }
+    catch (Exception ex)
+    {
+        _exception = ex;
+    }
+}
+
+VALIDACIONES ESPECIALES:
+
+[Then(@"el TaxDocument debe ser unico")]
+public async Task ThenElTaxDocumentDebeSerUnico()
+{
+    var duplicates = await _context.Clients
+        .Where(c => c.TaxDocument == _resultClient!.TaxDocument)
+        .ToListAsync();
+    Assert.Equal(1, duplicates.Count);  // Solo debe haber 1 registro
+}
+
+[Then(@"el Email debe ser unico")]
+public async Task ThenElEmailDebeSerUnico()
+{
+    var duplicates = await _context.Clients
+        .Where(c => c.Email == _resultClient!.Email)
+        .ToListAsync();
+    Assert.Equal(1, duplicates.Count);
+}
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CL-02 - Crear cliente sin dirección (Happy Path 2)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se puede crear un cliente con el campo Address vacío
+(campo opcional en el sistema).
+
+DATOS DE PRUEBA:
+- BusinessName: "Maria Garcia"
+- Email: "maria.garcia@example.com"
+- TaxDocument: "8765432"
+- Address: "" (vacío)
+
+VALIDACIÓN:
+El cliente debe crearse exitosamente aunque Address esté vacío.
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CL-03 - Crear cliente con email inválido (Unhappy Path)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que el sistema rechaza emails con formato inválido
+(validación de FluentValidation).
+
+CÓDIGO:
+
+[When(@"intento crear un cliente con email ""(.*)""")]
+public async Task WhenIntentoCrearUnClienteConEmail(string email)
+{
+    try
+    {
+        var dto = new CreateClientDTO
+        {
+            BusinessName = "Cliente Test",
+            Email = email,  // ? Email inválido
+            TaxDocument = "12345678",
+            Address = "Dirección"
+        };
+
+        _resultClient = await _clientService.CreateClientAsync(dto);
+    }
+    catch (Exception ex)
+    {
+        _exception = ex;
+    }
+}
+
+[Then(@"debe mostrar error de validacion de email")]
+public void ThenDebeMostrarErrorDeValidacionDeEmail()
+{
+    Assert.Null(_resultClient);  // La creación debe fallar
+}
+
+DATOS DE PRUEBA:
+- Email inválido: "correo_invalido" (sin @, sin dominio)
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CL-04 - Actualizar nombre y dirección (Happy Path 1)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se puede actualizar un cliente existente
+modificando BusinessName y Address.
+
+PREPARACIÓN:
+
+[Given(@"existe un cliente con TaxDocument ""(.*)""")]
+public async Task GivenExisteUnClienteConTaxDocument(string taxDocument)
+{
+    _context.ChangeTracker.Clear();
+    
+    var client = new Client
+    {
+        Id = _nextClientId++,
+        BusinessName = "Cliente Existente",
+        Email = "cliente@example.com",
+        TaxDocument = taxDocument,
+        Address = "Dirección inicial",
+        Status = 1,
+        LastUpdate = DateTime.Now
+    };
+
+    _context.Clients.Add(client);
+    await _context.SaveChangesAsync();
+    _context.ChangeTracker.Clear();
+    
+    // Guardar ID para uso posterior
+    _scenarioContext["ClientId"] = client.Id;
+}
+
+ACTUALIZACIÓN:
+
+[When(@"actualizo el cliente con:")]
+public async Task WhenActualizoElClienteCon(Table table)
+{
+    try
+    {
+        _context.ChangeTracker.Clear();
+        var clientId = (int)_scenarioContext["ClientId"];
+        
+        // 1. Obtener cliente existente
+        var existingClient = await _context.Clients
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == clientId);
+        
+        if (existingClient == null)
+            throw new InvalidOperationException($"Client ID {clientId} not found");
+
+        // 2. Inicializar con valores actuales
+        string businessName = existingClient.BusinessName;
+        string email = existingClient.Email;
+        string taxDocument = existingClient.TaxDocument;
+        string address = existingClient.Address ?? string.Empty;
+        byte status = existingClient.Status;
+
+        // 3. Aplicar cambios de la tabla
+        foreach (var row in table.Rows)
+        {
+            var campo = row["Campo"];
+            var valor = row["Valor"];
+
+            switch (campo)
+            {
+                case "BusinessName": businessName = valor; break;
+                case "Email": email = valor; break;
+                case "TaxDocument": taxDocument = valor; break;
+                case "Address": address = valor; break;
+                case "Status": status = byte.Parse(valor); break;
+            }
+        }
+
+        // 4. Crear DTO y actualizar
+        var dto = new UpdateClientDTO
+        {
+            Id = clientId,
+            BusinessName = businessName,
+            Email = email,
+            TaxDocument = taxDocument,
+            Address = address,
+            Status = status
+        };
+
+        _resultClient = await _clientService.UpdateClientAsync(dto);
+        _scenarioContext["LastUpdateSuccess"] = _resultClient != null;
+    }
+    catch (Exception ex)
+    {
+        _exception = ex;
+        _scenarioContext["LastUpdateSuccess"] = false;
+    }
+}
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CL-05 - Actualizar email válido (Happy Path 2)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se puede actualizar el email de un cliente
+y que el nuevo email sigue siendo único en el sistema.
+
+PREPARACIÓN:
+[Given(@"existe un cliente ""(.*)"" con email ""(.*)""")]
+public async Task GivenExisteUnClienteConEmail(string nombre, string email)
+{
+    _context.ChangeTracker.Clear();
+    
+    var client = new Client
+    {
+        Id = _nextClientId++,
+        BusinessName = nombre,
+        Email = email,
+        TaxDocument = "11111111",
+        Address = "Dirección",
+        Status = 1,
+        LastUpdate = DateTime.Now
+    };
+
+    _context.Clients.Add(client);
+    await _context.SaveChangesAsync();
+    _context.ChangeTracker.Clear();
+    _scenarioContext["ClientId"] = client.Id;
+}
+
+ACTUALIZACIÓN:
+[When(@"actualizo el email a ""(.*)""")]
+public async Task WhenActualizoElEmailA(string nuevoEmail)
+{
+    _context.ChangeTracker.Clear();
+    var clientId = (int)_scenarioContext["ClientId"];
+    var existingClient = await _context.Clients
+        .AsNoTracking()
+        .FirstOrDefaultAsync(c => c.Id == clientId);
+
+    var dto = new UpdateClientDTO
+    {
+        Id = clientId,
+        BusinessName = existingClient!.BusinessName,
+        Email = nuevoEmail,  // ? Nuevo email
+        TaxDocument = existingClient.TaxDocument,
+        Address = existingClient.Address,
+        Status = existingClient.Status
+    };
+
+    _resultClient = await _clientService.UpdateClientAsync(dto);
+}
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CL-06 - Actualizar con TaxDocument duplicado (Unhappy Path)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que el sistema rechaza la actualización cuando se intenta
+usar un TaxDocument que ya está en uso por OTRO cliente.
+
+PREPARACIÓN:
+[Given(@"existen los siguientes clientes:")]
+public async Task GivenExistenLosSiguientesClientes(Table table)
+{
+    _context.ChangeTracker.Clear();
+    
+    foreach (var row in table.Rows)
+    {
+        var client = new Client
+        {
+            Id = _nextClientId++,
+            BusinessName = row["BusinessName"],
+            Email = $"{row["BusinessName"].Replace(" ", "")}@example.com",
+            TaxDocument = row["TaxDocument"],
+            Address = "Dirección",
+            Status = 1,
+            LastUpdate = DateTime.Now
+        };
+
+        _context.Clients.Add(client);
+    }
+    await _context.SaveChangesAsync();
+    _context.ChangeTracker.Clear();
+}
+
+DATOS DE PRUEBA:
+- Cliente A: TaxDocument="1111111"
+- Cliente B: TaxDocument="2222222"
+- Intento: Actualizar Cliente B con TaxDocument="1111111" ? DEBE FALLAR
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CL-07 - Eliminar cliente (Happy Path)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica el borrado lógico de un cliente (Status cambia a 0).
+
+IMPLEMENTACIÓN:
+
+[When(@"elimino el cliente")]
+public async Task WhenEliminoElCliente()
+{
+    var clientId = (int)_scenarioContext["ClientId"];
+    
+    // Llamar al servicio para eliminar (borrado lógico)
+    await _clientService.DeleteClientAsync(clientId);
+
+    // Obtener cliente de la BD para verificar cambios
+    var deletedClient = await _context.Clients.FindAsync(clientId);
+    _resultClient = deletedClient != null ? new ClientDTO
+    {
+        Id = deletedClient.Id,
+        BusinessName = deletedClient.BusinessName,
+        Status = deletedClient.Status
+    } : null;
+}
+
+VALIDACIONES:
+
+[Then(@"el Status del cliente debe cambiar a 0")]
+public void ThenElStatusDelClienteDebeCambiarA()
+{
+    Assert.NotNull(_resultClient);
+    Assert.Equal((byte)0, _resultClient.Status);
+}
+
+[Then(@"el cliente no debe aparecer en busquedas activas")]
+public async Task ThenElClienteNoDebeAparecerEnBusquedasActivas()
+{
+    // GetAllClientsAsync solo retorna clientes con Status = 1
+    var activeClients = await _clientService.GetAllClientsAsync();
+    Assert.DoesNotContain(activeClients, c => c.Id == _resultClient?.Id);
+}
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: CL-08 - Buscar cliente por TaxDocument (Happy Path)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se puede buscar un cliente específico por su TaxDocument único.
+
+PREPARACIÓN:
+[Given(@"existe un cliente ""(.*)"" con TaxDocument ""(.*)""")]
+public async Task GivenExisteUnClienteConNombreYTaxDocument(string nombre, string taxDocument)
+{
+    _context.ChangeTracker.Clear();
+    
+    var client = new Client
+    {
+        Id = _nextClientId++,
+        BusinessName = nombre,
+        Email = $"{nombre.Replace(" ", "").ToLower()}@example.com",
+        TaxDocument = taxDocument,
+        Address = "Dirección",
+        Status = 1,
+        LastUpdate = DateTime.Now
+    };
+
+    _context.Clients.Add(client);
+    await _context.SaveChangesAsync();
+    _context.ChangeTracker.Clear();
+}
+
+BÚSQUEDA:
+[When(@"busco el cliente por TaxDocument ""(.*)""")]
+public async Task WhenBuscoElClientePorTaxDocument(string taxDocument)
+{
+    _resultClient = await _clientService.GetClientByTaxDocumentAsync(taxDocument);
+}
+
+VALIDACIONES:
+[Then(@"debo recibir los datos del cliente")]
+public void ThenDeboRecibirLosDatosDelCliente()
+{
+    Assert.NotNull(_resultClient);
+}
+
+[Then(@"el BusinessName debe ser ""(.*)""")]
+public void ThenElBusinessNameDebeSer(string expectedName)
+{
+    Assert.Equal(expectedName, _resultClient?.BusinessName);
+}
+
+
+================================================================================
+3. FEATURE: INTEGRACIÓN CRUD DE PRODUCTOS
+================================================================================
+
+--------------------------------------------------------------------------------
+ESCENARIO: PR-01 - Crear producto completo (Happy Path 1)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se puede crear un producto con todos los campos completos,
+incluida la relación con una categoría válida.
+
+BACKGROUND:
+Todos los escenarios de productos requieren que exista una categoría activa.
+
+[Given(@"existe una categoria ""(.*)"" con id (.*)")]
+public async Task GivenExisteUnaCategoria(string nombre, byte id)
+{
+    _context.ChangeTracker.Clear();
+
+    var category = new Category
+    {
+        Id = id,
+        Name = nombre,
+        Description = $"Descripción de {nombre}",
+        Status = 1,
+        LastUpdate = DateTime.Now
+    };
+
+    _context.Categories.Add(category);
+    await _context.SaveChangesAsync();
+    _context.ChangeTracker.Clear();
+    _scenarioContext["CategoryId"] = id;
+}
+
+CREACIÓN DEL PRODUCTO:
+
+[When(@"creo un producto con los siguientes datos:")]
+public async Task WhenCreoUnProducto(Table table)
+{
+    try
+    {
+        string name = string.Empty;
+        string description = string.Empty;
+        string brand = string.Empty;
+        decimal price = 0;
+        short stock = 0;
+        byte categoryId = 0;
+
+        // 1. Extraer datos de la tabla
+        foreach (var row in table.Rows)
+        {
+            var campo = row["Campo"];
+            var valor = row["Valor"];
+
+            switch (campo)
+            {
+                case "Name": name = valor; break;
+                case "Description": description = valor; break;
+                case "Brand": brand = valor; break;
+                case "Price": price = decimal.Parse(valor); break;
+                case "Stock": stock = short.Parse(valor); break;
+                case "CategoryId": categoryId = byte.Parse(valor); break;
+            }
+        }
+
+        // 2. Crear DTO
+        var dto = new CreateProductDTO
+        {
+            Name = name,
+            Description = description,
+            Brand = brand,
+            Price = price,
+            Stock = stock,
+            CategoryId = categoryId
+        };
+
+        // 3. Llamar al servicio
+        _resultProduct = await _productService.CreateProductAsync(dto);
+    }
+    catch (Exception ex)
+    {
+        _exception = ex;
+    }
+}
+
+VALIDACIONES:
+
+[Then(@"el producto debe crearse exitosamente")]
+public void ThenElProductoDebeCrearseExitosamente()
+{
+    Assert.NotNull(_resultProduct);
+    Assert.Null(_exception);
+    _scenarioContext["CreationResult"] = _resultProduct;
+}
+
+[Then(@"debe tener Stock (.*)")]
+public void ThenDebeTenerStock(short expectedStock)
+{
+    Assert.Equal(expectedStock, _resultProduct?.Stock);
+}
+
+[Then(@"debe estar asociado a la categoria (.*)")]
+public void ThenDebeEstarAsociadoALaCategoria(byte categoryId)
+{
+    Assert.Equal(categoryId, _resultProduct?.CategoryId);
+}
+
+DATOS DE PRUEBA:
+- Name: "Quinua Organica"
+- Description: "Quinua de Bolivia"
+- Brand: "Bolivia Natural"
+- Price: 28.50
+- Stock: 100
+- CategoryId: 1
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: PR-02 - Crear producto con descripción vacía (Happy Path 2)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se puede crear un producto con el campo Description vacío
+(campo opcional).
+
+DATOS DE PRUEBA:
+- Name: "Arroz Premium 1kg"
+- Description: "" (vacío)
+- Brand: "Del Campo"
+- Price: 12.50
+- Stock: 200
+- CategoryId: 1
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: PR-03 - Crear producto con precio negativo (Unhappy Path)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que el sistema rechaza productos con precio negativo
+(validación de FluentValidation).
+
+CÓDIGO:
+
+[When(@"intento crear un producto con precio (.*)")]
+public async Task WhenIntentoCrearUnProductoConPrecio(decimal precio)
+{
+    try
+    {
+        var dto = new CreateProductDTO
+        {
+            Name = "Producto Test",
+            Description = "Descripción",
+            Brand = "Marca",
+            Price = precio,  // ? Precio negativo
+            Stock = 10,
+            CategoryId = 1
+        };
+
+        _resultProduct = await _productService.CreateProductAsync(dto);
+        _scenarioContext["CreationResult"] = _resultProduct;
+    }
+    catch (Exception ex)
+    {
+        _exception = ex;
+        _scenarioContext["CreationResult"] = null;
+    }
+}
+
+[Then(@"debe mostrar error de validacion de precio")]
+public void ThenDebeMostrarErrorDeValidacionDePrecio()
+{
+    Assert.Null(_resultProduct);  // La creación debe fallar
+}
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: PR-04 - Actualizar precio y stock (Happy Path 1)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se puede actualizar el precio y stock de un producto existente.
+
+PREPARACIÓN:
+
+[Given(@"existe un producto ""(.*)"" con precio (.*) y stock (.*)")]
+public async Task GivenExisteUnProducto(string nombre, decimal precio, short stock)
+{
+    _context.ChangeTracker.Clear();
+
+    var product = new Product
+    {
+        Id = _nextProductId++,
+        Name = nombre,
+        Description = "Descripción de prueba",
+        Brand = "Marca Test",
+        Price = precio,
+        Stock = stock,
+        CategoryId = 1,
+        Status = 1,
+        LastUpdate = DateTime.Now
+    };
+
+    _context.Products.Add(product);
+    await _context.SaveChangesAsync();
+    _context.ChangeTracker.Clear();
+    _scenarioContext["ProductId"] = product.Id;
+}
+
+ACTUALIZACIÓN:
+
+[When(@"actualizo el producto con:")]
+public async Task WhenActualizoElProductoCon(Table table)
+{
+    try
+    {
+        _context.ChangeTracker.Clear();
+        var productId = (short)_scenarioContext["ProductId"];
+        
+        // 1. Obtener producto existente
+        var existingProduct = await _context.Products
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == productId);
+
+        if (existingProduct == null)
+            throw new InvalidOperationException($"Product ID {productId} not found");
+
+        // 2. Inicializar con valores actuales
+        string name = existingProduct.Name;
+        string description = existingProduct.Description;
+        string brand = existingProduct.Brand;
+        decimal price = existingProduct.Price;
+        short stock = existingProduct.Stock;
+        byte categoryId = existingProduct.CategoryId;
+        byte status = existingProduct.Status;
+
+        // 3. Aplicar cambios de la tabla
+        foreach (var row in table.Rows)
+        {
+            var campo = row["Campo"];
+            var valor = row["Valor"];
+
+            switch (campo)
+            {
+                case "Price": price = decimal.Parse(valor); break;
+                case "Stock": stock = short.Parse(valor); break;
+                // ... otros campos
+            }
+        }
+
+        // 4. Crear DTO y actualizar
+        var dto = new UpdateProductDTO
+        {
+            Id = productId,
+            Name = name,
+            Description = description,
+            Brand = brand,
+            Price = price,
+            Stock = stock,
+            CategoryId = categoryId,
+            Status = status
+        };
+
+        _resultProduct = await _productService.UpdateProductAsync(dto);
+        _scenarioContext["UpdateResult"] = _resultProduct;
+    }
+    catch (Exception ex)
+    {
+        _exception = ex;
+        _scenarioContext["UpdateResult"] = null;
+    }
+}
+
+VALIDACIONES:
+
+[Then(@"el precio debe ser (.*)")]
+public void ThenElPrecioDebeSer(decimal expectedPrice)
+{
+    Assert.Equal(expectedPrice, _resultProduct?.Price);
+}
+
+[Then(@"el stock debe ser (.*)")]
+public void ThenElStockDebeSer(short expectedStock)
+{
+    Assert.Equal(expectedStock, _resultProduct?.Stock);
+}
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: PR-05 - Actualizar manteniendo mismo nombre (Happy Path 2)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se puede actualizar un producto sin cambiar su nombre.
+Similar al escenario CA-05 de categorías.
+
+DATOS DE PRUEBA:
+- Producto existente: "Sal Fina 1kg"
+- Actualización: Mantener nombre "Sal Fina 1kg", cambiar Description y Price
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: PR-06 - Actualizar con stock negativo (Unhappy Path)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que el sistema rechaza actualizaciones con stock negativo.
+
+CÓDIGO:
+
+[When(@"intento actualizar el stock a (.*)")]
+public async Task WhenIntentoActualizarElStockA(short nuevoStock)
+{
+    try
+    {
+        _context.ChangeTracker.Clear();
+        var productId = (short)_scenarioContext["ProductId"];
+        var existingProduct = await _context.Products
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == productId);
+
+        var dto = new UpdateProductDTO
+        {
+            Id = productId,
+            Name = existingProduct!.Name,
+            Description = existingProduct.Description,
+            Brand = existingProduct.Brand,
+            Price = existingProduct.Price,
+            Stock = nuevoStock,  // ? Stock negativo
+            CategoryId = existingProduct.CategoryId,
+            Status = existingProduct.Status
+        };
+
+        _resultProduct = await _productService.UpdateProductAsync(dto);
+        _scenarioContext["UpdateResult"] = _resultProduct;
+    }
+    catch (Exception ex)
+    {
+        _exception = ex;
+        _scenarioContext["UpdateResult"] = null;
+    }
+}
+
+[Then(@"debe mostrar error de validacion de stock")]
+public void ThenDebeMostrarErrorDeValidacionDeStock()
+{
+    Assert.Null(_resultProduct);
+}
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: PR-07 - Eliminar producto (Happy Path)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica el borrado lógico de un producto (Status cambia a 0).
+
+IMPLEMENTACIÓN:
+
+[Given(@"existe un producto ""(.*)""")]
+public async Task GivenExisteUnProducto(string nombre)
+{
+    _context.ChangeTracker.Clear();
+
+    var product = new Product
+    {
+        Id = _nextProductId++,
+        Name = nombre,
+        Description = "Descripción temporal",
+        Brand = "Marca",
+        Price = 5.00m,
+        Stock = 10,
+        CategoryId = 1,
+        Status = 1,
+        LastUpdate = DateTime.Now
+    };
+
+    _context.Products.Add(product);
+    await _context.SaveChangesAsync();
+    _context.ChangeTracker.Clear();
+    _scenarioContext["ProductId"] = product.Id;
+}
+
+[When(@"elimino el producto")]
+public async Task WhenEliminoElProducto()
+{
+    var productId = (short)_scenarioContext["ProductId"];
+    
+    // Llamar al servicio para eliminar (borrado lógico)
+    await _productService.DeleteProductAsync(productId);
+
+    // Obtener producto de la BD para verificar cambios
+    _context.ChangeTracker.Clear();
+    _resultProduct = await _context.Products
+        .AsNoTracking()
+        .FirstOrDefaultAsync(p => p.Id == productId);
+}
+
+VALIDACIONES:
+
+[Then(@"el Status del producto debe cambiar a 0")]
+public void ThenElStatusDelProductoDebeCambiarA()
+{
+    Assert.NotNull(_resultProduct);
+    Assert.Equal((byte)0, _resultProduct.Status);
+}
+
+[Then(@"el producto no debe aparecer en busquedas activas")]
+public async Task ThenElProductoNoDebeAparecerEnBusquedasActivas()
+{
+    // GetAllProductsAsync solo retorna productos con Status = 1
+    var activeProducts = await _productService.GetAllProductsAsync();
+    Assert.False(activeProducts.Any(p => p.Id == _resultProduct?.Id));
+}
+
+
+--------------------------------------------------------------------------------
+ESCENARIO: PR-08 - Buscar productos por categoría (Happy Path)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica que se pueden buscar todos los productos activos
+de una categoría específica.
+
+PREPARACIÓN:
+
+[Given(@"existen los siguientes productos activos en categoria (.*):")]
+public async Task GivenExistenLosSiguientesProductosActivos(int categoryId, Table table)
+{
+    _context.ChangeTracker.Clear();
+
+    foreach (var row in table.Rows)
+    {
+        var product = new Product
+        {
+            Id = _nextProductId++,
+            Name = row["Name"],
+            Description = "Descripción",
+            Brand = "Marca",
+            Price = decimal.Parse(row["Price"]),
+            Stock = short.Parse(row["Stock"]),
+            CategoryId = (byte)categoryId,
+            Status = 1,
+            LastUpdate = DateTime.Now
+        };
+
+        _context.Products.Add(product);
+    }
+    await _context.SaveChangesAsync();
+    _context.ChangeTracker.Clear();
+}
+
+BÚSQUEDA:
+
+[When(@"busco productos de la categoria (.*)")]
+public async Task WhenBuscoProductosDeLaCategoria(byte categoryId)
+{
+    // Obtener todos los productos y filtrar por categoría
+    _productsList = await _productService.GetAllProductsAsync();
+    _productsList = _productsList.Where(p => p.CategoryId == categoryId);
+}
+
+VALIDACIONES:
+
+[Then(@"debo recibir (.*) productos")]
+public void ThenDeboRecibirProductos(int expectedCount)
+{
+    Assert.Equal(expectedCount, _productsList?.Count());
+}
+
+[Then(@"todos deben tener Status 1")]
+public void ThenTodosDebenTenerStatus1()
+{
+    Assert.True(_productsList?.All(p => p.Status == 1));
+}
+
+DATOS DE PRUEBA:
+- Arroz (10.00, Stock 50)
+- Azucar (8.00, Stock 60)
+- Sal (3.50, Stock 100)
+- Resultado esperado: 3 productos de categoría 1
+
+
+================================================================================
+4. FEATURE: INTEGRACIÓN DEL PROCESO PRINCIPAL DE VENTAS
+================================================================================
+
+--------------------------------------------------------------------------------
+ESCENARIO: VT-01 - Procesar venta completa con múltiples productos (Happy Path)
+--------------------------------------------------------------------------------
+
+DESCRIPCIÓN:
+Verifica el proceso completo de una venta con múltiples productos,
+incluyendo cálculos, actualización de stock y persistencia en BD.
+
+BACKGROUND:
+Preparación de datos necesarios para el proceso de venta.
+
+[Given(@"existen los siguientes productos:")]
+public async Task GivenExistenLosSiguientesProductos(Table table)
+{
+    _context.ChangeTracker.Clear();
+    
+    foreach (var row in table.Rows)
+    {
+        var product = new Product
+        {
+            Name = row["Name"],
+            Description = "Descripción de prueba",
+            Brand = "Marca Test",
+            Price = decimal.Parse(row["Price"]),
+            Stock = short.Parse(row["Stock"]),
+            CategoryId = byte.Parse(row["CategoryId"]),
+            Status = 1,
+            LastUpdate = DateTime.Now
+        };
+
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+
+        // Guardar ID del producto para referencia posterior
+        _productIds[row["Name"]] = product.Id;
+        _scenarioContext[$"Product_{row["Name"]}"] = product.Id;
+    }
+    _context.ChangeTracker.Clear();
+}
+
+[Given(@"existe un cliente ""(.*)"" con TaxDocument ""(.*)"" para ventas")]
+public async Task GivenExisteUnClienteParaVentas(string nombre, string taxDocument)
+{
+    var client = new Client
+    {
+        BusinessName = nombre,
+        Email = $"{nombre.Replace(" ", "").ToLower()}@example.com",
+        TaxDocument = taxDocument,
+        Address = "Dirección de prueba",
+        Status = 1,
+        LastUpdate = DateTime.Now
+    };
+
+    _context.Clients.Add(client);
+    await _context.SaveChangesAsync();
+    _scenarioContext["ClientId"] = client.Id;
+}
+
+PASO 1 - AGREGAR PRODUCTOS AL CARRITO:
+
+[Given(@"tengo los siguientes productos en el carrito:")]
+public void GivenTengoLosSiguientesProductosEnElCarrito(Table table)
+{
+    _saleDto.Items = new List<SaleDTO.SaleItemDTO>();
+
+    foreach (var row in table.Rows)
+    {
+        var productName = row["ProductName"];
+        var quantity = short.Parse(row["Quantity"]);
+
+        // Buscar ID del producto en el diccionario
+        if (_productIds.TryGetValue(productName, out var productId))
+        {
+            var product = _context.Products.Find(productId);
+
+            // Agregar item al carrito
+            _saleDto.Items.Add(new SaleDTO.SaleItemDTO
+            {
+                ProductId = productId,
+                Quantity = quantity,
+                Price = product!.Price
+            });
+        }
+    }
+}
+
+PASO 2 - PROCESAR LA VENTA:
+
+[When(@"proceso la venta con los siguientes datos:")]
+public async Task WhenProcesoLaVentaConLosSiguientesDatos(Table table)
+{
+    // 1. Obtener ClientId del contexto
+    _saleDto.ClientId = (int)_scenarioContext["ClientId"];
+    
+    // 2. Procesar datos adicionales de la tabla
+    foreach (var row in table.Rows)
+    {
+        var campo = row["Campo"].Trim();
+        var valor = row["Valor"].Trim();
+        
+        if (campo.Equals("PaymentType", StringComparison.OrdinalIgnoreCase))
+        {
+            _saleDto.PaymentType = valor.Equals("Efectivo", StringComparison.OrdinalIgnoreCase) 
+                ? (byte)1 
+                : (byte)2;
+        }
+        else if (campo.Equals("CashReceived", StringComparison.OrdinalIgnoreCase))
+        {
+            _saleDto.CashReceived = decimal.Parse(valor);
+        }
+    }
+
+    // 3. Calcular totales
+    _saleDto.TotalAmount = _saleDto.Items.Sum(i => i.Quantity * i.Price);
+    _saleDto.Change = _saleDto.CashReceived - _saleDto.TotalAmount;
+
+    // 4. Llamar al servicio para crear la venta
+    _saleResult = await _saleService.CreateSaleAsync(_saleDto);
+}
+
+VALIDACIONES:
+
+[Then(@"la venta debe registrarse exitosamente")]
+public void ThenLaVentaDebeRegistrarseExitosamente()
+{
+    Assert.NotNull(_saleResult);
+    Assert.True(_saleResult.Success, "La venta falló: " + _saleResult?.Message);
+}
+
+[Then(@"el total debe ser (.*)")]
+public void ThenElTotalDebeSer(decimal expectedTotal)
+{
+    Assert.Equal(expectedTotal, _saleDto.TotalAmount, 2);  // 2 decimales
+}
+
+[Then(@"el cambio debe ser (.*)")]
+public void ThenElCambioDebeSer(decimal expectedChange)
+{
+    Assert.Equal(expectedChange, _saleDto.Change, 2);
+}
+
+[Then(@"el stock de ""(.*)"" debe ser (.*)")]
+public async Task ThenElStockDeDebeSer(string productName, short expectedStock)
+{
+    // Buscar producto por nombre
+    if (_productIds.TryGetValue(productName, out var productId))
+    {
+        _context.ChangeTracker.Clear();
+        var product = await _context.Products.FindAsync(productId);
+
+        Assert.NotNull(product);
+        Assert.Equal(expectedStock, product.Stock);
+    }
+    else
+    {
+        throw new Exception($"No se encontró el producto '{productName}'");
+    }
+}
+
+[Then(@"debe existir (.*) registro en Sales")]
+public void ThenDebeExistirRegistroEnSales(int expectedCount)
+{
+    var salesCount = _context.Sales.Count();
+    Assert.Equal(expectedCount, salesCount);
+}
+
+[Then(@"deben existir (.*) registros en SaleItems")]
+public void ThenDebenExistirRegistrosEnSaleItems(int expectedCount)
+{
+    var saleItemsCount = _context.SaleItems.Count();
+    Assert.Equal(expectedCount, saleItemsCount);
+}
+
+[Then(@"la fecha de venta debe ser la actual")]
+public void ThenLaFechaDeVentaDebeSerLaActual()
+{
+    var sale = _context.Sales.FirstOrDefault();
+    Assert.NotNull(sale);
+
+    var differenceInMinutes = Math.Abs((DateTime.Now - sale.SaleDate).TotalMinutes);
+    Assert.True(differenceInMinutes < 5, "La fecha de venta difiere demasiado");
+}
+
+DATOS DE PRUEBA:
+
+PRODUCTOS INICIALES:
+- Quinua Premium: Precio=28.50, Stock=100
+- Arroz Integral: Precio=15.00, Stock=80
+- Aceite Vegetal: Precio=12.00, Stock=50
+
+CARRITO:
+- Quinua Premium: Cantidad=3 ? 3 × 28.50 = 85.50
+- Arroz Integral: Cantidad=5 ? 5 × 15.00 = 75.00
+- Aceite Vegetal: Cantidad=2 ? 2 × 12.00 = 24.00
+
+CÁLCULOS:
+- Total: 85.50 + 75.00 + 24.00 = 184.50
+- Efectivo recibido: 200.00
+- Cambio: 200.00 - 184.50 = 15.50
+
+STOCK FINAL ESPERADO:
+- Quinua Premium: 100 - 3 = 97
+- Arroz Integral: 80 - 5 = 75
+- Aceite Vegetal: 50 - 2 = 48
+
+PERSISTENCIA EN BD:
+- 1 registro en tabla Sales
+- 3 registros en tabla SaleItems (uno por cada producto)

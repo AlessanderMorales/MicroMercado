@@ -1,0 +1,13 @@
+{
+  "$schema": "https://schemas.reqnroll.net/reqnroll-config-latest.json",
+  "trace": {
+    "traceSuccessfulSteps": true,
+    "traceTimings": true,
+    "minTracedDuration": "0:0:0.1"
+  },
+  "stepAssemblies": [
+    {
+      "assembly": "PruebasUIBased"
+    }
+  ]
+}
