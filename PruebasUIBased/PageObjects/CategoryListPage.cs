@@ -1,188 +1,181 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers; // Asegúrate de tener este paquete
 using System;
+using System.Linq;
 
 namespace PruebasUIBased.PageObjects
 {
     /// <summary>
-    /// Page Object para la página de listado de Categorías
+    /// Page Object para la página de listado de Categorías (Optimizado)
     /// </summary>
     public class CategoryListPage : BasePage
     {
-        // Locators
+        private readonly WebDriverWait _wait;
+
+        // --- SELECTORES (Basados en tu HTML de CategoryPage) ---
         private readonly By _addNewCategoryButton = By.CssSelector("a[href*='NewCategory']");
-        private readonly By _categoryTable = By.Id("categoryTable");
+
+        // Tabla y Buscador
         private readonly By _categoryRows = By.CssSelector("#categoryTable tbody tr");
-        private readonly By _editButtons = By.CssSelector("a[href*='EditCategory']");
-        private readonly By _deleteButtons = By.CssSelector("button[onclick*='confirmDeleteCategory']");
+        private readonly By _searchBox = By.CssSelector("input[type='search']"); // DataTables suele usar este input type
+
+        // Modal de Eliminación (IDs confirmados en tu HTML)
+        private readonly By _deleteModal = By.Id("deleteConfirmationModal");
+        private readonly By _confirmDeleteButton = By.CssSelector("#deleteCategoryForm button[type='submit']");
+
+        // Alertas
         private readonly By _successAlert = By.CssSelector(".alert-success");
         private readonly By _errorAlert = By.CssSelector(".alert-danger");
 
-        public CategoryListPage(IWebDriver driver) : base(driver) { }
+        public CategoryListPage(IWebDriver driver) : base(driver)
+        {
+            _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        }
 
-        /// <summary>
-        /// Hace clic en el botón para agregar nueva categoría
-        /// </summary>
         public void ClickAddNewCategory()
         {
-            ClickElement(_addNewCategoryButton);
+            var btn = _wait.Until(ExpectedConditions.ElementToBeClickable(_addNewCategoryButton));
+            btn.Click();
         }
 
-        /// <summary>
-        /// Hace clic en editar categoría por nombre
-        /// </summary>
         public void ClickEditCategory(string categoryName)
         {
-            System.Threading.Thread.Sleep(2000); // Esperar a que DataTables se inicialice
-            
-            // Deshabilitar paginación para ver todas las filas (opcional, comentado por ahora)
-            var js = (IJavaScriptExecutor)Driver;
-            
-            // Intentar encontrar la categoría directamente buscando en todas las filas
-            // Usar un selector más específico y esperar a que las filas estén presentes
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
-            wait.Until(d => d.FindElements(By.CssSelector("#categoryTable tbody tr")).Count > 0);
-            
-            var allRows = Driver.FindElements(By.CssSelector("#categoryTable tbody tr"));
-            
-            foreach (var row in allRows)
+            // 1. FILTRAR: Fundamental para encontrar elementos en páginas ocultas
+            FilterTable(categoryName);
+
+            // 2. ENCONTRAR FILA: Esperar a que DataTables refresque
+            var row = FindRowWithWait(categoryName);
+
+            if (row != null)
             {
-                try
-                {
-                    // Verificar si la fila contiene el nombre de la categoría
-                    var cells = row.FindElements(By.TagName("td"));
-                    if (cells.Count > 0)
-                    {
-                        var firstCell = cells[0]; // Generalmente el nombre está en la primera columna
-                        if (firstCell.Text.Trim().Equals(categoryName, StringComparison.OrdinalIgnoreCase) ||
-                            firstCell.Text.Contains(categoryName))
-                        {
-                            // Buscar el enlace de editar en esta fila
-                            var editLinks = row.FindElements(By.TagName("a"));
-                            
-                            foreach (var link in editLinks)
-                            {
-                                var href = link.GetAttribute("href");
-                                if (href != null && href.Contains("EditCategory"))
-                                {
-                                    // Hacer scroll y clic con JavaScript
-                                    js.ExecuteScript("arguments[0].scrollIntoView({behavior: 'instant', block: 'center'});", link);
-                                    System.Threading.Thread.Sleep(300);
-                                    js.ExecuteScript("arguments[0].click();", link);
-                                    System.Threading.Thread.Sleep(500);
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (StaleElementReferenceException)
-                {
-                    // Si el elemento se vuelve obsoleto, continuar con la siguiente fila
-                    continue;
-                }
+                // 3. BUSCAR BOTÓN: Buscamos por href parcial O por clase 'btn-warning' (amarillo)
+                var editButton = row.FindElement(By.CssSelector("a[href*='EditCategory'], a.btn-warning"));
+
+                ClickWithJs(editButton);
             }
-            
-            throw new Exception($"No se encontró el botón de editar para la categoría '{categoryName}'. " +
-                $"Filas encontradas: {allRows.Count}");
+            else
+            {
+                throw new Exception($"No se encontró el botón de editar para la categoría '{categoryName}' (incluso después de filtrar).");
+            }
         }
 
-        /// <summary>
-        /// Hace clic en eliminar categoría por nombre
-        /// </summary>
         public void ClickDeleteCategory(string categoryName)
         {
-            var rows = Driver.FindElements(_categoryRows);
-            foreach (var row in rows)
-            {
-                if (row.Text.Contains(categoryName))
-                {
-                    var deleteButton = row.FindElement(By.CssSelector("button[onclick*='confirmDeleteCategory']"));
-                    deleteButton.Click();
-                    System.Threading.Thread.Sleep(500);
+            FilterTable(categoryName);
+            var row = FindRowWithWait(categoryName);
 
-                    // Confirmar en el modal
-                    var confirmButton = Driver.FindElement(By.CssSelector("#deleteCategoryForm button[type='submit']"));
-                    confirmButton.Click();
-                    System.Threading.Thread.Sleep(500);
-                    break;
+            if (row != null)
+            {
+                // 1. Clic en el botón de eliminar de la fila (Rojo / btn-danger)
+                var deleteButton = row.FindElement(By.CssSelector(".btn-danger, button[onclick*='confirmDeleteCategory']"));
+                ClickWithJs(deleteButton);
+
+                // 2. Manejo del Modal de Confirmación
+                try
+                {
+                    // Esperar a que el modal sea visible
+                    _wait.Until(ExpectedConditions.ElementIsVisible(_deleteModal));
+
+                    // Esperar a que el botón Confirmar sea interactuable
+                    var confirmBtn = _wait.Until(ExpectedConditions.ElementToBeClickable(_confirmDeleteButton));
+
+                    System.Threading.Thread.Sleep(300); // Estabilidad para animación Bootstrap
+                    confirmBtn.Click();
                 }
+                catch (WebDriverTimeoutException)
+                {
+                    throw new Exception("El modal de eliminación no apareció o el botón no respondió.");
+                }
+
+                System.Threading.Thread.Sleep(1000); // Esperar recarga
+            }
+            else
+            {
+                throw new Exception($"No se pudo eliminar: La categoría '{categoryName}' no aparece en la tabla.");
             }
         }
 
-        /// <summary>
-        /// Verifica si existe una categoría con el nombre especificado
-        /// </summary>
         public bool CategoryExists(string categoryName)
         {
-            try
-            {
-                // Esperar a que DataTables esté inicializado
-                System.Threading.Thread.Sleep(1000);
-                
-                // Usar la función de búsqueda de DataTables
-                var searchBox = Driver.FindElement(By.CssSelector(".dataTables_filter input"));
-                searchBox.Clear();
-                searchBox.SendKeys(categoryName);
-                
-                // Esperar a que se filtre
-                System.Threading.Thread.Sleep(500);
-                
-                // Verificar si hay filas visibles
-                var rows = Driver.FindElements(By.CssSelector("#categoryTable tbody tr:not(.dataTables_empty)"));
-                
-                bool found = false;
-                foreach (var row in rows)
-                {
-                    if (row.Text.Contains(categoryName))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                
-                // Limpiar la búsqueda
-                searchBox.Clear();
-                searchBox.SendKeys("");
-                System.Threading.Thread.Sleep(300);
-                
-                return found;
-            }
-            catch
-            {
-                return false;
-            }
+            FilterTable(categoryName);
+            return FindRowWithWait(categoryName) != null;
         }
 
-        /// <summary>
-        /// Obtiene el número de categorías en la tabla
-        /// </summary>
         public int GetCategoryCount()
         {
             try
             {
-                return Driver.FindElements(_categoryRows).Count;
+                // Limpiar filtro para contar todo
+                var js = (IJavaScriptExecutor)Driver;
+                // Intentamos limpiar via JS para rapidez
+                js.ExecuteScript("var s=document.querySelector('input[type=\"search\"]'); if(s){s.value=''; s.dispatchEvent(new Event('input'));}");
+                System.Threading.Thread.Sleep(500);
             }
-            catch
-            {
-                return 0;
-            }
+            catch { }
+
+            return Driver.FindElements(_categoryRows).Count;
         }
 
-        /// <summary>
-        /// Verifica si hay un mensaje de éxito
-        /// </summary>
         public bool HasSuccessMessage()
         {
-            return IsElementVisible(_successAlert);
+            try { return _wait.Until(ExpectedConditions.ElementIsVisible(_successAlert)).Displayed; }
+            catch { return false; }
         }
 
-        /// <summary>
-        /// Verifica si hay un mensaje de error
-        /// </summary>
         public bool HasErrorMessage()
         {
-            return IsElementVisible(_errorAlert);
+            try { return _wait.Until(ExpectedConditions.ElementIsVisible(_errorAlert)).Displayed; }
+            catch { return false; }
+        }
+
+        // --- MÉTODOS PRIVADOS (Helpers) ---
+
+        private void FilterTable(string text)
+        {
+            try
+            {
+                // Intentar encontrar la caja de búsqueda (DataTables crea input type='search')
+                var searchBox = _wait.Until(ExpectedConditions.ElementIsVisible(_searchBox));
+
+                if (searchBox.GetAttribute("value") != text)
+                {
+                    searchBox.Clear();
+                    searchBox.SendKeys(text);
+                    // DataTables filtra al escribir, no necesita Enter usualmente, pero esperamos un poco
+                    // System.Threading.Thread.Sleep(300); // WaitForRow se encarga de esperar
+                }
+            }
+            catch (WebDriverTimeoutException)
+            {
+                // Fallback: intentar selector alternativo si el genérico falla
+                try { Driver.FindElement(By.CssSelector(".dataTables_filter input")).SendKeys(text); } catch { }
+            }
+        }
+
+        private IWebElement FindRowWithWait(string text)
+        {
+            try
+            {
+                // Reintentar buscar la fila hasta que aparezca (útil tras filtrar)
+                return _wait.Until(d =>
+                {
+                    var rows = d.FindElements(_categoryRows);
+                    return rows.FirstOrDefault(r => r.Displayed && r.Text.Contains(text));
+                });
+            }
+            catch (WebDriverTimeoutException)
+            {
+                return null;
+            }
+        }
+
+        private void ClickWithJs(IWebElement element)
+        {
+            var js = (IJavaScriptExecutor)Driver;
+            js.ExecuteScript("arguments[0].scrollIntoView({block: 'center'});", element);
+            System.Threading.Thread.Sleep(200);
+            js.ExecuteScript("arguments[0].click();", element);
         }
     }
 }

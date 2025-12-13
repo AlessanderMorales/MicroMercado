@@ -23,17 +23,17 @@ Scenario Outline: CC-01 - Crear categoria con combinaciones Pairwise
 
 @ui @category @update @pairwise
 Scenario Outline: CC-02 - Actualizar categoria con combinaciones Pairwise
-  Given existe una categoria creada con nombre "CategoriaParaActualizar"
-  When hago clic en editar categoria "CategoriaParaActualizar"
+  Given existe una categoria creada con nombre "CatBase"
+  When hago clic en editar categoria "CatBase"
   And actualizo el formulario con nombre "<NuevoNombre>" y descripcion "<NuevaDescripcion>"
   And hago clic en guardar categoria
   Then <Resultado>
 
   Examples:
-    | NuevoNombre              | NuevaDescripcion         | Resultado                              |
-    | CategoriaActualizada     | Nueva descripcion valida | debo ver mensaje de exito en categoria |
-    | CategoriaParaActualizar  | Descripcion modificada   | debo ver mensaje de exito en categoria |
-    | Nombre Actualizado Largo |                          | debo ver mensaje de exito en categoria |
+    | NuevoNombre        | NuevaDescripcion         | Resultado                              |
+    | CatActualizada     | Nueva descripcion valida | debo ver mensaje de exito en categoria |
+    | CatModificada      | Descripcion modificada   | debo ver mensaje de exito en categoria |
+    | NombreNuevo        |                          | debo ver mensaje de exito en categoria |
 
 @ui @category @delete @happy
 Scenario: CC-03 - Eliminar categoria

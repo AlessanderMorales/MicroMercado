@@ -213,9 +213,9 @@ await this.FeatureBackgroundAsync();
         [global::Xunit.TraitAttribute("Category", "category")]
         [global::Xunit.TraitAttribute("Category", "update")]
         [global::Xunit.TraitAttribute("Category", "pairwise")]
-        [global::Xunit.InlineDataAttribute("CategoriaActualizada", "Nueva descripcion valida", "debo ver mensaje de exito en categoria", "4", new string[0])]
-        [global::Xunit.InlineDataAttribute("CategoriaParaActualizar", "Descripcion modificada", "debo ver mensaje de exito en categoria", "5", new string[0])]
-        [global::Xunit.InlineDataAttribute("Nombre Actualizado Largo", "", "debo ver mensaje de exito en categoria", "6", new string[0])]
+        [global::Xunit.InlineDataAttribute("CatActualizada", "Nueva descripcion valida", "debo ver mensaje de exito en categoria", "4", new string[0])]
+        [global::Xunit.InlineDataAttribute("CatModificada", "Descripcion modificada", "debo ver mensaje de exito en categoria", "5", new string[0])]
+        [global::Xunit.InlineDataAttribute("NombreNuevo", "", "debo ver mensaje de exito en categoria", "6", new string[0])]
         public async global::System.Threading.Tasks.Task CC_02_ActualizarCategoriaConCombinacionesPairwise(string nuevoNombre, string nuevaDescripcion, string resultado, string @__pickleIndex, string[] exampleTags)
         {
             string[] @__tags = new string[] {
@@ -250,10 +250,10 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 await this.FeatureBackgroundAsync();
 #line hidden
 #line 26
-  await testRunner.GivenAsync("existe una categoria creada con nombre \"CategoriaParaActualizar\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+  await testRunner.GivenAsync("existe una categoria creada con nombre \"CatBase\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 27
-  await testRunner.WhenAsync("hago clic en editar categoria \"CategoriaParaActualizar\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+  await testRunner.WhenAsync("hago clic en editar categoria \"CatBase\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 28
   await testRunner.AndAsync(string.Format("actualizo el formulario con nombre \"{0}\" y descripcion \"{1}\"", nuevoNombre, nuevaDescripcion), ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");

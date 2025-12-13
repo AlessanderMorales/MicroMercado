@@ -1,153 +1,115 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers; // Necesario para ExpectedConditions
 using System;
 using System.Linq;
 
 namespace PruebasUIBased.PageObjects
 {
-    /// <summary>
-    /// Page Object para la página de crear/editar Categoría
-    /// </summary>
     public class CategoryFormPage : BasePage
     {
-        // Locators
-        private readonly By _nameInput = By.Id("CreateCategory_Name");
-        private readonly By _descriptionInput = By.Id("CreateCategory_Description");
-        private readonly By _updateNameInput = By.Id("UpdateCategory_Name");
-        private readonly By _updateDescriptionInput = By.Id("UpdateCategory_Description");
-        private readonly By _updateStatusSelect = By.Id("UpdateCategory_Status");
-        private readonly By _saveButton = By.CssSelector("button[type='submit']");
-        private readonly By _cancelButton = By.CssSelector("a[href*='Category']");
-        private readonly By _successAlert = By.CssSelector(".alert-success");
-        private readonly By _errorAlert = By.CssSelector(".alert-danger");
-        private readonly By _nameValidationError = By.CssSelector("span[data-valmsg-for='CreateCategory.Name'], span[data-valmsg-for='UpdateCategory.Name']");
+        private readonly WebDriverWait _wait;
 
-        public CategoryFormPage(IWebDriver driver) : base(driver) { }
+        // --- SELECTORES PARA CREACIÓN (Asumiendo modelo NewCategory) ---
+        // Si tu HTML usa asp-for="NewCategory.Name", el ID es este:
+        private readonly By _newName = By.Id("NewCategory_Name");
+        private readonly By _newDesc = By.Id("NewCategory_Description");
+
+        // --- SELECTORES PARA EDICIÓN (Confirmado en tu HTML anterior UpdateCategory) ---
+        private readonly By _updateName = By.Id("UpdateCategory_Name");
+        private readonly By _updateDesc = By.Id("UpdateCategory_Description");
+        private readonly By _updateStatus = By.Id("UpdateCategory_Status");
+
+        // Botones y Alertas
+        private readonly By _saveButton = By.CssSelector("button[type='submit']");
+        private readonly By _validationSummary = By.CssSelector(".text-danger ul li, .validation-summary-errors");
+        private readonly By _fieldErrors = By.CssSelector(".field-validation-error, .text-danger");
+
+        public CategoryFormPage(IWebDriver driver) : base(driver)
+        {
+            _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        }
 
         /// <summary>
-        /// Llena el formulario de categoría (para crear)
+        /// Llena el formulario de CREACIÓN
         /// </summary>
         public void FillCategoryForm(string name, string description)
         {
-            TypeText(_nameInput, name);
-            TypeText(_descriptionInput, description);
+            try
+            {
+                // Esperamos el campo de CREACIÓN
+                _wait.Until(ExpectedConditions.ElementIsVisible(_newName));
+            }
+            catch (WebDriverTimeoutException)
+            {
+                // Si falla, intentamos buscar con el ID antiguo por si acaso el modelo se llama diferente
+                try
+                {
+                    var fallback = Driver.FindElement(By.Id("CreateCategory_Name"));
+                    fallback.Clear();
+                    fallback.SendKeys(name);
+                    Driver.FindElement(By.Id("CreateCategory_Description")).SendKeys(description);
+                    return;
+                }
+                catch { throw new Exception("No cargó el formulario de Nueva Categoría (Buscando #NewCategory_Name)."); }
+            }
+
+            EnterText(_newName, name);
+            EnterText(_newDesc, description);
         }
 
         /// <summary>
-        /// Llena el formulario de categoría (para actualizar)
+        /// Llena el formulario de ACTUALIZACIÓN
         /// </summary>
         public void UpdateCategoryForm(string name, string description)
         {
-            // Esperar a que la página cargue completamente
-            System.Threading.Thread.Sleep(3000); // Aumentar el tiempo de espera
-            
-            // Verificar que estamos en la página correcta
-            var currentUrl = Driver.Url;
-            if (!currentUrl.Contains("/EditCategory"))
-            {
-                throw new Exception($"No estamos en la página de edición de categoría. URL actual: {currentUrl}");
-            }
-            
-            // Usar JavaScript Executor para mayor robustez
-            var js = (IJavaScriptExecutor)Driver;
-            
             try
             {
-                // Intentar encontrar los campos de Update con un wait más robusto
-                var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
-                
-                var nameElement = wait.Until(d => {
-                    try {
-                        var el = d.FindElement(_updateNameInput);
-                        return (el != null && el.Displayed) ? el : null;
-                    } catch { return null; }
-                });
-                
-                var descElement = wait.Until(d => {
-                    try {
-                        var el = d.FindElement(_updateDescriptionInput);
-                        return (el != null && el.Displayed) ? el : null;
-                    } catch { return null; }
-                });
-                
-                if (nameElement == null || descElement == null)
-                {
-                    throw new NoSuchElementException("No se pudieron encontrar los elementos del formulario");
-                }
-                
-                // Limpiar y llenar usando JavaScript
-                js.ExecuteScript("arguments[0].value = arguments[1];", nameElement, name);
-                js.ExecuteScript("arguments[0].value = arguments[1];", descElement, description);
-                
-                // Disparar eventos de cambio
-                js.ExecuteScript("arguments[0].dispatchEvent(new Event('change', { bubbles: true }));", nameElement);
-                js.ExecuteScript("arguments[0].dispatchEvent(new Event('change', { bubbles: true }));", descElement);
+                // Esperamos el campo de EDICIÓN (Sin Thread.Sleep)
+                _wait.Until(ExpectedConditions.ElementIsVisible(_updateName));
             }
-            catch (Exception ex)
+            catch (WebDriverTimeoutException)
             {
-                throw new Exception($"No se encontraron los campos de actualización de categoría. " +
-                    $"URL actual: {currentUrl}. Error: {ex.Message}");
+                throw new Exception($"No se cargó el formulario de Editar Categoría (Buscando #UpdateCategory_Name). URL actual: {Driver.Url}");
             }
+
+            if (!string.IsNullOrEmpty(name)) EnterText(_updateName, name);
+            if (!string.IsNullOrEmpty(description)) EnterText(_updateDesc, description);
         }
 
-        /// <summary>
-        /// Hace clic en el botón de guardar
-        /// </summary>
         public void ClickSave()
         {
-            ClickElement(_saveButton);
-            System.Threading.Thread.Sleep(1000);
+            var btn = _wait.Until(ExpectedConditions.ElementToBeClickable(_saveButton));
+
+            // Scroll para asegurar visibilidad
+            ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].scrollIntoView({block: 'center'});", btn);
+            System.Threading.Thread.Sleep(300); // Pequeña pausa visual
+
+            btn.Click();
         }
 
-        /// <summary>
-        /// Hace clic en el botón de cancelar
-        /// </summary>
-        public void ClickCancel()
-        {
-            ClickElement(_cancelButton);
-        }
-
-        /// <summary>
-        /// Verifica si hay un mensaje de éxito
-        /// </summary>
-        public bool HasSuccessMessage()
-        {
-            return IsElementVisible(_successAlert);
-        }
-
-        /// <summary>
-        /// Verifica si hay un mensaje de error
-        /// </summary>
         public bool HasErrorMessage()
-        {
-            System.Threading.Thread.Sleep(500); // Esperar a que se muestre el error
-            
-            // Buscar alertas generales
-            if (IsElementVisible(_errorAlert))
-                return true;
-            
-            // Buscar spans de validación específicos
-            var validationSpans = Driver.FindElements(
-                By.CssSelector("span.text-danger, [class*='validation'], [data-valmsg-for]"));
-            
-            return validationSpans.Any(s => 
-                s.Displayed && !string.IsNullOrWhiteSpace(s.Text));
-        }
-
-        /// <summary>
-        /// Verifica si hay error de validación en el nombre
-        /// </summary>
-        public bool HasNameValidationError()
         {
             try
             {
-                var element = Driver.FindElement(_nameValidationError);
-                return !string.IsNullOrEmpty(element.Text);
+                // Busca el resumen de validación
+                if (_wait.Until(ExpectedConditions.ElementIsVisible(_validationSummary)).Displayed)
+                    return true;
             }
-            catch
-            {
-                return false;
-            }
+            catch { }
+
+            // Busca errores individuales en los campos
+            var errors = Driver.FindElements(_fieldErrors);
+            return errors.Any(e => e.Displayed && !string.IsNullOrWhiteSpace(e.Text) && e.Text != "*");
+        }
+
+        // --- Helpers ---
+
+        private void EnterText(By locator, string text)
+        {
+            var element = Driver.FindElement(locator);
+            element.Clear();
+            element.SendKeys(text);
         }
     }
 }

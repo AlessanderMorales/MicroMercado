@@ -1,174 +1,187 @@
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
+using System;
+using System.Linq;
 
 namespace PruebasUIBased.PageObjects
 {
-    /// <summary>
-    /// Page Object para la página de listado de Clientes
-    /// </summary>
     public class ClientListPage : BasePage
     {
-        // Locators - Nota: La página usa "categoryTable" debido a copy-paste, pero es la tabla de clientes
+        private readonly WebDriverWait _wait;
+
+        // --- SELECTORES BASADOS EN TU HTML PROPORCIONADO ---
+
+        // HTML: <a asp-page="/NewClient" ...>
         private readonly By _addNewClientButton = By.CssSelector("a[href*='NewClient']");
-        private readonly By _clientTable = By.Id("categoryTable"); // NOTA: La página usa categoryTable por error
+
+        // HTML: <table id="categoryTable" ...> (Cuidado: usa ID de categoría por error de copy-paste en la app)
         private readonly By _clientRows = By.CssSelector("#categoryTable tbody tr");
-        private readonly By _editButtons = By.CssSelector("a[href*='EditCategory']"); // NOTA: También usa EditCategory
-        private readonly By _deleteButtons = By.CssSelector("button[onclick*='confirmDeleteCategory']"); // NOTA: confirmDeleteCategory
+
+        // HTML: DataTables genera input type='search'
+        private readonly By _searchBox = By.CssSelector("input[type='search']");
+
+        // --- MODAL DE ELIMINACIÓN ---
+
+        // HTML: <div class="modal fade" id="deleteConfirmationModal" ...>
+        private readonly By _deleteModal = By.Id("deleteConfirmationModal");
+
+        // HTML: <form method="post" id="deleteClientForm" ...>
+        // ESTA ERA LA CLAVE DEL ERROR: Aquí se llama deleteClientForm, no deleteCategoryForm
+        private readonly By _confirmDeleteButton = By.CssSelector("#deleteClientForm button[type='submit']");
+
+        // Alertas de éxito/error
         private readonly By _successAlert = By.CssSelector(".alert-success");
         private readonly By _errorAlert = By.CssSelector(".alert-danger");
 
-        public ClientListPage(IWebDriver driver) : base(driver) { }
+        public ClientListPage(IWebDriver driver) : base(driver)
+        {
+            _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        }
 
-        /// <summary>
-        /// Hace clic en el botón para agregar nuevo cliente
-        /// </summary>
+        public void NavigateTo(string url) => Driver.Navigate().GoToUrl(url);
+        public string GetCurrentUrl() => Driver.Url;
+
         public void ClickAddNewClient()
         {
-            ClickElement(_addNewClientButton);
+            var btn = _wait.Until(ExpectedConditions.ElementToBeClickable(_addNewClientButton));
+            btn.Click();
         }
 
-        /// <summary>
-        /// Hace clic en editar cliente por nombre
-        /// </summary>
-        public void ClickEditClient(string clientName)
+        public void ClickEditClient(string documento)
         {
-            System.Threading.Thread.Sleep(1000);
-            
-            try
+            var row = FindRowWithWait(documento);
+            if (row != null)
             {
-                var searchBox = Driver.FindElement(By.CssSelector(".dataTables_filter input"));
-                searchBox.Clear();
-                searchBox.SendKeys(clientName);
-                System.Threading.Thread.Sleep(500);
+                var editButton = row.FindElement(By.CssSelector("a[href*='EditClient'], a.btn-warning"));
+
+                ClickWithJs(editButton);
             }
-            catch { }
-            
-            var rows = Driver.FindElements(_clientRows);
-            bool found = false;
-            
-            foreach (var row in rows)
+            else
             {
-                if (row.Text.Contains(clientName) && row.Displayed)
+                throw new Exception($"No se encontró el botón de editar para '{documento}'");
+            }
+        }
+
+        public void ClickDeleteClient(string documento)
+        {
+            // 1. Filtrar la tabla para aislar el registro
+            FilterTable(documento);
+
+            // 2. Esperar a que DataTables renderice la fila
+            var row = FindRowWithWait(documento);
+
+            if (row != null)
+            {
+                // 3. Encontrar el botón en la fila
+                // HTML: onclick="confirmDeleteCategory(...)"
+                var deleteButton = row.FindElement(By.CssSelector("button[onclick*='confirmDeleteCategory']"));
+
+                // Clic con JS para evitar problemas de scroll/overlays
+                ClickWithJs(deleteButton);
+
+                // 4. Manejo del Modal
+                try
                 {
-                    try
-                    {
-                        var editButton = row.FindElement(By.CssSelector("a[href*='EditCategory']"));  // Nota: usa EditCategory por error en la página
-                        
-                        if (editButton.Displayed && editButton.Enabled)
-                        {
-                            var js = (IJavaScriptExecutor)Driver;
-                            js.ExecuteScript("arguments[0].scrollIntoView(true);", editButton);
-                            System.Threading.Thread.Sleep(300);
-                            js.ExecuteScript("arguments[0].click();", editButton);
-                            found = true;
-                            break;
-                        }
-                    }
-                    catch (NoSuchElementException) { continue; }
-                }
-            }
-            
-            if (!found)
-            {
-                throw new Exception($"No se encontró el botón de editar para el cliente '{clientName}'");
-            }
-        }
+                    // Esperar a que el modal sea visible (clase 'show' de bootstrap)
+                    _wait.Until(ExpectedConditions.ElementIsVisible(_deleteModal));
 
-        /// <summary>
-        /// Hace clic en eliminar cliente por nombre
-        /// </summary>
-        public void ClickDeleteClient(string clientName)
-        {
-            var rows = Driver.FindElements(_clientRows);
-            foreach (var row in rows)
-            {
-                if (row.Text.Contains(clientName))
+                    // Esperar a que el botón Confirmar (dentro de deleteClientForm) sea cliqueable
+                    var confirmBtn = _wait.Until(ExpectedConditions.ElementToBeClickable(_confirmDeleteButton));
+
+                    // Pequeña pausa para asegurar que la animación terminó
+                    System.Threading.Thread.Sleep(300);
+
+                    confirmBtn.Click();
+                }
+                catch (WebDriverTimeoutException)
                 {
-                    var deleteButton = row.FindElement(By.CssSelector("button[onclick*='confirmDeleteCategory']")); // Usa confirmDeleteCategory
-                    deleteButton.Click();
-                    System.Threading.Thread.Sleep(500);
-
-                    // Confirmar en el modal
-                    var confirmButton = Driver.FindElement(By.CssSelector("#deleteClientForm button[type='submit']"));
-                    confirmButton.Click();
-                    System.Threading.Thread.Sleep(500);
-                    break;
+                    throw new Exception("El modal '#deleteConfirmationModal' no apareció o el botón en '#deleteClientForm' no fue accesible.");
                 }
-            }
-        }
 
-        /// <summary>
-        /// Verifica si existe un cliente con el nombre especificado
-        /// </summary>
-        public bool ClientExists(string clientName)
-        {
-            try
-            {
-                // Esperar a que DataTables esté inicializado
+                // Esperar recarga de página
                 System.Threading.Thread.Sleep(1000);
-                
-                // Usar la función de búsqueda de DataTables para encontrar el cliente
-                var searchBox = Driver.FindElement(By.CssSelector(".dataTables_filter input"));
-                searchBox.Clear();
-                searchBox.SendKeys(clientName);
-                
-                // Esperar a que se filtre
-                System.Threading.Thread.Sleep(500);
-                
-                // Verificar si hay filas visibles (sin contar la fila de "No se encontraron resultados")
-                var rows = Driver.FindElements(By.CssSelector("#categoryTable tbody tr:not(.dataTables_empty)"));
-                
-                bool found = false;
-                foreach (var row in rows)
-                {
-                    if (row.Text.Contains(clientName))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                
-                // Limpiar la búsqueda
-                searchBox.Clear();
-                searchBox.SendKeys("");
-                System.Threading.Thread.Sleep(300);
-                
-                return found;
             }
-            catch
+            else
             {
-                return false;
+                throw new Exception($"No se pudo eliminar: El cliente '{documento}' no aparece en la tabla #categoryTable.");
             }
         }
 
-        /// <summary>
-        /// Obtiene el número de clientes en la tabla
-        /// </summary>
+        public bool ClientExists(string texto)
+        {
+            FilterTable(texto);
+            return FindRowWithWait(texto) != null;
+        }
+
         public int GetClientCount()
         {
             try
             {
-                return Driver.FindElements(_clientRows).Count;
+                // Limpiar filtro JS directo para rapidez
+                var js = (IJavaScriptExecutor)Driver;
+                js.ExecuteScript("var input = document.querySelector('input[type=\"search\"]'); if(input){ input.value = ''; input.dispatchEvent(new Event('input')); }");
+                System.Threading.Thread.Sleep(500);
             }
-            catch
-            {
-                return 0;
-            }
+            catch { }
+            return Driver.FindElements(_clientRows).Count;
         }
 
-        /// <summary>
-        /// Verifica si hay un mensaje de éxito
-        /// </summary>
         public bool HasSuccessMessage()
         {
-            return IsElementVisible(_successAlert);
+            try { return _wait.Until(ExpectedConditions.ElementIsVisible(_successAlert)).Displayed; }
+            catch { return false; }
         }
 
-        /// <summary>
-        /// Verifica si hay un mensaje de error
-        /// </summary>
         public bool HasErrorMessage()
         {
-            return IsElementVisible(_errorAlert);
+            try { return _wait.Until(ExpectedConditions.ElementIsVisible(_errorAlert)).Displayed; }
+            catch { return false; }
+        }
+
+        // --- HELPERS ---
+
+        private void FilterTable(string text)
+        {
+            try
+            {
+                var searchBox = _wait.Until(ExpectedConditions.ElementIsVisible(_searchBox));
+                if (searchBox.GetAttribute("value") != text)
+                {
+                    searchBox.Clear();
+                    searchBox.SendKeys(text);
+                    // No usamos Enter, DataTables filtra al escribir (keyup)
+                }
+            }
+            catch (WebDriverTimeoutException)
+            {
+                Console.WriteLine("Warning: Search box not found");
+            }
+        }
+
+        // Método vital para esperar a que DataTables actualice el DOM
+        private IWebElement FindRowWithWait(string text)
+        {
+            try
+            {
+                return _wait.Until(d =>
+                {
+                    var rows = d.FindElements(_clientRows);
+                    return rows.FirstOrDefault(r => r.Displayed && r.Text.Contains(text));
+                });
+            }
+            catch (WebDriverTimeoutException)
+            {
+                return null;
+            }
+        }
+
+        private void ClickWithJs(IWebElement element)
+        {
+            var js = (IJavaScriptExecutor)Driver;
+            js.ExecuteScript("arguments[0].scrollIntoView({block: 'center'});", element);
+            System.Threading.Thread.Sleep(200);
+            js.ExecuteScript("arguments[0].click();", element);
         }
     }
 }

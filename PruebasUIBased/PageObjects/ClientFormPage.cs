@@ -1,115 +1,132 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 using System;
-using System.Linq;
 
 namespace PruebasUIBased.PageObjects
 {
-    /// <summary>
-    /// Page Object para la página de crear/editar Cliente
-    /// </summary>
     public class ClientFormPage : BasePage
     {
-        // Locators - Create
-        private readonly By _createBusinessNameInput = By.Id("NewClient_BusinessName");
-        private readonly By _createEmailInput = By.Id("NewClient_Email");
-        private readonly By _createTaxDocumentInput = By.Id("NewClient_TaxDocument");
-        private readonly By _createAddressInput = By.Id("NewClient_Address");
+        private readonly WebDriverWait _wait;
 
-        // Locators - Update (EditClient)
-        private readonly By _updateBusinessNameInput = By.Id("EditClient_BusinessName");
-        private readonly By _updateEmailInput = By.Id("EditClient_Email");
-        private readonly By _updateTaxDocumentInput = By.Id("EditClient_TaxDocument");
-        private readonly By _updateAddressInput = By.Id("EditClient_Address");
+        // ==========================================
+        // SELECTORES PARA CREACIÓN (Model: NewClient)
+        // ==========================================
+        private readonly By _newName = By.Id("NewClient_BusinessName");
+        private readonly By _newEmail = By.Id("NewClient_Email");
+        private readonly By _newAddress = By.Id("NewClient_Address");
+        private readonly By _newDoc = By.Id("NewClient_TaxDocument");
 
-        // Common
+        // ==========================================
+        // SELECTORES PARA EDICIÓN (Model: EditClient)
+        // ==========================================
+        private readonly By _editName = By.Id("EditClient_BusinessName");
+        private readonly By _editEmail = By.Id("EditClient_Email");
+        private readonly By _editAddress = By.Id("EditClient_Address");
+        private readonly By _editDoc = By.Id("EditClient_TaxDocument");
+
+        // Botón Guardar (Sirve para ambos)
         private readonly By _saveButton = By.CssSelector("button[type='submit']");
-        private readonly By _cancelButton = By.CssSelector("a[href*='Client']");
-        private readonly By _successAlert = By.CssSelector(".alert-success");
-        private readonly By _errorAlert = By.CssSelector(".alert-danger");
 
-        public ClientFormPage(IWebDriver driver) : base(driver) { }
+        // Validaciones
+        private readonly By _validationSummary = By.CssSelector(".text-danger ul li, .validation-summary-errors");
 
-        /// <summary>
-        /// Llena el formulario de cliente (para crear)
-        /// </summary>
-        public void FillClientForm(string businessName, string email, string taxDocument, string address)
+        public ClientFormPage(IWebDriver driver) : base(driver)
         {
-            TypeText(_createBusinessNameInput, businessName);
-            TypeText(_createEmailInput, email);
-            TypeText(_createTaxDocumentInput, taxDocument);
-            TypeText(_createAddressInput, address);
+            _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         }
 
         /// <summary>
-        /// Llena el formulario de cliente (para actualizar)
+        /// Llena el formulario de CREACIÓN usando IDs de NewClient
         /// </summary>
-        public void UpdateClientForm(string businessName, string email, string taxDocument, string address)
+        public void FillClientForm(string nombre, string email, string documento, string direccion)
         {
-            System.Threading.Thread.Sleep(2000);
-            
-            var js = (IJavaScriptExecutor)Driver;
-            
             try
             {
-                var nameInput = Driver.FindElement(_updateBusinessNameInput);
-                var emailInput = Driver.FindElement(_updateEmailInput);
-                var taxDocInput = Driver.FindElement(_updateTaxDocumentInput);
-                var addressInput = Driver.FindElement(_updateAddressInput);
-                
-                js.ExecuteScript("arguments[0].value = arguments[1];", nameInput, businessName);
-                js.ExecuteScript("arguments[0].value = arguments[1];", emailInput, email);
-                js.ExecuteScript("arguments[0].value = arguments[1];", taxDocInput, taxDocument);
-                js.ExecuteScript("arguments[0].value = arguments[1];", addressInput, address);
+                // Esperamos que cargue el campo de CREACIÓN
+                _wait.Until(ExpectedConditions.ElementIsVisible(_newName));
             }
-            catch (NoSuchElementException ex)
+            catch (WebDriverTimeoutException)
             {
-                throw new Exception($"No se encontraron los campos de actualización de cliente. Error: {ex.Message}");
+                throw new Exception("Timeout: No se cargó el formulario de Nuevo Cliente (Buscando #NewClient_BusinessName).");
+            }
+
+            EnterText(_newName, nombre);
+            EnterText(_newEmail, email);
+            EnterText(_newDoc, documento);
+
+            if (!string.IsNullOrEmpty(direccion))
+            {
+                EnterText(_newAddress, direccion);
             }
         }
 
         /// <summary>
-        /// Hace clic en el botón de guardar
+        /// Llena el formulario de EDICIÓN usando IDs de EditClient
         /// </summary>
+        public void UpdateClientForm(string nombre, string email, string documento, string direccion)
+        {
+            try
+            {
+                // CAMBIO IMPORTANTE: Esperamos que cargue el campo de EDICIÓN
+                _wait.Until(ExpectedConditions.ElementIsVisible(_editName));
+            }
+            catch (WebDriverTimeoutException)
+            {
+                // Si falla aquí, es posible que el botón 'Editar' en la lista siga apuntando a /EditCategory (página incorrecta)
+                throw new Exception("Timeout: No se cargó el formulario de Editar Cliente (Buscando #EditClient_BusinessName). Verifique si el enlace en la lista apunta a /EditClient.");
+            }
+
+            // Usamos los selectores _edit...
+            if (!string.IsNullOrEmpty(nombre)) EnterText(_editName, nombre);
+            if (!string.IsNullOrEmpty(email)) EnterText(_editEmail, email);
+            if (!string.IsNullOrEmpty(direccion)) EnterText(_editAddress, direccion);
+
+            // Intentamos editar el documento si se proporciona
+            if (!string.IsNullOrEmpty(documento))
+            {
+                try
+                {
+                    EnterText(_editDoc, documento);
+                }
+                catch { /* Ignorar si es readonly o no existe */ }
+            }
+        }
+
         public void ClickSave()
         {
-            ClickElement(_saveButton);
-            System.Threading.Thread.Sleep(1000);
+            var btn = _wait.Until(ExpectedConditions.ElementToBeClickable(_saveButton));
+
+            // Scroll para asegurar visibilidad
+            var js = (IJavaScriptExecutor)Driver;
+            js.ExecuteScript("arguments[0].scrollIntoView({block: 'center'});", btn);
+            System.Threading.Thread.Sleep(300);
+
+            btn.Click();
         }
 
-        /// <summary>
-        /// Hace clic en el botón de cancelar
-        /// </summary>
-        public void ClickCancel()
-        {
-            ClickElement(_cancelButton);
-        }
-
-        /// <summary>
-        /// Verifica si hay un mensaje de éxito
-        /// </summary>
-        public bool HasSuccessMessage()
-        {
-            return IsElementVisible(_successAlert);
-        }
-
-        /// <summary>
-        /// Verifica si hay un mensaje de error
-        /// </summary>
         public bool HasErrorMessage()
         {
-            System.Threading.Thread.Sleep(500); // Esperar a que se muestre el error
-            
-            // Buscar alertas generales
-            if (IsElementVisible(_errorAlert))
-                return true;
-            
-            // Buscar spans de validación específicos
-            var validationSpans = Driver.FindElements(
-                By.CssSelector("span.text-danger, [class*='validation'], [data-valmsg-for]"));
-            
-            return validationSpans.Any(s => 
-                s.Displayed && !string.IsNullOrWhiteSpace(s.Text));
+            try
+            {
+                return _wait.Until(ExpectedConditions.ElementIsVisible(_validationSummary)).Displayed;
+            }
+            catch
+            {
+                var fieldErrors = Driver.FindElements(By.CssSelector(".field-validation-error, .text-danger"));
+                foreach (var err in fieldErrors)
+                {
+                    if (err.Displayed && !string.IsNullOrWhiteSpace(err.Text) && err.Text != "*") return true;
+                }
+                return false;
+            }
+        }
+
+        private void EnterText(By locator, string text)
+        {
+            var element = Driver.FindElement(locator);
+            element.Clear();
+            element.SendKeys(text);
         }
     }
 }

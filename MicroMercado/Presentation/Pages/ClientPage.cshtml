@@ -80,7 +80,7 @@
                         <td>@t.item.Email</td>
                         <td>@t.item.TaxDocument</td>
                         <td class="text-center">
-                            <a asp-page="/EditCategory" asp-route-id="@t.item.Id" class="btn btn-warning btn-sm me-1" title="Editar Categoría">
+                                <a asp-page="/EditClient" asp-route-id="@t.item.Id" class="btn btn-warning btn-sm me-1" title="Editar Cliente">
                                 <i class="fas fa-edit"></i> Editar
                             </a>
                             <button type="button" class="btn btn-danger btn-sm"
@@ -169,8 +169,8 @@
         });
 
         function confirmDeleteCategory(categoryId, categoryName) {
-            document.getElementById('categoryIdToDelete').value = categoryId;
-            document.getElementById('categoryNameToDelete').innerText = categoryName;
+            document.getElementById('clientIdToDelete').value = categoryId;
+            document.getElementById('clientNameToDelete').innerText = categoryName;
             var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
             deleteModal.show();
         }
