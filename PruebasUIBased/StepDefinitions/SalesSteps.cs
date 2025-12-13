@@ -1,7 +1,9 @@
 using PruebasUIBased.Infrastructure;
 using PruebasUIBased.PageObjects;
-using Reqnroll;
+using Reqnroll; // O TechTalk.SpecFlow
 using Xunit;
+using System;
+using System.Globalization;
 
 namespace PruebasUIBased.StepDefinitions
 {
@@ -10,6 +12,7 @@ namespace PruebasUIBased.StepDefinitions
     {
         private readonly WebDriverFixture _fixture;
         private readonly ScenarioContext _scenarioContext;
+        private SalesPage _salesPage;
 
         public SalesSteps(WebDriverFixture fixture, ScenarioContext scenarioContext)
         {
@@ -17,96 +20,63 @@ namespace PruebasUIBased.StepDefinitions
             _scenarioContext = scenarioContext;
         }
 
-        private SalesPage GetSalesPage()
-        {
-            if (!_scenarioContext.ContainsKey("SalesPage"))
-            {
-                var salesPage = new SalesPage(_fixture.Driver);
-                _scenarioContext["SalesPage"] = salesPage;
-            }
-            return (SalesPage)_scenarioContext["SalesPage"];
-        }
+        private SalesPage SalesPage => _salesPage ??= new SalesPage(_fixture.Driver);
 
         [Given(@"que existe un cliente con documento ""(.*)""")]
         public void GivenQueExisteUnClienteConDocumento(string documento)
         {
-            // Este paso es principalmente documental
-            // Asumimos que el cliente ya existe en la base de datos de pruebas
             _scenarioContext["ClientDocument"] = documento;
         }
 
         [When(@"agrego el producto ""(.*)"" con cantidad (.*) al carrito")]
         public void WhenAgregoElProductoConCantidadAlCarrito(string productName, int quantity)
         {
-            var salesPage = GetSalesPage();
-            salesPage.SearchAndAddProduct(productName);
-            
+            SalesPage.SearchAndAddProduct(productName);
             if (quantity > 1)
             {
-                salesPage.SetProductQuantity(productName, quantity);
+                SalesPage.SetProductQuantity(productName, quantity);
             }
-
-            System.Threading.Thread.Sleep(500);
         }
 
         [When(@"busco el cliente con documento ""(.*)""")]
         public void WhenBuscoElClienteConDocumento(string documento)
         {
-            var salesPage = GetSalesPage();
-            salesPage.SearchClient(documento);
+            SalesPage.SearchClient(documento);
         }
 
         [When(@"selecciono tipo de pago ""(.*)""")]
         public void WhenSeleccionoTipoDePago(string paymentType)
         {
-            var salesPage = GetSalesPage();
-            salesPage.SelectPaymentType(paymentType);
+            SalesPage.SelectPaymentType(paymentType);
         }
 
         [When(@"ingreso efectivo recibido ""(.*)""")]
         public void WhenIngresoEfectivoRecibido(string amount)
         {
-            var salesPage = GetSalesPage();
-            salesPage.EnterCashReceived(decimal.Parse(amount, System.Globalization.CultureInfo.InvariantCulture));
+            SalesPage.EnterCashReceived(decimal.Parse(amount, CultureInfo.InvariantCulture));
         }
 
         [When(@"confirmo la venta")]
         public void WhenConfirmoLaVenta()
         {
-            var salesPage = GetSalesPage();
-            salesPage.ConfirmSale();
+            SalesPage.ConfirmSale();
+            SalesPage.WaitForCartToEmpty();
         }
 
         [Then(@"la venta debe procesarse exitosamente")]
         public void ThenLaVentaDebeProcesarseExitosamente()
         {
-            var salesPage = GetSalesPage();
-            
-            // Esperar a que la página se redirija o muestre confirmación
-            System.Threading.Thread.Sleep(2000);
-            
-            // Verificar que no haya mensajes de error
-            Assert.False(salesPage.HasErrorMessage(), "No debe haber mensajes de error");
+            bool successMsg = SalesPage.HasSuccessMessage();
+            bool cartEmpty = SalesPage.GetCartItemCount() == 0;
+
+            Assert.True(successMsg || cartEmpty, "La venta falló: El carrito sigue lleno y no hay mensaje de éxito.");
+            Assert.False(SalesPage.HasErrorMessage(), "Se encontró un mensaje de error en la pantalla.");
         }
 
         [Then(@"el carrito debe estar vacio")]
         public void ThenElCarritoDebeEstarVacio()
         {
-            var salesPage = GetSalesPage();
-            
-            // Esperar más tiempo después de la venta para que la página se recargue
-            System.Threading.Thread.Sleep(3000);
-            
-            // Verificar si necesitamos navegar de vuelta a la página de ventas
-            var currentUrl = salesPage.GetCurrentUrl();
-            if (!currentUrl.Contains("/Sales"))
-            {
-                salesPage.NavigateTo($"{_fixture.BaseUrl}/Sales");
-                System.Threading.Thread.Sleep(2000);
-            }
-
-            var itemCount = salesPage.GetCartItemCount();
-            Assert.True(itemCount == 0, $"El carrito debería estar vacío pero tiene {itemCount} items");
+            Assert.Equal(0, SalesPage.GetCartItemCount());
         }
     }
 }

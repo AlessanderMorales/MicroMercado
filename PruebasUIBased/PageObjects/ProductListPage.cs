@@ -1,174 +1,167 @@
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
+using System;
+using System.Linq;
 
 namespace PruebasUIBased.PageObjects
 {
-    /// <summary>
-    /// Page Object para la página de listado de Productos
-    /// </summary>
     public class ProductListPage : BasePage
     {
-        // Locators
-        private readonly By _addNewProductButton = By.CssSelector("a[href*='NewProduct']");
-        private readonly By _productTable = By.Id("productTable");
-        private readonly By _productRows = By.CssSelector("#productTable tbody tr");
-        private readonly By _editButtons = By.CssSelector("a[href*='EditProduct']");
-        private readonly By _deleteButtons = By.CssSelector("button[onclick*='confirmDeleteProduct']");
+        private readonly WebDriverWait _wait;
+
+        // --- SELECTORES ---
+        private readonly By _addNewButton = By.CssSelector("a[href*='NewProduct'], a[href*='Create']");
+        private readonly By _rows = By.CssSelector("#productTable tbody tr");
+        private readonly By _searchBox = By.CssSelector("input[type='search']"); // DataTables
         private readonly By _successAlert = By.CssSelector(".alert-success");
-        private readonly By _errorAlert = By.CssSelector(".alert-danger");
 
-        public ProductListPage(IWebDriver driver) : base(driver) { }
+        public ProductListPage(IWebDriver driver) : base(driver)
+        {
+            _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        }
 
-        /// <summary>
-        /// Hace clic en el botón para agregar nuevo producto
-        /// </summary>
         public void ClickAddNewProduct()
         {
-            ClickElement(_addNewProductButton);
-        }
-
-        /// <summary>
-        /// Hace clic en editar producto por nombre
-        /// </summary>
-        public void ClickEditProduct(string productName)
-        {
-            System.Threading.Thread.Sleep(1000);
-            
             try
             {
-                var searchBox = Driver.FindElement(By.CssSelector(".dataTables_filter input"));
-                searchBox.Clear();
-                searchBox.SendKeys(productName);
-                System.Threading.Thread.Sleep(500);
-            }
-            catch { }
-            
-            var rows = Driver.FindElements(_productRows);
-            bool found = false;
-            
-            foreach (var row in rows)
-            {
-                if (row.Text.Contains(productName) && row.Displayed)
-                {
-                    try
-                    {
-                        var editButton = row.FindElement(By.CssSelector("a[href*='EditProduct']"));
-                        
-                        if (editButton.Displayed && editButton.Enabled)
-                        {
-                            var js = (IJavaScriptExecutor)Driver;
-                            js.ExecuteScript("arguments[0].scrollIntoView(true);", editButton);
-                            System.Threading.Thread.Sleep(300);
-                            js.ExecuteScript("arguments[0].click();", editButton);
-                            found = true;
-                            break;
-                        }
-                    }
-                    catch (NoSuchElementException) { continue; }
-                }
-            }
-            
-            if (!found)
-            {
-                throw new Exception($"No se encontró el botón de editar para el producto '{productName}'");
-            }
-        }
-
-        /// <summary>
-        /// Hace clic en eliminar producto por nombre
-        /// </summary>
-        public void ClickDeleteProduct(string productName)
-        {
-            var rows = Driver.FindElements(_productRows);
-            foreach (var row in rows)
-            {
-                if (row.Text.Contains(productName))
-                {
-                    var deleteButton = row.FindElement(By.CssSelector("button[onclick*='confirmDeleteProduct']"));
-                    deleteButton.Click();
-                    System.Threading.Thread.Sleep(500);
-
-                    // Confirmar en el modal
-                    var confirmButton = Driver.FindElement(By.CssSelector("#deleteProductForm button[type='submit']"));
-                    confirmButton.Click();
-                    System.Threading.Thread.Sleep(500);
-                    break;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Verifica si existe un producto con el nombre especificado
-        /// </summary>
-        public bool ProductExists(string productName)
-        {
-            try
-            {
-                // Esperar a que DataTables esté inicializado
-                System.Threading.Thread.Sleep(1000);
-                
-                // Usar la función de búsqueda de DataTables
-                var searchBox = Driver.FindElement(By.CssSelector(".dataTables_filter input"));
-                searchBox.Clear();
-                searchBox.SendKeys(productName);
-                
-                // Esperar a que se filtre
-                System.Threading.Thread.Sleep(500);
-                
-                // Verificar si hay filas visibles
-                var rows = Driver.FindElements(By.CssSelector("#productTable tbody tr:not(.dataTables_empty)"));
-                
-                bool found = false;
-                foreach (var row in rows)
-                {
-                    if (row.Text.Contains(productName))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                
-                // Limpiar la búsqueda
-                searchBox.Clear();
-                searchBox.SendKeys("");
-                System.Threading.Thread.Sleep(300);
-                
-                return found;
+                var btn = _wait.Until(ExpectedConditions.ElementToBeClickable(_addNewButton));
+                btn.Click();
             }
             catch
             {
-                return false;
+                Driver.FindElement(By.PartialLinkText("Agregar")).Click();
             }
         }
 
-        /// <summary>
-        /// Obtiene el número de productos en la tabla
-        /// </summary>
+        public void ClickEditProduct(string productName)
+        {
+            FilterTable(productName);
+            var row = FindRowWithWait(productName);
+
+            if (row != null)
+            {
+                var editButton = row.FindElement(By.CssSelector("a[href*='EditProduct'], a.btn-warning"));
+                ClickWithJs(editButton);
+            }
+            else
+            {
+                throw new Exception($"No se encontró el botón de editar para '{productName}'.");
+            }
+        }
+
+        public void ClickDeleteProduct(string productName)
+        {
+            FilterTable(productName);
+            var row = FindRowWithWait(productName);
+
+            if (row != null)
+            {
+                var deleteButton = row.FindElement(By.CssSelector(".btn-danger"));
+
+                // Obtener ID del modal específico (data-bs-target="#deleteModal123")
+                var modalId = deleteButton.GetAttribute("data-bs-target");
+
+                ClickWithJs(deleteButton);
+
+                try
+                {
+                    // Esperar modal específico
+                    var specificModal = By.CssSelector($"{modalId}.show");
+                    _wait.Until(ExpectedConditions.ElementIsVisible(specificModal));
+
+                    // Botón confirmar dentro de ese modal
+                    var confirmBtnSelector = By.CssSelector($"{modalId} form button[type='submit']");
+                    var confirmBtn = _wait.Until(ExpectedConditions.ElementToBeClickable(confirmBtnSelector));
+
+                    System.Threading.Thread.Sleep(300);
+                    confirmBtn.Click();
+                }
+                catch (WebDriverTimeoutException)
+                {
+                    throw new Exception($"El modal de eliminación {modalId} no apareció.");
+                }
+
+                System.Threading.Thread.Sleep(1000);
+            }
+            else
+            {
+                throw new Exception($"No se encontró el producto '{productName}' para eliminar.");
+            }
+        }
+
+        public bool ProductExists(string name)
+        {
+            FilterTable(name);
+            return FindRowWithWait(name) != null;
+        }
+
+        // --- ESTE ES EL MÉTODO QUE FALTABA ---
         public int GetProductCount()
         {
             try
             {
-                return Driver.FindElements(_productRows).Count;
+                // Limpiar el filtro de búsqueda para contar todos los productos
+                var js = (IJavaScriptExecutor)Driver;
+                js.ExecuteScript("var s=document.querySelector('input[type=\"search\"]'); if(s){s.value=''; s.dispatchEvent(new Event('input'));}");
+                System.Threading.Thread.Sleep(500);
             }
-            catch
-            {
-                return 0;
-            }
-        }
+            catch { }
 
-        /// <summary>
-        /// Verifica si hay un mensaje de éxito
-        /// </summary>
+            return Driver.FindElements(_rows).Count;
+        }
+        // -------------------------------------
+
         public bool HasSuccessMessage()
         {
-            return IsElementVisible(_successAlert);
+            try { return _wait.Until(ExpectedConditions.ElementIsVisible(_successAlert)).Displayed; }
+            catch { return false; }
         }
 
-        /// <summary>
-        /// Verifica si hay un mensaje de error
-        /// </summary>
-        public bool HasErrorMessage()
+        public string GetCurrentUrl()
         {
-            return IsElementVisible(_errorAlert);
+            return Driver.Url;
+        }
+
+        public void NavigateTo(string url)
+        {
+            Driver.Navigate().GoToUrl(url);
+        }
+
+        // --- Helpers ---
+
+        private void FilterTable(string text)
+        {
+            try
+            {
+                var searchBox = _wait.Until(ExpectedConditions.ElementIsVisible(_searchBox));
+                if (searchBox.GetAttribute("value") != text)
+                {
+                    searchBox.Clear();
+                    searchBox.SendKeys(text);
+                }
+            }
+            catch { }
+        }
+
+        private IWebElement FindRowWithWait(string text)
+        {
+            try
+            {
+                return _wait.Until(d =>
+                {
+                    var rows = d.FindElements(_rows);
+                    return rows.FirstOrDefault(r => r.Displayed && r.Text.Contains(text));
+                });
+            }
+            catch { return null; }
+        }
+
+        private void ClickWithJs(IWebElement element)
+        {
+            ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].scrollIntoView({block: 'center'});", element);
+            System.Threading.Thread.Sleep(200);
+            ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", element);
         }
     }
 }

@@ -301,13 +301,13 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 await this.FeatureBackgroundAsync();
 #line hidden
 #line 40
-  await testRunner.GivenAsync("existe una categoria creada con nombre \"CategoriaParaEliminar\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+  await testRunner.GivenAsync("existe una categoria creada con nombre \"CatParaEliminar\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 41
-  await testRunner.WhenAsync("hago clic en eliminar categoria \"CategoriaParaEliminar\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+  await testRunner.WhenAsync("hago clic en eliminar categoria \"CatParaEliminar\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 42
-  await testRunner.ThenAsync("la categoria \"CategoriaParaEliminar\" no debe aparecer en la lista", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+  await testRunner.ThenAsync("la categoria \"CatParaEliminar\" no debe aparecer en la lista", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();

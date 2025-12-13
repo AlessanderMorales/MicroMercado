@@ -37,9 +37,9 @@ Scenario Outline: CC-02 - Actualizar categoria con combinaciones Pairwise
 
 @ui @category @delete @happy
 Scenario: CC-03 - Eliminar categoria
-  Given existe una categoria creada con nombre "CategoriaParaEliminar"
-  When hago clic en eliminar categoria "CategoriaParaEliminar"
-  Then la categoria "CategoriaParaEliminar" no debe aparecer en la lista
+  Given existe una categoria creada con nombre "CatParaEliminar"
+  When hago clic en eliminar categoria "CatParaEliminar"
+  Then la categoria "CatParaEliminar" no debe aparecer en la lista
 
 @ui @category @read @happy
 Scenario: CC-04 - Listar categorias activas

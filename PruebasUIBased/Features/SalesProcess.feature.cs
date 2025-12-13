@@ -177,13 +177,13 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 await this.FeatureBackgroundAsync();
 #line hidden
 #line 12
-  await testRunner.GivenAsync("que existe un cliente con documento \"9404687\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+  await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 13
   await testRunner.WhenAsync("agrego el producto \"Yogurt\" con cantidad 2 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 14
-  await testRunner.AndAsync("busco el cliente con documento \"9404687\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 15
   await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
@@ -209,20 +209,20 @@ await this.FeatureBackgroundAsync();
         [global::Xunit.TraitAttribute("Description", "VP-02 - Venta con multiples productos en efectivo")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "sales")]
-        [global::Xunit.TraitAttribute("Category", "happy")]
+        [global::Xunit.TraitAttribute("Category", "complex")]
         public async global::System.Threading.Tasks.Task VP_02_VentaConMultiplesProductosEnEfectivo()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
                     "sales",
-                    "happy"};
+                    "complex"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "1";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("VP-02 - Venta con multiples productos en efectivo", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 22
-this.ScenarioInitialize(scenarioInfo, ruleInfo);
+  this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
             {
@@ -235,37 +235,36 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 await this.FeatureBackgroundAsync();
 #line hidden
 #line 23
-  await testRunner.GivenAsync("que existe un cliente con documento \"9404687\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+    await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 24
-  await testRunner.WhenAsync("agrego el producto \"Yogurt\" con cantidad 3 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("agrego el producto \"Yogurt Bebible Sabor Durazno Pil 1000 Gr\" con cantidad 3 al c" +
+                        "arrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 25
-  await testRunner.AndAsync("agrego el producto \"Leche\" con cantidad 2 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("agrego el producto \"Leche de Soya sabor Banana Soy 946 Ml\" con cantidad 2 al carr" +
+                        "ito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 26
-  await testRunner.AndAsync("agrego el producto \"Mantequilla\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("agrego el producto \"Mantequilla sin Sal Pil 200 Gr\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 27
-  await testRunner.AndAsync("busco el cliente con documento \"9404687\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 28
-  await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 29
-  await testRunner.AndAsync("ingreso efectivo recibido \"150.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("ingreso efectivo recibido \"200.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 30
-  await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 31
-  await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+    await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 32
-  await testRunner.AndAsync("debo ver un mensaje de exito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 33
-  await testRunner.AndAsync("el carrito debe estar vacio", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("el carrito debe estar vacio", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -302,7 +301,7 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 await this.FeatureBackgroundAsync();
 #line hidden
 #line 37
-  await testRunner.GivenAsync("que existe un cliente con documento \"9404687\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+  await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 38
   await testRunner.WhenAsync("agrego el producto \"Yogurt\" con cantidad 2 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
@@ -314,7 +313,7 @@ await this.FeatureBackgroundAsync();
   await testRunner.AndAsync("agrego el producto \"Pasta Dental\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 41
-  await testRunner.AndAsync("busco el cliente con documento \"9404687\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 42
   await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");

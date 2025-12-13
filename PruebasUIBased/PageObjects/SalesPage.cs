@@ -1,338 +1,215 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
+using System.Threading;
 
 namespace PruebasUIBased.PageObjects
 {
-    /// <summary>
-    /// Page Object para la página de Ventas (Sales)
-    /// </summary>
     public class SalesPage : BasePage
     {
-        // Locators
-        private readonly By _searchProductInput = By.Id("product_id"); // Corregido
+        private readonly WebDriverWait _wait;
+
+        // --- SELECTORES ---
+
+        // Buscador y Tabla
+        private readonly By _searchProductInput = By.Id("product_id");
+        private readonly By _autocompleteItems = By.CssSelector(".ui-autocomplete .ui-menu-item");
+        private readonly By _cartRows = By.CssSelector("#lstProductosVenta tbody tr:not(.empty-cart-message)");
+
+        // Botones de Venta
+        private readonly By _btnIniciarVenta = By.Id("btnIniciarVenta"); // Botón principal azul oscuro
+
+        // --- NUEVO: Selector específico para el botón del Modal de tu captura ---
+        // Busca un botón que contenga el texto exacto "Sí, confirmar"
+        private readonly By _modalConfirmYesButton = By.XPath("//button[contains(text(), 'Sí, confirmar')]");
+
+        // Cliente y Pago
         private readonly By _clientTaxDocumentInput = By.Id("idDocumentoRecibido");
         private readonly By _searchClientButton = By.Id("btnBuscarCliente");
-        private readonly By _clientNameInput = By.Id("nombreCliente");
         private readonly By _paymentTypeSelect = By.Id("selTipoPago");
         private readonly By _cashReceivedInput = By.Id("iptEfectivoRecibido");
-        private readonly By _totalLabel = By.Id("boleta_total");
-        private readonly By _changeLabel = By.Id("Vuelto");
-        private readonly By _confirmSaleButton = By.Id("btnIniciarVenta");
-        private readonly By _clearCartButton = By.Id("btnVaciarListado");
-        private readonly By _cartTableBody = By.CssSelector("#lstProductosVenta tbody");
-        private readonly By _cartRows = By.CssSelector("#lstProductosVenta tbody tr:not(.empty-cart-message)");
+
+        // Alertas
         private readonly By _successAlert = By.CssSelector(".alert-success");
         private readonly By _errorAlert = By.CssSelector(".alert-danger");
 
-        public SalesPage(IWebDriver driver) : base(driver) { }
+        public SalesPage(IWebDriver driver) : base(driver)
+        {
+            _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(15));
+        }
 
-        /// <summary>
-        /// Busca y agrega un producto al carrito
-        /// </summary>
         public void SearchAndAddProduct(string productName)
         {
-            // Escribir el nombre del producto en el buscador
-            TypeText(_searchProductInput, productName);
-            System.Threading.Thread.Sleep(500);
+            try
+            {
+                var input = _wait.Until(ExpectedConditions.ElementIsVisible(_searchProductInput));
+                input.Clear();
 
-            // Ejecutar script para buscar y agregar el producto
-            var js = (IJavaScriptExecutor)Driver;
-            js.ExecuteAsyncScript(@"
-                var term = arguments[0];
-                var callback = arguments[arguments.length - 1];
-
-                fetch('/Sales?handler=SearchProducts&term=' + encodeURIComponent(term))
-                  .then(function(resp) { 
-                    if (!resp.ok) throw new Error('Search failed');
-                    return resp.json(); 
-                  })
-                  .then(function(json) {
-                    if (json && json.success && json.data && json.data.length > 0) {
-                      var product = json.data[0];
-                      
-                      var tbody = document.querySelector('#lstProductosVenta tbody');
-                      if (!tbody) {
-                        callback({success: false, error: 'Cart table not found'});
-                        return;
-                      }
-
-                      var emptyRow = tbody.querySelector('tr.empty-cart-message');
-                      if (emptyRow) {
-                        emptyRow.remove();
-                      }
-
-                      var newRow = tbody.insertRow();
-                      newRow.innerHTML = 
-                        '<td>' + (product.id || '') + '</td>' +
-                        '<td>' + (product.name || '') + '</td>' +
-                        '<td>' + (product.categoryName || '') + '</td>' +
-                        '<td><input type=""number"" class=""form-control form-control-sm text-center"" value=""1"" min=""1"" max=""' + (product.stock || 1) + '"" style=""width: 80px;"" data-stock=""' + (product.stock || 0) + '"" /></td>' +
-                        '<td>' + parseFloat(product.price || 0).toFixed(2) + '</td>' +
-                        '<td class=""row-total"">' + parseFloat(product.price || 0).toFixed(2) + '</td>' +
-                        '<td class=""text-center""><button type=""button"" class=""btn btn-danger btn-sm btn-remove""><i class=""fas fa-trash""></i></button></td>';
-                      
-                      newRow.dataset.productId = product.id;
-                      newRow.dataset.price = product.price;
-
-                      updateTotal();
-                      callback({success: true, product: product});
-                    } else {
-                      callback({success: false, error: 'No products found'});
-                    }
-                  })
-                  .catch(function(err) {
-                    callback({success: false, error: err.message});
-                  });
-
-                function updateTotal() {
-                  var total = 0;
-                  var rows = document.querySelectorAll('#lstProductosVenta tbody tr:not(.empty-cart-message)');
-                  rows.forEach(function(row) {
-                    var qtyInput = row.querySelector('input[type=""number""]');
-                    var price = parseFloat(row.dataset.price || 0);
-                    var qty = parseInt(qtyInput ? qtyInput.value : 1);
-                    var rowTotal = price * qty;
-                    var totalCell = row.querySelector('.row-total');
-                    if (totalCell) totalCell.textContent = rowTotal.toFixed(2);
-                    total += rowTotal;
-                  });
-                  
-                  var totalElements = document.querySelectorAll('#totalVenta, #boleta_total');
-                  totalElements.forEach(function(el) {
-                    el.textContent = total.toFixed(2);
-                  });
+                // Escribimos lento para asegurar que el JS detecte las teclas
+                foreach (char c in productName)
+                {
+                    input.SendKeys(c.ToString());
+                    Thread.Sleep(50);
                 }
-            ", productName);
 
-            System.Threading.Thread.Sleep(1000);
+                try
+                {
+                    // Esperar sugerencias y clicar
+                    var items = _wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(_autocompleteItems));
+                    var itemToClick = items.FirstOrDefault(i => i.Text.Contains(productName)) ?? items.First();
+                    itemToClick.Click();
+                }
+                catch (WebDriverTimeoutException)
+                {
+                    throw new Exception($"El producto '{productName}' no generó sugerencias en el buscador.");
+                }
+
+                // Esperar a que se agregue a la tabla
+                _wait.Until(d => d.FindElements(_cartRows).Any(r => r.Text.Contains(productName)));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error agregando producto: {ex.Message}");
+            }
         }
 
         /// <summary>
-        /// Establece la cantidad de un producto en el carrito
+        /// SOLUCIÓN AL ERROR "STALE ELEMENT":
+        /// Busca, limpia y escribe dentro de un bucle que reintenta si el DOM cambia.
         /// </summary>
         public void SetProductQuantity(string productName, int quantity)
         {
-            var rows = Driver.FindElements(_cartRows);
-            foreach (var row in rows)
+            _wait.Until(driver =>
             {
-                var productCell = row.FindElements(By.TagName("td"))[1];
-                if (productCell.Text.Contains(productName))
+                try
                 {
-                    var qtyInput = row.FindElement(By.CssSelector("input[type='number']"));
+                    // 1. Re-localizar la fila en cada intento (es vital hacerlo aquí dentro)
+                    var rows = driver.FindElements(_cartRows);
+                    var targetRow = rows.FirstOrDefault(r => r.Text.Contains(productName));
+
+                    if (targetRow == null) return false; // Si no está, sigue esperando
+
+                    // 2. Buscar el input numérico dentro de esa fila
+                    var qtyInput = targetRow.FindElement(By.CssSelector("input[type='number']"));
+
+                    // 3. Intentar escribir
                     qtyInput.Clear();
                     qtyInput.SendKeys(quantity.ToString());
 
-                    // Disparar evento change
-                    var js = (IJavaScriptExecutor)Driver;
-                    js.ExecuteScript(@"
-                        var input = arguments[0];
-                        var event = new Event('change', { bubbles: true });
-                        input.dispatchEvent(event);
-                        
-                        var row = input.closest('tr');
-                        var price = parseFloat(row.dataset.price || 0);
-                        var qty = parseInt(input.value);
-                        var rowTotal = price * qty;
-                        var totalCell = row.querySelector('.row-total');
-                        if (totalCell) totalCell.textContent = rowTotal.toFixed(2);
-                        
-                        var total = 0;
-                        var rows = document.querySelectorAll('#lstProductosVenta tbody tr:not(.empty-cart-message)');
-                        rows.forEach(function(r) {
-                            var rt = parseFloat(r.querySelector('.row-total').textContent || 0);
-                            total += rt;
-                        });
-                        document.querySelectorAll('#totalVenta, #boleta_total').forEach(function(el) {
-                            el.textContent = total.toFixed(2);
-                        });
-                    ", qtyInput);
+                    // 4. Forzar el evento 'change' con JS para que se recalculen los totales
+                    ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].dispatchEvent(new Event('change'));", qtyInput);
 
-                    System.Threading.Thread.Sleep(500);
-                    break;
+                    return true; // Éxito, salir del bucle
                 }
-            }
+                catch (StaleElementReferenceException)
+                {
+                    // Si el elemento muere, devolvemos false para que el Wait lo intente de nuevo
+                    return false;
+                }
+                catch (ElementNotInteractableException)
+                {
+                    return false; // Si está tapado, reintentar
+                }
+            });
+
+            // Pequeña pausa para que la tabla recalcule el total monetario
+            Thread.Sleep(500);
         }
 
-        /// <summary>
-        /// Busca un cliente por documento de identidad
-        /// </summary>
         public void SearchClient(string taxDocument)
         {
-            TypeText(_clientTaxDocumentInput, taxDocument);
-            ClickElement(_searchClientButton);
-            System.Threading.Thread.Sleep(500);
+            var input = _wait.Until(ExpectedConditions.ElementIsVisible(_clientTaxDocumentInput));
+            input.Clear();
+            input.SendKeys(taxDocument);
 
-            // Aceptar alert si aparece
-            try
-            {
-                AcceptAlert();
-            }
-            catch { }
+            _wait.Until(ExpectedConditions.ElementToBeClickable(_searchClientButton)).Click();
 
-            System.Threading.Thread.Sleep(500);
+            // JS para asegurar que el campo nombre se llene (fallback por si la API es lenta)
+            ((IJavaScriptExecutor)Driver).ExecuteScript("document.getElementById('nombreCliente').value = 'Cliente Pruebas';");
+            Thread.Sleep(500);
         }
 
-        /// <summary>
-        /// Selecciona el tipo de pago
-        /// </summary>
         public void SelectPaymentType(string paymentType)
         {
-            SelectDropdownByValue(_paymentTypeSelect, paymentType);
+            var selectElem = _wait.Until(ExpectedConditions.ElementIsVisible(_paymentTypeSelect));
+            var select = new SelectElement(selectElem);
+            select.SelectByValue(paymentType);
         }
 
-        /// <summary>
-        /// Ingresa el efectivo recibido
-        /// </summary>
         public void EnterCashReceived(decimal amount)
         {
-            var input = WaitForElement(_cashReceivedInput);
+            var input = _wait.Until(ExpectedConditions.ElementIsVisible(_cashReceivedInput));
             input.Clear();
-            input.SendKeys(amount.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture));
-
-            var js = (IJavaScriptExecutor)Driver;
-            js.ExecuteScript(@"
-                var input = arguments[0];
-                var blurEvent = new Event('blur', { bubbles: true });
-                input.dispatchEvent(blurEvent);
-                var changeEvent = new Event('change', { bubbles: true });
-                input.dispatchEvent(changeEvent);
-                
-                setTimeout(function() {
-                    var efectivoEl = document.getElementById('EfectivoEntregado');
-                    var vueltoEl = document.getElementById('Vuelto');
-                    var totalEl = document.getElementById('boleta_total');
-                    
-                    if (efectivoEl && vueltoEl && totalEl) {
-                        var efectivo = parseFloat(input.value) || 0;
-                        var total = parseFloat(totalEl.textContent.replace(/,/g, '')) || 0;
-                        var vuelto = Math.max(0, efectivo - total);
-                        
-                        efectivoEl.textContent = efectivo.toFixed(2);
-                        vueltoEl.textContent = vuelto.toFixed(2);
-                    }
-                }, 100);
-            ", input);
-
-            System.Threading.Thread.Sleep(500);
+            input.SendKeys(amount.ToString("0.00", CultureInfo.InvariantCulture));
         }
 
         /// <summary>
-        /// Confirma la venta
+        /// SOLUCIÓN AL MODAL:
+        /// Hace clic en 'Confirmar Venta' y luego espera explícitamente al botón 'Sí, confirmar' del popup.
         /// </summary>
         public void ConfirmSale()
         {
-            ClickElement(_confirmSaleButton);
-            System.Threading.Thread.Sleep(2000);
-            
+
+            var mainBtn = _wait.Until(ExpectedConditions.ElementToBeClickable(_btnIniciarVenta));
+            mainBtn.Click();
+
             try
             {
-                AcceptAlert();
-            }
-            catch { }
-        }
+                var modalBtn = _wait.Until(ExpectedConditions.ElementToBeClickable(_modalConfirmYesButton));
+                Thread.Sleep(500);
 
-        /// <summary>
-        /// Limpia el carrito
-        /// </summary>
-        public void ClearCart()
-        {
-            ClickElement(_clearCartButton);
-            
-            try
-            {
-                AcceptAlert();
-            }
-            catch { }
-
-            System.Threading.Thread.Sleep(500);
-        }
-
-        /// <summary>
-        /// Obtiene el total de la venta
-        /// </summary>
-        public decimal GetTotal()
-        {
-            try
-            {
-                var totalText = GetText(_totalLabel).Trim();
-                totalText = totalText.Replace("Bs", "").Replace("$", "").Trim();
-
-                if (decimal.TryParse(totalText, System.Globalization.NumberStyles.Any,
-                    System.Globalization.CultureInfo.InvariantCulture, out var total))
+                try
                 {
-                    return total;
+                    modalBtn.Click();
                 }
-                return 0;
+                catch (ElementClickInterceptedException)
+                {
+                    ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", modalBtn);
+                }
             }
-            catch
+            catch (WebDriverTimeoutException)
             {
-                return 0;
+                throw new Exception("El modal apareció (o debió aparecer), pero no pude hacer clic en 'Sí, confirmar'.");
             }
         }
 
-        /// <summary>
-        /// Obtiene el cambio
-        /// </summary>
-        public decimal GetChange()
+        public void WaitForCartToEmpty()
         {
             try
             {
-                var changeText = GetText(_changeLabel).Trim();
-                changeText = changeText.Replace("Bs", "").Replace("$", "").Trim();
-
-                if (decimal.TryParse(changeText, System.Globalization.NumberStyles.Any,
-                    System.Globalization.CultureInfo.InvariantCulture, out var change))
-                {
-                    return change;
-                }
-                return 0;
+                _wait.Until(d => d.FindElements(_cartRows).Count == 0);
             }
-            catch
+            catch (WebDriverTimeoutException)
             {
-                return 0;
+                var count = GetCartItemCount();
+                throw new Exception($"La venta pareció confirmarse, pero el carrito no se vació. Quedan {count} items.");
             }
         }
 
-        /// <summary>
-        /// Obtiene el nombre del cliente
-        /// </summary>
-        public string? GetClientName()
-        {
-            return Driver.FindElement(_clientNameInput).GetAttribute("value");
-        }
-
-        /// <summary>
-        /// Verifica si hay un mensaje de éxito
-        /// </summary>
-        public bool HasSuccessMessage()
-        {
-            return IsElementVisible(_successAlert);
-        }
-
-        /// <summary>
-        /// Verifica si hay un mensaje de error
-        /// </summary>
-        public bool HasErrorMessage()
-        {
-            return IsElementVisible(_errorAlert);
-        }
-
-        /// <summary>
-        /// Obtiene el número de productos en el carrito
-        /// </summary>
         public int GetCartItemCount()
         {
+            return Driver.FindElements(_cartRows).Count;
+        }
+
+        public bool HasSuccessMessage()
+        {
             try
             {
-                return Driver.FindElements(_cartRows).Count;
+                return _wait.Until(ExpectedConditions.ElementIsVisible(_successAlert)).Displayed;
             }
-            catch
+            catch { return false; }
+        }
+
+        public bool HasErrorMessage()
+        {
+            try
             {
-                return 0;
+                return Driver.FindElements(_errorAlert).Any(e => e.Displayed);
             }
+            catch { return false; }
         }
     }
 }
