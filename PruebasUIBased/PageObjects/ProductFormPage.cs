@@ -84,7 +84,9 @@ namespace PruebasUIBased.PageObjects
         /// </summary>
         public void ClickSave()
         {
-            ClickElement(_saveButton);
+            var btn = Driver.FindElement(By.XPath("//button[@type='submit' or contains(text(),'Guardar') or contains(text(),'Save')]"));
+            IJavaScriptExecutor executor = (IJavaScriptExecutor)Driver;
+            executor.ExecuteScript("arguments[0].click();", btn);
             System.Threading.Thread.Sleep(1000);
         }
 
@@ -109,13 +111,11 @@ namespace PruebasUIBased.PageObjects
         /// </summary>
         public bool HasErrorMessage()
         {
-            System.Threading.Thread.Sleep(500); // Esperar a que se muestre el error
+            System.Threading.Thread.Sleep(500); 
             
-            // Buscar alertas generales
             if (IsElementVisible(_errorAlert))
                 return true;
             
-            // Buscar spans de validación específicos
             var validationSpans = Driver.FindElements(
                 By.CssSelector("span.text-danger, [class*='validation'], [data-valmsg-for]"));
             

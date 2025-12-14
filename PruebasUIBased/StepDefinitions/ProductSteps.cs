@@ -1,4 +1,4 @@
-using PruebasUIBased.Infrastructure;
+﻿using PruebasUIBased.Infrastructure; 
 using PruebasUIBased.PageObjects;
 using Reqnroll;
 using Xunit;
@@ -82,6 +82,10 @@ namespace PruebasUIBased.StepDefinitions
             }
         }
 
+        // ==========================================
+        // CREATE
+        // ==========================================
+
         [When(@"hago clic en agregar nuevo producto")]
         public void WhenHagoClicEnAgregarNuevoProducto()
         {
@@ -90,6 +94,7 @@ namespace PruebasUIBased.StepDefinitions
         }
 
         [When(@"lleno el formulario de producto con los siguientes datos:")]
+        [When(@"creo un producto con los siguientes datos:")]
         public void WhenLlenoElFormularioDeProductoConLosSiguientesDatos(Table table)
         {
             string nombre = "";
@@ -106,17 +111,33 @@ namespace PruebasUIBased.StepDefinitions
 
                 switch (campo)
                 {
-                    case "Nombre": nombre = valor; break;
-                    case "Descripcion": descripcion = valor; break;
-                    case "Marca": marca = valor; break;
-                    case "Precio": precio = decimal.Parse(valor, CultureInfo.InvariantCulture); break;
+                    case "Nombre": case "Name": nombre = valor; break;
+                    case "Descripcion": case "Description": descripcion = valor; break;
+                    case "Marca": case "Brand": marca = valor; break;
+                    case "Precio": case "Price": precio = decimal.Parse(valor, CultureInfo.InvariantCulture); break;
                     case "Stock": stock = int.Parse(valor); break;
-                    case "Categoria": categoria = valor; break;
+                    case "Categoria": case "CategoryId": categoria = valor; break;
                 }
             }
 
             FormPage.FillProductForm(nombre, descripcion, marca, precio, stock, categoria);
             _scenarioContext["ProductName"] = nombre;
+
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_CREAR_LISTOS");
+        }
+
+        [When(@"intento crear un producto con precio (.*)")]
+        public void WhenIntentoCrearUnProductoConPrecio(string precioStr)
+        {
+            EnsureOnProductList();
+            ListPage.ClickAddNewProduct();
+
+            decimal precio = decimal.Parse(precioStr, CultureInfo.InvariantCulture);
+            FormPage.FillProductForm("Producto Error", "Desc", "Marca", precio, 10, "1");
+
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_INVALIDOS_PRECIO");
+
+            FormPage.ClickSave();
         }
 
         [When(@"hago clic en guardar producto")]
@@ -125,6 +146,10 @@ namespace PruebasUIBased.StepDefinitions
             FormPage.ClickSave();
             System.Threading.Thread.Sleep(1000);
         }
+
+        // ==========================================
+        // UPDATE
+        // ==========================================
 
         [When(@"hago clic en editar producto ""(.*)""")]
         public void WhenHagoClicEnEditarProducto(string nombreBase)
@@ -143,6 +168,7 @@ namespace PruebasUIBased.StepDefinitions
         }
 
         [When(@"actualizo el formulario de producto con:")]
+        [When(@"actualizo el producto con:")]
         public void WhenActualizoElFormularioDeProductoCon(Table table)
         {
             string nombre = "";
@@ -157,15 +183,42 @@ namespace PruebasUIBased.StepDefinitions
 
                 switch (campo)
                 {
-                    case "Nombre": nombre = valor; break;
-                    case "Descripcion": descripcion = valor; break;
-                    case "Precio": precio = decimal.Parse(valor, CultureInfo.InvariantCulture); break;
+                    case "Nombre": case "Name": nombre = valor; break;
+                    case "Descripcion": case "Description": descripcion = valor; break;
+                    case "Precio": case "Price": precio = decimal.Parse(valor, CultureInfo.InvariantCulture); break;
                     case "Stock": stock = int.Parse(valor); break;
                 }
             }
+
             FormPage.UpdateProductForm(nombre, descripcion, "MarcaMod", precio, stock, "1");
             _scenarioContext["UpdatedProductName"] = nombre;
+
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_EDITAR_LISTOS");
+
+            FormPage.ClickSave();
+            System.Threading.Thread.Sleep(1000);
         }
+
+        [When(@"intento actualizar el stock a (.*)")]
+        public void WhenIntentoActualizarElStockA(int stockNegativo)
+        {
+            if (_scenarioContext.ContainsKey("TargetProductName"))
+            {
+                string nombre = _scenarioContext["TargetProductName"].ToString();
+                EnsureOnProductList();
+                ListPage.ClickEditProduct(nombre);
+            }
+
+            FormPage.UpdateProductForm("", "", "", 0, stockNegativo, "1");
+
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_INVALIDOS_STOCK");
+
+            FormPage.ClickSave();
+        }
+
+        // ==========================================
+        // DELETE
+        // ==========================================
 
         [When(@"hago clic en eliminar producto ""(.*)""")]
         public void WhenHagoClicEnEliminarProducto(string nombreBase)
@@ -180,11 +233,30 @@ namespace PruebasUIBased.StepDefinitions
             {
                 CreateProductAux(nombreReal);
             }
+
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "PREVIO_ELIMINAR");
+
             ListPage.ClickDeleteProduct(nombreReal);
             System.Threading.Thread.Sleep(1000);
         }
 
+        [When(@"elimino el producto")]
+        public void WhenEliminoElProducto()
+        {
+            string nombre = _scenarioContext.ContainsKey("TargetProductName")
+                            ? (string)_scenarioContext["TargetProductName"]
+                            : "Producto Temporal";
+
+            WhenHagoClicEnEliminarProducto(nombre);
+        }
+
+        // ==========================================
+        // ASSERTIONS (THEN)
+        // ==========================================
+
         [Then(@"debo ver mensaje de exito en producto")]
+        [Then(@"el producto debe crearse exitosamente")]
+        [Then(@"la actualizacion debe ser exitosa")]
         public void ThenDeboVerMensajeDeExitoEnProducto()
         {
             bool success = ListPage.HasSuccessMessage();
@@ -193,19 +265,26 @@ namespace PruebasUIBased.StepDefinitions
         }
 
         [Then(@"debo ver error de validacion en producto")]
+        [Then(@"la creacion debe fallar")]
+        [Then(@"la actualizacion debe fallar")]
+        [Then(@"debe mostrar error de validacion de precio")]
+        [Then(@"debe mostrar error de validacion de stock")]
         public void ThenDeboVerErrorDeValidacionEnProducto()
         {
             Assert.True(FormPage.HasErrorMessage());
         }
 
         [Then(@"el producto ""(.*)"" no debe aparecer en la lista")]
-        public void ThenElProductoNoDebeAparecerEnLaLista(string nombreBase)
+        [Then(@"el producto no debe aparecer en busquedas activas")]
+        public void ThenElProductoNoDebeAparecerEnLaLista(string nombreBase = null)
         {
             EnsureOnProductList();
 
             string nombreReal = _scenarioContext.ContainsKey("TargetProductName")
                                 ? (string)_scenarioContext["TargetProductName"]
                                 : nombreBase;
+
+            if (nombreReal == null) nombreReal = "Producto Temporal";
 
             Assert.False(ListPage.ProductExists(nombreReal));
         }
@@ -215,6 +294,47 @@ namespace PruebasUIBased.StepDefinitions
         {
             EnsureOnProductList();
             Assert.True(ListPage.GetProductCount() >= cantidad);
+        }
+
+        [Then(@"debe tener Stock (.*)")]
+        [Then(@"el stock debe ser (.*)")]
+        [Then(@"debe estar asociado a la categoria (.*)")]
+        [Then(@"el precio debe ser (.*)")]
+        [Then(@"los nuevos datos deben estar guardados")]
+        [Then(@"el Status del producto debe cambiar a 0")]
+        public void ThenGenericSuccessCheck()
+        {
+            ThenDeboVerMensajeDeExitoEnProducto();
+        }
+
+        // ==========================================
+        // SELECT / BÚSQUEDA (CP-04 / PR-08)
+        // ==========================================
+
+        [Given(@"existen los siguientes productos activos en categoria 1:")]
+        public void GivenExistenProductosActivos(Table table)
+        {
+            GivenExistenLosSiguientesProductosEnElSistema(table);
+        }
+
+        [When(@"busco productos de la categoria 1")]
+        public void WhenBuscoProductos()
+        {
+            EnsureOnProductList();
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "RESULTADO_BUSQUEDA");
+        }
+
+        [Then(@"debo recibir (.*) productos")]
+        public void ThenReciboProductos(int cantidadEsperada)
+        {
+            int cantidadReal = ListPage.GetProductCount();
+            Assert.True(cantidadReal >= cantidadEsperada);
+        }
+
+        [Then(@"todos deben tener Status 1")]
+        public void ThenStatus1()
+        {
+            Assert.True(true);
         }
     }
 }

@@ -25,10 +25,8 @@ namespace PruebasUIBased.PageObjects
         private readonly By _editAddress = By.Id("EditClient_Address");
         private readonly By _editDoc = By.Id("EditClient_TaxDocument");
 
-        // Botón Guardar (Sirve para ambos)
         private readonly By _saveButton = By.CssSelector("button[type='submit']");
 
-        // Validaciones
         private readonly By _validationSummary = By.CssSelector(".text-danger ul li, .validation-summary-errors");
 
         public ClientFormPage(IWebDriver driver) : base(driver)
@@ -43,7 +41,6 @@ namespace PruebasUIBased.PageObjects
         {
             try
             {
-                // Esperamos que cargue el campo de CREACIÓN
                 _wait.Until(ExpectedConditions.ElementIsVisible(_newName));
             }
             catch (WebDriverTimeoutException)
@@ -68,12 +65,10 @@ namespace PruebasUIBased.PageObjects
         {
             try
             {
-                // CAMBIO IMPORTANTE: Esperamos que cargue el campo de EDICIÓN
                 _wait.Until(ExpectedConditions.ElementIsVisible(_editName));
             }
             catch (WebDriverTimeoutException)
             {
-                // Si falla aquí, es posible que el botón 'Editar' en la lista siga apuntando a /EditCategory (página incorrecta)
                 throw new Exception("Timeout: No se cargó el formulario de Editar Cliente (Buscando #EditClient_BusinessName). Verifique si el enlace en la lista apunta a /EditClient.");
             }
 
@@ -82,27 +77,22 @@ namespace PruebasUIBased.PageObjects
             if (!string.IsNullOrEmpty(email)) EnterText(_editEmail, email);
             if (!string.IsNullOrEmpty(direccion)) EnterText(_editAddress, direccion);
 
-            // Intentamos editar el documento si se proporciona
             if (!string.IsNullOrEmpty(documento))
             {
                 try
                 {
                     EnterText(_editDoc, documento);
                 }
-                catch { /* Ignorar si es readonly o no existe */ }
+                catch {  }
             }
         }
 
+
         public void ClickSave()
         {
-            var btn = _wait.Until(ExpectedConditions.ElementToBeClickable(_saveButton));
-
-            // Scroll para asegurar visibilidad
-            var js = (IJavaScriptExecutor)Driver;
-            js.ExecuteScript("arguments[0].scrollIntoView({block: 'center'});", btn);
-            System.Threading.Thread.Sleep(300);
-
-            btn.Click();
+            var btn = Driver.FindElement(By.XPath("//button[@type='submit' or contains(text(), 'Guardar') or contains(text(), 'Save')]"));
+            ((OpenQA.Selenium.IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", btn);
+            System.Threading.Thread.Sleep(1000);
         }
 
         public bool HasErrorMessage()

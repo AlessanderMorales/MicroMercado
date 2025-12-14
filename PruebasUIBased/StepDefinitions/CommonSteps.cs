@@ -20,8 +20,7 @@ namespace PruebasUIBased.StepDefinitions
         [Given(@"que la aplicacion esta en ejecucion")]
         public void GivenQueLaAplicacionEstaEnEjecucion()
         {
-            // La aplicación ya está corriendo en localhost:7040
-            // Este paso es principalmente documental
+
         }
 
         [Given(@"navego a la pagina de ventas")]
@@ -83,7 +82,6 @@ namespace PruebasUIBased.StepDefinitions
         [Then(@"debo ver un mensaje de exito")]
         public void ThenDeboVerUnMensajeDeExito()
         {
-            // Este paso se validará según el contexto en los steps específicos
             Assert.True(true);
         }
     }

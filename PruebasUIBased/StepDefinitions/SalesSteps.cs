@@ -1,6 +1,6 @@
 using PruebasUIBased.Infrastructure;
 using PruebasUIBased.PageObjects;
-using Reqnroll; // O TechTalk.SpecFlow
+using Reqnroll; 
 using Xunit;
 using System;
 using System.Globalization;
@@ -54,11 +54,16 @@ namespace PruebasUIBased.StepDefinitions
         public void WhenIngresoEfectivoRecibido(string amount)
         {
             SalesPage.EnterCashReceived(decimal.Parse(amount, CultureInfo.InvariantCulture));
+            string title = _scenarioContext.ScenarioInfo.Title;
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, title, "DATOS_LISTOS");
         }
 
         [When(@"confirmo la venta")]
         public void WhenConfirmoLaVenta()
         {
+
+            string title = _scenarioContext.ScenarioInfo.Title;
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, title, "DATOS_LISTOS");
             SalesPage.ConfirmSale();
             SalesPage.WaitForCartToEmpty();
         }

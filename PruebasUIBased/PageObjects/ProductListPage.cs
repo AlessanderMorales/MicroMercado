@@ -10,7 +10,6 @@ namespace PruebasUIBased.PageObjects
     {
         private readonly WebDriverWait _wait;
 
-        // --- SELECTORES ---
         private readonly By _addNewButton = By.CssSelector("a[href*='NewProduct'], a[href*='Create']");
         private readonly By _rows = By.CssSelector("#productTable tbody tr");
         private readonly By _searchBox = By.CssSelector("input[type='search']"); // DataTables
@@ -59,18 +58,15 @@ namespace PruebasUIBased.PageObjects
             {
                 var deleteButton = row.FindElement(By.CssSelector(".btn-danger"));
 
-                // Obtener ID del modal específico (data-bs-target="#deleteModal123")
                 var modalId = deleteButton.GetAttribute("data-bs-target");
 
                 ClickWithJs(deleteButton);
 
                 try
                 {
-                    // Esperar modal específico
                     var specificModal = By.CssSelector($"{modalId}.show");
                     _wait.Until(ExpectedConditions.ElementIsVisible(specificModal));
 
-                    // Botón confirmar dentro de ese modal
                     var confirmBtnSelector = By.CssSelector($"{modalId} form button[type='submit']");
                     var confirmBtn = _wait.Until(ExpectedConditions.ElementToBeClickable(confirmBtnSelector));
 
@@ -96,12 +92,10 @@ namespace PruebasUIBased.PageObjects
             return FindRowWithWait(name) != null;
         }
 
-        // --- ESTE ES EL MÉTODO QUE FALTABA ---
         public int GetProductCount()
         {
             try
             {
-                // Limpiar el filtro de búsqueda para contar todos los productos
                 var js = (IJavaScriptExecutor)Driver;
                 js.ExecuteScript("var s=document.querySelector('input[type=\"search\"]'); if(s){s.value=''; s.dispatchEvent(new Event('input'));}");
                 System.Threading.Thread.Sleep(500);
@@ -110,7 +104,6 @@ namespace PruebasUIBased.PageObjects
 
             return Driver.FindElements(_rows).Count;
         }
-        // -------------------------------------
 
         public bool HasSuccessMessage()
         {

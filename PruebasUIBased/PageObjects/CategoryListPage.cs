@@ -1,6 +1,6 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using SeleniumExtras.WaitHelpers; // Asegúrate de tener este paquete
+using SeleniumExtras.WaitHelpers;
 using System;
 using System.Linq;
 
@@ -13,18 +13,14 @@ namespace PruebasUIBased.PageObjects
     {
         private readonly WebDriverWait _wait;
 
-        // --- SELECTORES (Basados en tu HTML de CategoryPage) ---
         private readonly By _addNewCategoryButton = By.CssSelector("a[href*='NewCategory']");
 
-        // Tabla y Buscador
         private readonly By _categoryRows = By.CssSelector("#categoryTable tbody tr");
-        private readonly By _searchBox = By.CssSelector("input[type='search']"); // DataTables suele usar este input type
+        private readonly By _searchBox = By.CssSelector("input[type='search']"); 
 
-        // Modal de Eliminación (IDs confirmados en tu HTML)
         private readonly By _deleteModal = By.Id("deleteConfirmationModal");
         private readonly By _confirmDeleteButton = By.CssSelector("#deleteCategoryForm button[type='submit']");
 
-        // Alertas
         private readonly By _successAlert = By.CssSelector(".alert-success");
         private readonly By _errorAlert = By.CssSelector(".alert-danger");
 
@@ -41,15 +37,12 @@ namespace PruebasUIBased.PageObjects
 
         public void ClickEditCategory(string categoryName)
         {
-            // 1. FILTRAR: Fundamental para encontrar elementos en páginas ocultas
             FilterTable(categoryName);
 
-            // 2. ENCONTRAR FILA: Esperar a que DataTables refresque
             var row = FindRowWithWait(categoryName);
 
             if (row != null)
             {
-                // 3. BUSCAR BOTÓN: Buscamos por href parcial O por clase 'btn-warning' (amarillo)
                 var editButton = row.FindElement(By.CssSelector("a[href*='EditCategory'], a.btn-warning"));
 
                 ClickWithJs(editButton);
@@ -67,20 +60,16 @@ namespace PruebasUIBased.PageObjects
 
             if (row != null)
             {
-                // 1. Clic en el botón de eliminar de la fila (Rojo / btn-danger)
                 var deleteButton = row.FindElement(By.CssSelector(".btn-danger, button[onclick*='confirmDeleteCategory']"));
                 ClickWithJs(deleteButton);
 
-                // 2. Manejo del Modal de Confirmación
                 try
                 {
-                    // Esperar a que el modal sea visible
                     _wait.Until(ExpectedConditions.ElementIsVisible(_deleteModal));
 
-                    // Esperar a que el botón Confirmar sea interactuable
                     var confirmBtn = _wait.Until(ExpectedConditions.ElementToBeClickable(_confirmDeleteButton));
 
-                    System.Threading.Thread.Sleep(300); // Estabilidad para animación Bootstrap
+                    System.Threading.Thread.Sleep(300); 
                     confirmBtn.Click();
                 }
                 catch (WebDriverTimeoutException)
@@ -88,7 +77,7 @@ namespace PruebasUIBased.PageObjects
                     throw new Exception("El modal de eliminación no apareció o el botón no respondió.");
                 }
 
-                System.Threading.Thread.Sleep(1000); // Esperar recarga
+                System.Threading.Thread.Sleep(1000); 
             }
             else
             {
@@ -106,9 +95,7 @@ namespace PruebasUIBased.PageObjects
         {
             try
             {
-                // Limpiar filtro para contar todo
                 var js = (IJavaScriptExecutor)Driver;
-                // Intentamos limpiar via JS para rapidez
                 js.ExecuteScript("var s=document.querySelector('input[type=\"search\"]'); if(s){s.value=''; s.dispatchEvent(new Event('input'));}");
                 System.Threading.Thread.Sleep(500);
             }
@@ -135,20 +122,16 @@ namespace PruebasUIBased.PageObjects
         {
             try
             {
-                // Intentar encontrar la caja de búsqueda (DataTables crea input type='search')
                 var searchBox = _wait.Until(ExpectedConditions.ElementIsVisible(_searchBox));
 
                 if (searchBox.GetAttribute("value") != text)
                 {
                     searchBox.Clear();
                     searchBox.SendKeys(text);
-                    // DataTables filtra al escribir, no necesita Enter usualmente, pero esperamos un poco
-                    // System.Threading.Thread.Sleep(300); // WaitForRow se encarga de esperar
                 }
             }
             catch (WebDriverTimeoutException)
             {
-                // Fallback: intentar selector alternativo si el genérico falla
                 try { Driver.FindElement(By.CssSelector(".dataTables_filter input")).SendKeys(text); } catch { }
             }
         }
@@ -157,7 +140,6 @@ namespace PruebasUIBased.PageObjects
         {
             try
             {
-                // Reintentar buscar la fila hasta que aparezca (útil tras filtrar)
                 return _wait.Until(d =>
                 {
                     var rows = d.FindElements(_categoryRows);

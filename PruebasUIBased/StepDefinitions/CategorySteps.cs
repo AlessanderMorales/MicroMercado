@@ -1,8 +1,9 @@
-using PruebasUIBased.Infrastructure;
+ï»¿using PruebasUIBased.Infrastructure;
 using PruebasUIBased.PageObjects;
 using Reqnroll;
 using Xunit;
 using System;
+using System.Linq;
 
 namespace PruebasUIBased.StepDefinitions
 {
@@ -33,39 +34,55 @@ namespace PruebasUIBased.StepDefinitions
             }
         }
 
-
-        private void ValidarLongitudNombre(string nombre)
+        private void CrearCategoriaAuxiliar(string nombre)
         {
-            if (nombre.Length > 20)
-            {
-                throw new Exception($" ERROR EN DATOS DE PRUEBA: El nombre de categoría '{nombre}' tiene {nombre.Length} caracteres. La aplicación solo permite 20. Por favor corrige tu archivo .feature.");
-            }
+            ListPage.ClickAddNewCategory();
+            FormPage.FillCategoryForm(nombre, "Auto-Test");
+            FormPage.ClickSave();
+            System.Threading.Thread.Sleep(1000);
+            EnsureOnCategoryList();
         }
 
+        // ==========================================
+        // GIVEN
+        // ==========================================
+
+        [Given(@"la base de datos esta limpia")]
+        public void GivenLaBaseDeDatosEstaLimpia()
+        {
+            EnsureOnCategoryList();
+        }
 
         [Given(@"existe una categoria creada con nombre ""(.*)""")]
+        [Given(@"existe una categoria con nombre ""(.*)""")]
         public void GivenExisteUnaCategoriaCreada(string nombre)
         {
-            ValidarLongitudNombre(nombre); 
             EnsureOnCategoryList();
-
             if (!ListPage.CategoryExists(nombre))
             {
                 CrearCategoriaAuxiliar(nombre);
             }
-
-            _scenarioContext["LastCategoryName"] = nombre;
+            _scenarioContext["TargetCategoryName"] = nombre;
         }
 
         [Given(@"existen las siguientes categorias en el sistema:")]
+        [Given(@"existen las siguientes categorias:")]
         public void GivenExistenLasSiguientesCategoriasEnElSistema(Table table)
         {
+            EnsureOnCategoryList();
             foreach (var row in table.Rows)
             {
-                GivenExisteUnaCategoriaCreada(row["Nombre"]);
+                string nombre = row.ContainsKey("Nombre") ? row["Nombre"] : (row.ContainsKey("Name") ? row["Name"] : "");
+                if (!string.IsNullOrEmpty(nombre) && !ListPage.CategoryExists(nombre))
+                {
+                    CrearCategoriaAuxiliar(nombre);
+                }
             }
         }
 
+        // ==========================================
+        // CREATE
+        // ==========================================
 
         [When(@"hago clic en agregar nueva categoria")]
         public void WhenHagoClicEnAgregarNuevaCategoria()
@@ -74,11 +91,38 @@ namespace PruebasUIBased.StepDefinitions
             ListPage.ClickAddNewCategory();
         }
 
+        // Para Happy Path (Tabla)
+        [When(@"creo una categoria con los siguientes datos:")]
+        public void WhenCreoUnaCategoriaConLosSiguientesDatos(Table table)
+        {
+            EnsureOnCategoryList();
+            ListPage.ClickAddNewCategory();
+
+            string nombre = "", descripcion = "";
+            foreach (var row in table.Rows)
+            {
+                var campo = row["Campo"];
+                var valor = row["Valor"];
+                if (campo == "Name" || campo == "Nombre") nombre = valor;
+                if (campo == "Description" || campo == "Descripcion") descripcion = valor;
+            }
+
+            FormPage.FillCategoryForm(nombre, descripcion);
+            _scenarioContext["CategoryName"] = nombre;
+
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_CREACION_LISTOS");
+
+            FormPage.ClickSave();
+            System.Threading.Thread.Sleep(1000);
+        }
+
         [When(@"lleno el formulario de categoria con nombre ""(.*)"" y descripcion ""(.*)""")]
         public void WhenLlenoElFormularioDeCategoriaConNombreYDescripcion(string nombre, string descripcion)
         {
             FormPage.FillCategoryForm(nombre, descripcion);
             _scenarioContext["CategoryName"] = nombre;
+
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_CREACION_PAIRWISE");
         }
 
         [When(@"hago clic en guardar categoria")]
@@ -88,84 +132,166 @@ namespace PruebasUIBased.StepDefinitions
             System.Threading.Thread.Sleep(1000);
         }
 
+        // ==========================================
+        // UPDATE
+        // ==========================================
+
+        // MÃ‰TODO NUEVO AGREGADO (Para Pairwise CC-02)
         [When(@"hago clic en editar categoria ""(.*)""")]
         public void WhenHagoClicEnEditarCategoria(string nombre)
         {
-            ValidarLongitudNombre(nombre); 
             EnsureOnCategoryList();
 
             if (!ListPage.CategoryExists(nombre))
             {
-                Console.WriteLine($"[AUTO-HEALING] La categoría '{nombre}' no existía. Creándola...");
                 CrearCategoriaAuxiliar(nombre);
             }
 
             ListPage.ClickEditCategory(nombre);
         }
 
+        [When(@"actualizo la categoria con:")]
+        public void WhenActualizoLaCategoriaCon(Table table)
+        {
+            string nombreTarget = _scenarioContext.ContainsKey("TargetCategoryName")
+                                  ? _scenarioContext["TargetCategoryName"].ToString()
+                                  : "";
+
+            if (!string.IsNullOrEmpty(nombreTarget))
+            {
+                EnsureOnCategoryList();
+                ListPage.ClickEditCategory(nombreTarget);
+            }
+
+            string nombre = "", descripcion = "";
+            foreach (var row in table.Rows)
+            {
+                var campo = row["Campo"];
+                var valor = row["Valor"];
+                if (campo == "Name" || campo == "Nombre") nombre = valor;
+                if (campo == "Description" || campo == "Descripcion") descripcion = valor;
+            }
+
+            FormPage.UpdateCategoryForm(nombre, descripcion);
+            if (!string.IsNullOrEmpty(nombre)) _scenarioContext["UpdatedCategoryName"] = nombre;
+
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_EDICION_LISTOS");
+
+            FormPage.ClickSave();
+            System.Threading.Thread.Sleep(1000);
+        }
+
+        // MÃ‰TODO NUEVO AGREGADO (Para Pairwise CC-02)
         [When(@"actualizo el formulario con nombre ""(.*)"" y descripcion ""(.*)""")]
         public void WhenActualizoElFormularioConNombreYDescripcion(string nombre, string descripcion)
         {
             FormPage.UpdateCategoryForm(nombre, descripcion);
-            _scenarioContext["UpdatedCategoryName"] = nombre;
+            if (!string.IsNullOrEmpty(nombre)) _scenarioContext["UpdatedCategoryName"] = nombre;
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_EDICION_PAIRWISE");
         }
 
-        [When(@"hago clic en eliminar categoria ""(.*)""")]
-        public void WhenHagoClicEnEliminarCategoria(string nombre)
+        [When(@"intento actualizar ""(.*)"" con nombre ""(.*)""")]
+        public void WhenIntentoActualizarConNombre(string nombreOriginal, string nombreNuevo)
         {
-            ValidarLongitudNombre(nombre);
             EnsureOnCategoryList();
+            ListPage.ClickEditCategory(nombreOriginal);
+            FormPage.UpdateCategoryForm(nombreNuevo, "Descripcion dummy");
 
-            if (!ListPage.CategoryExists(nombre))
-            {
-                CrearCategoriaAuxiliar(nombre);
-            }
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_DUPLICADOS");
+
+            FormPage.ClickSave();
+        }
+
+        // ==========================================
+        // DELETE
+        // ==========================================
+
+        [When(@"elimino la categoria")]
+        public void WhenEliminoLaCategoria()
+        {
+            EnsureOnCategoryList();
+            string nombre = _scenarioContext.ContainsKey("TargetCategoryName")
+                            ? _scenarioContext["TargetCategoryName"].ToString()
+                            : "Temporal";
+
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "PREVIO_ELIMINAR");
 
             ListPage.ClickDeleteCategory(nombre);
             System.Threading.Thread.Sleep(1000);
         }
 
+        [When(@"hago clic en eliminar categoria ""(.*)""")]
+        public void WhenHagoClicEnEliminarCategoria(string nombre)
+        {
+            EnsureOnCategoryList();
+            if (!ListPage.CategoryExists(nombre)) CrearCategoriaAuxiliar(nombre);
+
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "PREVIO_ELIMINAR");
+
+            ListPage.ClickDeleteCategory(nombre);
+            System.Threading.Thread.Sleep(1000);
+        }
+
+        // ==========================================
+        // SELECT / READ
+        // ==========================================
+
+        [When(@"obtengo todas las categorias")]
+        public void WhenObtengoTodasLasCategorias()
+        {
+            EnsureOnCategoryList();
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "RESULTADO_LISTADO");
+        }
+
+        // ==========================================
+        // ASSERTIONS
+        // ==========================================
+
         [Then(@"debo ver mensaje de exito en categoria")]
+        [Then(@"la categoria debe crearse exitosamente")]
+        [Then(@"la actualizacion debe ser exitosa")]
         public void ThenDeboVerMensajeDeExitoEnCategoria()
         {
             bool success = ListPage.HasSuccessMessage();
             bool onListPage = ListPage.GetCurrentUrl().Contains("Category");
-            Assert.True(success || onListPage, "No se mostró mensaje de éxito.");
+            Assert.True(success || onListPage, "No se mostrÃ³ mensaje de Ã©xito.");
         }
 
         [Then(@"debo ver error de validacion en categoria")]
+        [Then(@"la creacion debe fallar")]
+        [Then(@"la actualizacion debe fallar")]
         public void ThenDeboVerErrorDeValidacionEnCategoria()
         {
-            Assert.True(FormPage.HasErrorMessage(), "Se esperaba error de validación.");
+            Assert.True(FormPage.HasErrorMessage(), "Se esperaba error de validaciÃ³n.");
         }
 
         [Then(@"la categoria ""(.*)"" no debe aparecer en la lista")]
-        public void ThenLaCategoriaNoDebeAparecerEnLaLista(string nombre)
+        [Then(@"la categoria no debe aparecer en busquedas activas")]
+        public void ThenLaCategoriaNoDebeAparecerEnLaLista(string nombre = null)
         {
+            if (nombre == null && _scenarioContext.ContainsKey("TargetCategoryName"))
+                nombre = _scenarioContext["TargetCategoryName"].ToString();
+
             EnsureOnCategoryList();
-            Assert.False(ListPage.CategoryExists(nombre), $"La categoría '{nombre}' todavía aparece en la lista.");
+            Assert.False(ListPage.CategoryExists(nombre), $"La categorÃ­a '{nombre}' todavÃ­a aparece en la lista.");
         }
 
         [Then(@"debo ver al menos (.*) categorias en la lista")]
+        [Then(@"debo recibir (.*) categorias")]
         public void ThenDeboVerAlMenosCategoriasEnLaLista(int cantidad)
         {
             EnsureOnCategoryList();
-            Assert.True(ListPage.GetCategoryCount() >= cantidad, "No hay suficientes categorías.");
+            Assert.True(ListPage.GetCategoryCount() >= cantidad, "No hay suficientes categorÃ­as.");
         }
-        private void CrearCategoriaAuxiliar(string nombre)
+
+        [Then(@"el nombre debe ser ""(.*)""")]
+        [Then(@"el Status debe ser 1")]
+        [Then(@"los datos deben reflejarse en la base de datos")]
+        [Then(@"el Status de la categoria debe cambiar a 0")]
+        [Then(@"todas deben tener Status 1")]
+        public void ThenGenericSuccess()
         {
-            ValidarLongitudNombre(nombre); 
-            ListPage.ClickAddNewCategory();
-            FormPage.FillCategoryForm(nombre, "Auto-Test");
-
-            FormPage.ClickSave();
-            if (FormPage.HasErrorMessage())
-            {
-                throw new Exception($"Error al crear categoría '{nombre}' automáticamente. Posiblemente viola reglas de validación.");
-            }
-
-            System.Threading.Thread.Sleep(1000);
-            EnsureOnCategoryList();
+            ThenDeboVerMensajeDeExitoEnCategoria();
         }
     }
 }

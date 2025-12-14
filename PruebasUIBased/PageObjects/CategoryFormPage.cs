@@ -65,7 +65,6 @@ namespace PruebasUIBased.PageObjects
         {
             try
             {
-                // Esperamos el campo de EDICIÓN (Sin Thread.Sleep)
                 _wait.Until(ExpectedConditions.ElementIsVisible(_updateName));
             }
             catch (WebDriverTimeoutException)
@@ -79,26 +78,21 @@ namespace PruebasUIBased.PageObjects
 
         public void ClickSave()
         {
-            var btn = _wait.Until(ExpectedConditions.ElementToBeClickable(_saveButton));
 
-            // Scroll para asegurar visibilidad
-            ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].scrollIntoView({block: 'center'});", btn);
-            System.Threading.Thread.Sleep(300); // Pequeña pausa visual
-
-            btn.Click();
+            var btn = Driver.FindElement(By.XPath("//button[@type='submit' or contains(text(), 'Guardar') or contains(text(), 'Save')]"));
+            ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", btn);
+            System.Threading.Thread.Sleep(1000);
         }
 
         public bool HasErrorMessage()
         {
             try
             {
-                // Busca el resumen de validación
                 if (_wait.Until(ExpectedConditions.ElementIsVisible(_validationSummary)).Displayed)
                     return true;
             }
             catch { }
 
-            // Busca errores individuales en los campos
             var errors = Driver.FindElements(_fieldErrors);
             return errors.Any(e => e.Displayed && !string.IsNullOrWhiteSpace(e.Text) && e.Text != "*");
         }

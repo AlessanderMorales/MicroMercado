@@ -65,31 +65,22 @@ namespace PruebasUIBased.PageObjects
 
         public void ClickDeleteClient(string documento)
         {
-            // 1. Filtrar la tabla para aislar el registro
             FilterTable(documento);
 
-            // 2. Esperar a que DataTables renderice la fila
             var row = FindRowWithWait(documento);
 
             if (row != null)
             {
-                // 3. Encontrar el botón en la fila
-                // HTML: onclick="confirmDeleteCategory(...)"
                 var deleteButton = row.FindElement(By.CssSelector("button[onclick*='confirmDeleteCategory']"));
 
-                // Clic con JS para evitar problemas de scroll/overlays
                 ClickWithJs(deleteButton);
 
-                // 4. Manejo del Modal
                 try
                 {
-                    // Esperar a que el modal sea visible (clase 'show' de bootstrap)
                     _wait.Until(ExpectedConditions.ElementIsVisible(_deleteModal));
 
-                    // Esperar a que el botón Confirmar (dentro de deleteClientForm) sea cliqueable
                     var confirmBtn = _wait.Until(ExpectedConditions.ElementToBeClickable(_confirmDeleteButton));
 
-                    // Pequeña pausa para asegurar que la animación terminó
                     System.Threading.Thread.Sleep(300);
 
                     confirmBtn.Click();
@@ -99,7 +90,6 @@ namespace PruebasUIBased.PageObjects
                     throw new Exception("El modal '#deleteConfirmationModal' no apareció o el botón en '#deleteClientForm' no fue accesible.");
                 }
 
-                // Esperar recarga de página
                 System.Threading.Thread.Sleep(1000);
             }
             else
@@ -118,7 +108,6 @@ namespace PruebasUIBased.PageObjects
         {
             try
             {
-                // Limpiar filtro JS directo para rapidez
                 var js = (IJavaScriptExecutor)Driver;
                 js.ExecuteScript("var input = document.querySelector('input[type=\"search\"]'); if(input){ input.value = ''; input.dispatchEvent(new Event('input')); }");
                 System.Threading.Thread.Sleep(500);
@@ -150,7 +139,6 @@ namespace PruebasUIBased.PageObjects
                 {
                     searchBox.Clear();
                     searchBox.SendKeys(text);
-                    // No usamos Enter, DataTables filtra al escribir (keyup)
                 }
             }
             catch (WebDriverTimeoutException)
@@ -159,7 +147,6 @@ namespace PruebasUIBased.PageObjects
             }
         }
 
-        // Método vital para esperar a que DataTables actualice el DOM
         private IWebElement FindRowWithWait(string text)
         {
             try

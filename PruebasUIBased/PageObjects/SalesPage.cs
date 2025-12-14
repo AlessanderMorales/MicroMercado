@@ -22,8 +22,6 @@ namespace PruebasUIBased.PageObjects
         // Botones de Venta
         private readonly By _btnIniciarVenta = By.Id("btnIniciarVenta"); // Botón principal azul oscuro
 
-        // --- NUEVO: Selector específico para el botón del Modal de tu captura ---
-        // Busca un botón que contenga el texto exacto "Sí, confirmar"
         private readonly By _modalConfirmYesButton = By.XPath("//button[contains(text(), 'Sí, confirmar')]");
 
         // Cliente y Pago
@@ -48,7 +46,6 @@ namespace PruebasUIBased.PageObjects
                 var input = _wait.Until(ExpectedConditions.ElementIsVisible(_searchProductInput));
                 input.Clear();
 
-                // Escribimos lento para asegurar que el JS detecte las teclas
                 foreach (char c in productName)
                 {
                     input.SendKeys(c.ToString());
@@ -57,7 +54,6 @@ namespace PruebasUIBased.PageObjects
 
                 try
                 {
-                    // Esperar sugerencias y clicar
                     var items = _wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(_autocompleteItems));
                     var itemToClick = items.FirstOrDefault(i => i.Text.Contains(productName)) ?? items.First();
                     itemToClick.Click();
@@ -86,36 +82,30 @@ namespace PruebasUIBased.PageObjects
             {
                 try
                 {
-                    // 1. Re-localizar la fila en cada intento (es vital hacerlo aquí dentro)
                     var rows = driver.FindElements(_cartRows);
                     var targetRow = rows.FirstOrDefault(r => r.Text.Contains(productName));
 
-                    if (targetRow == null) return false; // Si no está, sigue esperando
+                    if (targetRow == null) return false; 
 
-                    // 2. Buscar el input numérico dentro de esa fila
                     var qtyInput = targetRow.FindElement(By.CssSelector("input[type='number']"));
 
-                    // 3. Intentar escribir
                     qtyInput.Clear();
                     qtyInput.SendKeys(quantity.ToString());
 
-                    // 4. Forzar el evento 'change' con JS para que se recalculen los totales
                     ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].dispatchEvent(new Event('change'));", qtyInput);
 
-                    return true; // Éxito, salir del bucle
+                    return true; 
                 }
                 catch (StaleElementReferenceException)
                 {
-                    // Si el elemento muere, devolvemos false para que el Wait lo intente de nuevo
                     return false;
                 }
                 catch (ElementNotInteractableException)
                 {
-                    return false; // Si está tapado, reintentar
+                    return false; 
                 }
             });
 
-            // Pequeña pausa para que la tabla recalcule el total monetario
             Thread.Sleep(500);
         }
 
@@ -127,7 +117,6 @@ namespace PruebasUIBased.PageObjects
 
             _wait.Until(ExpectedConditions.ElementToBeClickable(_searchClientButton)).Click();
 
-            // JS para asegurar que el campo nombre se llene (fallback por si la API es lenta)
             ((IJavaScriptExecutor)Driver).ExecuteScript("document.getElementById('nombreCliente').value = 'Cliente Pruebas';");
             Thread.Sleep(500);
         }
