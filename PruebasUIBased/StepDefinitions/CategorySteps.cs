@@ -43,6 +43,20 @@ namespace PruebasUIBased.StepDefinitions
             EnsureOnCategoryList();
         }
 
+        /// <summary>
+        /// Genera un nombre aleatorio de 2 dígitos si el nombre base coincide.
+        /// </summary>
+        private string ObtenerNombreAleatorio(string nombreBase)
+        {
+            if (nombreBase.Equals("CatParaEliminar", StringComparison.OrdinalIgnoreCase))
+            {
+                var random = new Random();
+                int numero = random.Next(10, 100); 
+                return $"{nombreBase}{numero}";
+            }
+            return nombreBase;
+        }
+
         // ==========================================
         // GIVEN
         // ==========================================
@@ -55,14 +69,15 @@ namespace PruebasUIBased.StepDefinitions
 
         [Given(@"existe una categoria creada con nombre ""(.*)""")]
         [Given(@"existe una categoria con nombre ""(.*)""")]
-        public void GivenExisteUnaCategoriaCreada(string nombre)
+        public void GivenExisteUnaCategoriaCreada(string nombreBase)
         {
             EnsureOnCategoryList();
-            if (!ListPage.CategoryExists(nombre))
+            string nombreReal = ObtenerNombreAleatorio(nombreBase);
+            _scenarioContext["TargetCategoryName"] = nombreReal;
+            if (!ListPage.CategoryExists(nombreReal))
             {
-                CrearCategoriaAuxiliar(nombre);
+                CrearCategoriaAuxiliar(nombreReal);
             }
-            _scenarioContext["TargetCategoryName"] = nombre;
         }
 
         [Given(@"existen las siguientes categorias en el sistema:")]
@@ -91,7 +106,6 @@ namespace PruebasUIBased.StepDefinitions
             ListPage.ClickAddNewCategory();
         }
 
-        // Para Happy Path (Tabla)
         [When(@"creo una categoria con los siguientes datos:")]
         public void WhenCreoUnaCategoriaConLosSiguientesDatos(Table table)
         {
@@ -121,7 +135,6 @@ namespace PruebasUIBased.StepDefinitions
         {
             FormPage.FillCategoryForm(nombre, descripcion);
             _scenarioContext["CategoryName"] = nombre;
-
             ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_CREACION_PAIRWISE");
         }
 
@@ -136,17 +149,11 @@ namespace PruebasUIBased.StepDefinitions
         // UPDATE
         // ==========================================
 
-        // MÉTODO NUEVO AGREGADO (Para Pairwise CC-02)
         [When(@"hago clic en editar categoria ""(.*)""")]
         public void WhenHagoClicEnEditarCategoria(string nombre)
         {
             EnsureOnCategoryList();
-
-            if (!ListPage.CategoryExists(nombre))
-            {
-                CrearCategoriaAuxiliar(nombre);
-            }
-
+            if (!ListPage.CategoryExists(nombre)) CrearCategoriaAuxiliar(nombre);
             ListPage.ClickEditCategory(nombre);
         }
 
@@ -181,7 +188,6 @@ namespace PruebasUIBased.StepDefinitions
             System.Threading.Thread.Sleep(1000);
         }
 
-        // MÉTODO NUEVO AGREGADO (Para Pairwise CC-02)
         [When(@"actualizo el formulario con nombre ""(.*)"" y descripcion ""(.*)""")]
         public void WhenActualizoElFormularioConNombreYDescripcion(string nombre, string descripcion)
         {
@@ -196,9 +202,7 @@ namespace PruebasUIBased.StepDefinitions
             EnsureOnCategoryList();
             ListPage.ClickEditCategory(nombreOriginal);
             FormPage.UpdateCategoryForm(nombreNuevo, "Descripcion dummy");
-
             ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_DUPLICADOS");
-
             FormPage.ClickSave();
         }
 
@@ -210,6 +214,7 @@ namespace PruebasUIBased.StepDefinitions
         public void WhenEliminoLaCategoria()
         {
             EnsureOnCategoryList();
+            // Recuperamos el nombre real (que puede tener números aleatorios)
             string nombre = _scenarioContext.ContainsKey("TargetCategoryName")
                             ? _scenarioContext["TargetCategoryName"].ToString()
                             : "Temporal";
@@ -221,14 +226,19 @@ namespace PruebasUIBased.StepDefinitions
         }
 
         [When(@"hago clic en eliminar categoria ""(.*)""")]
-        public void WhenHagoClicEnEliminarCategoria(string nombre)
+        public void WhenHagoClicEnEliminarCategoria(string nombreBase)
         {
             EnsureOnCategoryList();
-            if (!ListPage.CategoryExists(nombre)) CrearCategoriaAuxiliar(nombre);
+
+            string nombreReal = _scenarioContext.ContainsKey("TargetCategoryName")
+                                ? _scenarioContext["TargetCategoryName"].ToString()
+                                : nombreBase;
+
+            if (!ListPage.CategoryExists(nombreReal)) CrearCategoriaAuxiliar(nombreReal);
 
             ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "PREVIO_ELIMINAR");
 
-            ListPage.ClickDeleteCategory(nombre);
+            ListPage.ClickDeleteCategory(nombreReal);
             System.Threading.Thread.Sleep(1000);
         }
 
@@ -267,13 +277,17 @@ namespace PruebasUIBased.StepDefinitions
 
         [Then(@"la categoria ""(.*)"" no debe aparecer en la lista")]
         [Then(@"la categoria no debe aparecer en busquedas activas")]
-        public void ThenLaCategoriaNoDebeAparecerEnLaLista(string nombre = null)
+        public void ThenLaCategoriaNoDebeAparecerEnLaLista(string nombreBase = null)
         {
-            if (nombre == null && _scenarioContext.ContainsKey("TargetCategoryName"))
-                nombre = _scenarioContext["TargetCategoryName"].ToString();
-
             EnsureOnCategoryList();
-            Assert.False(ListPage.CategoryExists(nombre), $"La categoría '{nombre}' todavía aparece en la lista.");
+            string nombreReal = null;
+
+            if (_scenarioContext.ContainsKey("TargetCategoryName"))
+                nombreReal = _scenarioContext["TargetCategoryName"].ToString();
+            else
+                nombreReal = nombreBase;
+
+            Assert.False(ListPage.CategoryExists(nombreReal), $"La categoría '{nombreReal}' todavía aparece en la lista.");
         }
 
         [Then(@"debo ver al menos (.*) categorias en la lista")]
