@@ -11,10 +11,10 @@ Background:
 @ui @sales @pairwise @pw-sales-01
 Scenario: PW-SALES-01 - Venta con un producto y pago exacto en efectivo
   Given que existe un cliente con documento "9404688"
-  When agrego el producto "Yogurt" con cantidad 1 al carrito
+  When agrego el producto "Jabon Delicada Uno 210 Gr" con cantidad 1 al carrito
   And busco el cliente con documento "9404688"
   And selecciono tipo de pago "1"
-  And ingreso efectivo recibido "10.00"
+  And ingreso efectivo recibido "20.00"
   And confirmo la venta
   Then la venta debe procesarse exitosamente
   And debo ver un mensaje de exito
@@ -33,8 +33,8 @@ Scenario: PW-SALES-02 - Venta con un producto y efectivo mayor (con cambio)
 @ui @sales @pairwise @pw-sales-03
 Scenario: PW-SALES-03 - Venta con dos productos diferentes
   Given que existe un cliente con documento "9404688"
-  When agrego el producto "Yogurt Bebible Sabor Durazno Pil 1000 Gr" con cantidad 2 al carrito
-  And agrego el producto "Leche de Soya sabor Banana Soy 946 Ml" con cantidad 1 al carrito
+  When agrego el producto "Pan Frances" con cantidad 2 al carrito
+  And agrego el producto "Bolsa Rayada 60 cm x 80 cm Belen 25 Unds" con cantidad 1 al carrito
   And busco el cliente con documento "9404688"
   And selecciono tipo de pago "1"
   And ingreso efectivo recibido "50.00"

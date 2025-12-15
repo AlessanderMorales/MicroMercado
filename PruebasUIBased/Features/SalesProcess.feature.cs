@@ -182,7 +182,7 @@ await this.FeatureBackgroundAsync();
   await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 14
-  await testRunner.WhenAsync("agrego el producto \"Yogurt\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+  await testRunner.WhenAsync("agrego el producto \"Jabon Delicada Uno 210 Gr\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 15
   await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
@@ -191,7 +191,7 @@ await this.FeatureBackgroundAsync();
   await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 17
-  await testRunner.AndAsync("ingreso efectivo recibido \"10.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+  await testRunner.AndAsync("ingreso efectivo recibido \"20.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 18
   await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
@@ -302,12 +302,11 @@ await this.FeatureBackgroundAsync();
   await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 36
-  await testRunner.WhenAsync("agrego el producto \"Yogurt Bebible Sabor Durazno Pil 1000 Gr\" con cantidad 2 al c" +
-                        "arrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+  await testRunner.WhenAsync("agrego el producto \"Pan Frances\" con cantidad 2 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 37
-  await testRunner.AndAsync("agrego el producto \"Leche de Soya sabor Banana Soy 946 Ml\" con cantidad 1 al carr" +
-                        "ito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+  await testRunner.AndAsync("agrego el producto \"Bolsa Rayada 60 cm x 80 cm Belen 25 Unds\" con cantidad 1 al c" +
+                        "arrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 38
   await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
