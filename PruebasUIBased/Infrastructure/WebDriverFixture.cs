@@ -5,17 +5,11 @@ using Xunit;
 
 namespace PruebasUIBased.Infrastructure
 {
-    /// <summary>
-    /// Configuración de colección de pruebas para evitar ejecución paralela
-    /// </summary>
     [CollectionDefinition("UITests", DisableParallelization = true)]
     public class UITestsCollection : ICollectionFixture<WebDriverFixture>
     {
     }
 
-    /// <summary>
-    /// Fixture para gestionar el ciclo de vida del WebDriver
-    /// </summary>
     public class WebDriverFixture : IDisposable
     {
         public IWebDriver Driver { get; private set; }
@@ -33,9 +27,6 @@ namespace PruebasUIBased.Infrastructure
             options.AddArgument("--disable-dev-shm-usage");
             options.AddArgument("--disable-gpu");
 
-            // Descomentar para modo headless
-            // options.AddArgument("--headless");
-
             Driver = new ChromeDriver(options);
             Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
         }
@@ -49,7 +40,6 @@ namespace PruebasUIBased.Infrastructure
             }
             catch
             {
-                // Ignorar errores al cerrar el driver
             }
         }
     }

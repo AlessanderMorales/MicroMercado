@@ -17,14 +17,14 @@ namespace PruebasUIBased.Features
     
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Reqnroll", "3.0.0.0")]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class CRUDDeClientes_UITestingFeature : object, global::Xunit.IClassFixture<CRUDDeClientes_UITestingFeature.FixtureData>, global::Xunit.IAsyncLifetime
+    public partial class CRUDDeClientes_UITestingConPairwiseFeature : object, global::Xunit.IClassFixture<CRUDDeClientes_UITestingConPairwiseFeature.FixtureData>, global::Xunit.IAsyncLifetime
     {
         
         private global::Reqnroll.ITestRunner testRunner;
         
         private static string[] featureTags = ((string[])(null));
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "CRUD de Clientes - UI Testing", "Como usuario del sistema\r\nQuiero gestionar clientes\r\nPara mantener la informacion" +
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "CRUD de Clientes - UI Testing con Pairwise", "Como usuario del sistema\r\nQuiero gestionar clientes\r\nPara mantener la informacion" +
                 " actualizada", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
         private global::Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
@@ -32,7 +32,7 @@ namespace PruebasUIBased.Features
 #line 1 "ClientCRUD.feature"
 #line hidden
         
-        public CRUDDeClientes_UITestingFeature(CRUDDeClientes_UITestingFeature.FixtureData fixtureData, global::Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public CRUDDeClientes_UITestingConPairwiseFeature(CRUDDeClientes_UITestingConPairwiseFeature.FixtureData fixtureData, global::Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
         }
@@ -118,7 +118,7 @@ namespace PruebasUIBased.Features
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/ClientCRUD.feature.ndjson", 11);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/ClientCRUD.feature.ndjson", 28);
         }
         
         async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.InitializeAsync()
@@ -146,37 +146,44 @@ namespace PruebasUIBased.Features
             await this.TestTearDownAsync();
         }
         
-        [global::Xunit.SkippableTheoryAttribute(DisplayName="CCL-01 - Crear cliente con combinaciones Pairwise")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "CCL-01 - Crear cliente con combinaciones Pairwise")]
+        [global::Xunit.SkippableTheoryAttribute(DisplayName="PW-CLI-01 - Crear cliente con combinaciones Pairwise")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-CLI-01 - Crear cliente con combinaciones Pairwise")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "client")]
         [global::Xunit.TraitAttribute("Category", "create")]
         [global::Xunit.TraitAttribute("Category", "pairwise")]
-        [global::Xunit.InlineDataAttribute("Cliente Valid 1", "cliente1@example.com", "1111111", "Av Principal 123", "debo ver mensaje de exito en cliente", "0", new string[0])]
-        [global::Xunit.InlineDataAttribute("Cliente Valid 2", "cliente2@example.com", "2222222", "", "debo ver mensaje de exito en cliente", "1", new string[0])]
-        [global::Xunit.InlineDataAttribute("Cliente Valid 3", "cliente3@example.com", "3333333", "Direccion larga", "debo ver mensaje de exito en cliente", "2", new string[0])]
-        [global::Xunit.InlineDataAttribute("", "cliente4@example.com", "4444444", "Direccion 456", "debo ver error de validacion en cliente", "3", new string[0])]
-        public async global::System.Threading.Tasks.Task CCL_01_CrearClienteConCombinacionesPairwise(string nombre, string email, string documento, string direccion, string resultado, string @__pickleIndex, string[] exampleTags)
+        [global::Xunit.TraitAttribute("Category", "pw-cli-01")]
+        [global::Xunit.InlineDataAttribute("PW01", "ClientePairwise01", "cliente.pw01@example.com", "11111111", "Av Principal 123", "debo ver mensaje de exito en cliente", "0", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW02", "ClientePairwise02", "cliente.pw02@example.com", "22222222", "", "debo ver mensaje de exito en cliente", "1", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW03", "ClientePairwise03", "cliente.pw03@example.com", "33333333", "Calle Larga 456 Zona Central", "debo ver mensaje de exito en cliente", "2", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW04", "ClienteDescLargo04", "cliente.pw04@example.com", "44444444", "Direccion muy larga para probar limites del campo", "debo ver mensaje de exito en cliente", "3", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW05", "ClientePairwise05", "email.largo.pw05@dominio.com.bo", "55555555", "Calle 789", "debo ver mensaje de exito en cliente", "4", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW06", "ClientePairwise06", "pw06@test.com", "66666666", "Zona Norte 321", "debo ver mensaje de exito en cliente", "5", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW07", "", "cliente.pw07@example.com", "77777777", "Direccion 987", "debo ver error de validacion en cliente", "6", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW08", "ClienteSinEmail08", "", "88888888", "Calle Sin Email", "debo ver error de validacion en cliente", "7", new string[0])]
+        public async global::System.Threading.Tasks.Task PW_CLI_01_CrearClienteConCombinacionesPairwise(string testID, string nombre, string email, string documento, string direccion, string resultado, string @__pickleIndex, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "ui",
                     "client",
                     "create",
-                    "pairwise"};
+                    "pairwise",
+                    "pw-cli-01"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
             }
             string[] tagsOfScenario = @__tags;
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("TestID", testID);
             argumentsOfScenario.Add("Nombre", nombre);
             argumentsOfScenario.Add("Email", email);
             argumentsOfScenario.Add("Documento", documento);
             argumentsOfScenario.Add("Direccion", direccion);
             argumentsOfScenario.Add("Resultado", resultado);
             string pickleIndex = @__pickleIndex;
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("CCL-01 - Crear cliente con combinaciones Pairwise", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-CLI-01 - Crear cliente con combinaciones Pairwise", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 11
@@ -223,38 +230,44 @@ await this.FeatureBackgroundAsync();
             await this.ScenarioCleanupAsync();
         }
         
-        [global::Xunit.SkippableTheoryAttribute(DisplayName="CCL-02 - Actualizar cliente con combinaciones Pairwise")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "CCL-02 - Actualizar cliente con combinaciones Pairwise")]
+        [global::Xunit.SkippableTheoryAttribute(DisplayName="PW-CLI-02 - Actualizar cliente con combinaciones Pairwise")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-CLI-02 - Actualizar cliente con combinaciones Pairwise")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "client")]
         [global::Xunit.TraitAttribute("Category", "update")]
         [global::Xunit.TraitAttribute("Category", "pairwise")]
-        [global::Xunit.InlineDataAttribute("ClienteActualizado", "actualizado@example.com", "Nueva Av 789", "debo ver mensaje de exito en cliente", "4", new string[0])]
-        [global::Xunit.InlineDataAttribute("ClienteModificado", "modificado@example.com", "", "debo ver mensaje de exito en cliente", "5", new string[0])]
-        [global::Xunit.InlineDataAttribute("ClienteNuevo", "nuevo@example.com", "Direccion Nueva", "debo ver mensaje de exito en cliente", "6", new string[0])]
-        public async global::System.Threading.Tasks.Task CCL_02_ActualizarClienteConCombinacionesPairwise(string nuevoNombre, string nuevoEmail, string nuevaDireccion, string resultado, string @__pickleIndex, string[] exampleTags)
+        [global::Xunit.TraitAttribute("Category", "pw-cli-02")]
+        [global::Xunit.InlineDataAttribute("PW09", "ClienteActualizado09", "actualizado09@example.com", "Nueva Av 789", "debo ver mensaje de exito en cliente", "8", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW10", "ClienteModificado10", "modificado10@example.com", "", "debo ver mensaje de exito en cliente", "9", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW11", "ClienteNuevoEmail11", "nuevo.email11@example.com", "Direccion Nueva 456", "debo ver mensaje de exito en cliente", "10", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW12", "ClienteDirLarga12", "dirlarga12@test.com", "Direccion actualizada muy larga para validar", "debo ver mensaje de exito en cliente", "11", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW13", "ClienteCompUpdate13", "completo13@dominio.com", "Actualizacion completa 123", "debo ver mensaje de exito en cliente", "12", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW14", "ClienteFinalUpd14", "final14@test.com", "Final update direccion", "debo ver mensaje de exito en cliente", "13", new string[0])]
+        public async global::System.Threading.Tasks.Task PW_CLI_02_ActualizarClienteConCombinacionesPairwise(string testID, string nuevoNombre, string nuevoEmail, string nuevaDireccion, string resultado, string @__pickleIndex, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "ui",
                     "client",
                     "update",
-                    "pairwise"};
+                    "pairwise",
+                    "pw-cli-02"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
             }
             string[] tagsOfScenario = @__tags;
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("TestID", testID);
             argumentsOfScenario.Add("NuevoNombre", nuevoNombre);
             argumentsOfScenario.Add("NuevoEmail", nuevoEmail);
             argumentsOfScenario.Add("NuevaDireccion", nuevaDireccion);
             argumentsOfScenario.Add("Resultado", resultado);
             string pickleIndex = @__pickleIndex;
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("CCL-02 - Actualizar cliente con combinaciones Pairwise", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-CLI-02 - Actualizar cliente con combinaciones Pairwise", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 30
+#line 34
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -267,11 +280,11 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line 6
 await this.FeatureBackgroundAsync();
 #line hidden
-#line 31
-  await testRunner.GivenAsync("existe un cliente creado con documento \"5555555\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line 35
+  await testRunner.GivenAsync("existe un cliente creado con documento \"99990001\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 32
-  await testRunner.WhenAsync("hago clic en editar el cliente con documento \"5555555\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line 36
+  await testRunner.WhenAsync("hago clic en editar el cliente con documento \"99990001\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
                 global::Reqnroll.Table table3 = new global::Reqnroll.Table(new string[] {
                             "Campo",
@@ -285,39 +298,39 @@ await this.FeatureBackgroundAsync();
                 table3.AddRow(new string[] {
                             "Direccion",
                             string.Format("{0}", nuevaDireccion)});
-#line 33
+#line 37
   await testRunner.AndAsync("actualizo el formulario de cliente con:", ((string)(null)), table3, "And ");
 #line hidden
-#line 38
+#line 42
   await testRunner.AndAsync("hago clic en guardar cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 39
+#line 43
   await testRunner.ThenAsync(string.Format("{0}", resultado), ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
         }
         
-        [global::Xunit.SkippableFactAttribute(DisplayName="CCL-03 - Eliminar cliente")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "CCL-03 - Eliminar cliente")]
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-CLI-01 - Crear cliente con nombre de 3 caracteres (minimo)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-CLI-01 - Crear cliente con nombre de 3 caracteres (minimo)")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "client")]
-        [global::Xunit.TraitAttribute("Category", "delete")]
-        [global::Xunit.TraitAttribute("Category", "happy")]
-        public async global::System.Threading.Tasks.Task CCL_03_EliminarCliente()
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-cli-01")]
+        public async global::System.Threading.Tasks.Task BVA_CLI_01_CrearClienteConNombreDe3CaracteresMinimo()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
                     "client",
-                    "delete",
-                    "happy"};
+                    "bva",
+                    "bva-cli-01"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
-            string pickleIndex = "7";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("CCL-03 - Eliminar cliente", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string pickleIndex = "14";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-CLI-01 - Crear cliente con nombre de 3 caracteres (minimo)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 48
+#line 55
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -330,39 +343,57 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line 6
 await this.FeatureBackgroundAsync();
 #line hidden
-#line 49
-  await testRunner.GivenAsync("existe un cliente creado con documento \"9999999\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line 56
+  await testRunner.WhenAsync("hago clic en agregar nuevo cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 50
-  await testRunner.WhenAsync("hago clic en eliminar el cliente con documento \"9999999\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+                global::Reqnroll.Table table4 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table4.AddRow(new string[] {
+                            "Nombre",
+                            "Cli"});
+                table4.AddRow(new string[] {
+                            "Email",
+                            "nombmin.bva01@example.com"});
+                table4.AddRow(new string[] {
+                            "Documento",
+                            "10000001"});
+                table4.AddRow(new string[] {
+                            "Direccion",
+                            "Direccion BVA nombre min"});
+#line 57
+  await testRunner.AndAsync("lleno el formulario de cliente con los siguientes datos:", ((string)(null)), table4, "And ");
 #line hidden
-#line 51
-  await testRunner.ThenAsync("el cliente con documento \"9999999\" no debe aparecer en la lista", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line 63
+  await testRunner.AndAsync("hago clic en guardar cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 64
+  await testRunner.ThenAsync("debo ver mensaje de exito en cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
         }
         
-        [global::Xunit.SkippableFactAttribute(DisplayName="CCL-04 - Listar clientes activos")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "CCL-04 - Listar clientes activos")]
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-CLI-02 - Crear cliente con nombre de 100 caracteres (maximo)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-CLI-02 - Crear cliente con nombre de 100 caracteres (maximo)")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "client")]
-        [global::Xunit.TraitAttribute("Category", "read")]
-        [global::Xunit.TraitAttribute("Category", "happy")]
-        public async global::System.Threading.Tasks.Task CCL_04_ListarClientesActivos()
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-cli-02")]
+        public async global::System.Threading.Tasks.Task BVA_CLI_02_CrearClienteConNombreDe100CaracteresMaximo()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
                     "client",
-                    "read",
-                    "happy"};
+                    "bva",
+                    "bva-cli-02"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
-            string pickleIndex = "8";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("CCL-04 - Listar clientes activos", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string pickleIndex = "15";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-CLI-02 - Crear cliente con nombre de 100 caracteres (maximo)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 54
+#line 67
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -375,26 +406,642 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line 6
 await this.FeatureBackgroundAsync();
 #line hidden
-                global::Reqnroll.Table table4 = new global::Reqnroll.Table(new string[] {
+#line 68
+  await testRunner.WhenAsync("hago clic en agregar nuevo cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table5 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table5.AddRow(new string[] {
+                            "Nombre",
+                            "ClienteConNombreDeNegocioMuyLargoQueTieneCienCaracteresExactosParaProbarElLimiteM" +
+                                "aximoDelCampoNombre"});
+                table5.AddRow(new string[] {
+                            "Email",
+                            "nombmax.bva02@example.com"});
+                table5.AddRow(new string[] {
+                            "Documento",
+                            "10000002"});
+                table5.AddRow(new string[] {
+                            "Direccion",
+                            "Direccion BVA nombre max"});
+#line 69
+  await testRunner.AndAsync("lleno el formulario de cliente con los siguientes datos:", ((string)(null)), table5, "And ");
+#line hidden
+#line 75
+  await testRunner.AndAsync("hago clic en guardar cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 76
+  await testRunner.ThenAsync("debo ver mensaje de exito en cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-CLI-03 - Crear cliente con documento de 7 digitos (minimo tipico)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-CLI-03 - Crear cliente con documento de 7 digitos (minimo tipico)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "client")]
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-cli-03")]
+        public async global::System.Threading.Tasks.Task BVA_CLI_03_CrearClienteConDocumentoDe7DigitosMinimoTipico()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "client",
+                    "bva",
+                    "bva-cli-03"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "16";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-CLI-03 - Crear cliente con documento de 7 digitos (minimo tipico)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 79
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 80
+  await testRunner.WhenAsync("hago clic en agregar nuevo cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table6 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table6.AddRow(new string[] {
+                            "Nombre",
+                            "ClienteDocMinBVA"});
+                table6.AddRow(new string[] {
+                            "Email",
+                            "docmin.bva03@example.com"});
+                table6.AddRow(new string[] {
+                            "Documento",
+                            "1000003"});
+                table6.AddRow(new string[] {
+                            "Direccion",
+                            "Direccion BVA doc min"});
+#line 81
+  await testRunner.AndAsync("lleno el formulario de cliente con los siguientes datos:", ((string)(null)), table6, "And ");
+#line hidden
+#line 87
+  await testRunner.AndAsync("hago clic en guardar cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 88
+  await testRunner.ThenAsync("debo ver mensaje de exito en cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-CLI-04 - Crear cliente con documento de 9 digitos (maximo)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-CLI-04 - Crear cliente con documento de 9 digitos (maximo)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "client")]
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-cli-04")]
+        public async global::System.Threading.Tasks.Task BVA_CLI_04_CrearClienteConDocumentoDe9DigitosMaximo()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "client",
+                    "bva",
+                    "bva-cli-04"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "17";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-CLI-04 - Crear cliente con documento de 9 digitos (maximo)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 91
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 92
+  await testRunner.WhenAsync("hago clic en agregar nuevo cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table7 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table7.AddRow(new string[] {
+                            "Nombre",
+                            "ClienteDocMaxBVA"});
+                table7.AddRow(new string[] {
+                            "Email",
+                            "docmax.bva04@example.com"});
+                table7.AddRow(new string[] {
+                            "Documento",
+                            "100000004"});
+                table7.AddRow(new string[] {
+                            "Direccion",
+                            "Direccion BVA doc max"});
+#line 93
+  await testRunner.AndAsync("lleno el formulario de cliente con los siguientes datos:", ((string)(null)), table7, "And ");
+#line hidden
+#line 99
+  await testRunner.AndAsync("hago clic en guardar cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 100
+  await testRunner.ThenAsync("debo ver mensaje de exito en cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-CLI-05 - Crear cliente con email formato minimo valido")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-CLI-05 - Crear cliente con email formato minimo valido")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "client")]
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-cli-05")]
+        public async global::System.Threading.Tasks.Task BVA_CLI_05_CrearClienteConEmailFormatoMinimoValido()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "client",
+                    "bva",
+                    "bva-cli-05"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "18";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-CLI-05 - Crear cliente con email formato minimo valido", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 103
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 104
+  await testRunner.WhenAsync("hago clic en agregar nuevo cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table8 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table8.AddRow(new string[] {
+                            "Nombre",
+                            "ClienteEmailMinBVA"});
+                table8.AddRow(new string[] {
+                            "Email",
+                            "a@b.co"});
+                table8.AddRow(new string[] {
+                            "Documento",
+                            "10000005"});
+                table8.AddRow(new string[] {
+                            "Direccion",
+                            "Direccion BVA email min"});
+#line 105
+  await testRunner.AndAsync("lleno el formulario de cliente con los siguientes datos:", ((string)(null)), table8, "And ");
+#line hidden
+#line 111
+  await testRunner.AndAsync("hago clic en guardar cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 112
+  await testRunner.ThenAsync("debo ver mensaje de exito en cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-CLI-06 - Crear cliente con direccion vacia (campo opcional)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-CLI-06 - Crear cliente con direccion vacia (campo opcional)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "client")]
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-cli-06")]
+        public async global::System.Threading.Tasks.Task BVA_CLI_06_CrearClienteConDireccionVaciaCampoOpcional()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "client",
+                    "bva",
+                    "bva-cli-06"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "19";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-CLI-06 - Crear cliente con direccion vacia (campo opcional)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 115
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 116
+  await testRunner.WhenAsync("hago clic en agregar nuevo cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table9 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table9.AddRow(new string[] {
+                            "Nombre",
+                            "ClienteSinDirBVA"});
+                table9.AddRow(new string[] {
+                            "Email",
+                            "sindir.bva06@example.com"});
+                table9.AddRow(new string[] {
+                            "Documento",
+                            "10000006"});
+                table9.AddRow(new string[] {
+                            "Direccion",
+                            ""});
+#line 117
+  await testRunner.AndAsync("lleno el formulario de cliente con los siguientes datos:", ((string)(null)), table9, "And ");
+#line hidden
+#line 123
+  await testRunner.AndAsync("hago clic en guardar cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 124
+  await testRunner.ThenAsync("debo ver mensaje de exito en cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-CLI-01 - Crear cliente con documento duplicado")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-CLI-01 - Crear cliente con documento duplicado")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "client")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-cli-01")]
+        public async global::System.Threading.Tasks.Task PE_CLI_01_CrearClienteConDocumentoDuplicado()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "client",
+                    "pe",
+                    "pe-cli-01"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "20";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-CLI-01 - Crear cliente con documento duplicado", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 127
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 128
+  await testRunner.GivenAsync("existe un cliente creado con documento \"20000001\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 129
+  await testRunner.WhenAsync("hago clic en agregar nuevo cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table10 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table10.AddRow(new string[] {
+                            "Nombre",
+                            "ClienteDuplicadoPE"});
+                table10.AddRow(new string[] {
+                            "Email",
+                            "duplicado.pe@example.com"});
+                table10.AddRow(new string[] {
+                            "Documento",
+                            "20000001"});
+                table10.AddRow(new string[] {
+                            "Direccion",
+                            "Direccion duplicada"});
+#line 130
+  await testRunner.AndAsync("lleno el formulario de cliente con los siguientes datos:", ((string)(null)), table10, "And ");
+#line hidden
+#line 136
+  await testRunner.AndAsync("hago clic en guardar cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 137
+  await testRunner.ThenAsync("debo ver error de validacion en cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-CLI-02 - Eliminar cliente existente (borrado logico)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-CLI-02 - Eliminar cliente existente (borrado logico)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "client")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-cli-02")]
+        public async global::System.Threading.Tasks.Task PE_CLI_02_EliminarClienteExistenteBorradoLogico()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "client",
+                    "pe",
+                    "pe-cli-02"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "21";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-CLI-02 - Eliminar cliente existente (borrado logico)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 140
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 141
+  await testRunner.GivenAsync("existe un cliente creado con documento \"30000002\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 142
+  await testRunner.WhenAsync("hago clic en eliminar el cliente con documento \"30000002\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 143
+  await testRunner.ThenAsync("el cliente con documento \"30000002\" no debe aparecer en la lista", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-CLI-03 - Listar clientes activos")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-CLI-03 - Listar clientes activos")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "client")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-cli-03")]
+        public async global::System.Threading.Tasks.Task PE_CLI_03_ListarClientesActivos()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "client",
+                    "pe",
+                    "pe-cli-03"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "22";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-CLI-03 - Listar clientes activos", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 146
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+                global::Reqnroll.Table table11 = new global::Reqnroll.Table(new string[] {
                             "Nombre",
                             "Documento"});
-                table4.AddRow(new string[] {
-                            "Cliente A",
-                            "7777777"});
-                table4.AddRow(new string[] {
-                            "Cliente B",
-                            "8888888"});
-                table4.AddRow(new string[] {
-                            "Cliente C",
-                            "6666666"});
-#line 55
-  await testRunner.GivenAsync("existen los siguientes clientes en el sistema:", ((string)(null)), table4, "Given ");
+                table11.AddRow(new string[] {
+                            "ClienteListA",
+                            "40000001"});
+                table11.AddRow(new string[] {
+                            "ClienteListB",
+                            "40000002"});
+                table11.AddRow(new string[] {
+                            "ClienteListC",
+                            "40000003"});
+#line 147
+  await testRunner.GivenAsync("existen los siguientes clientes en el sistema:", ((string)(null)), table11, "Given ");
 #line hidden
-#line 60
+#line 152
   await testRunner.WhenAsync("navego a la pagina de clientes", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 61
+#line 153
   await testRunner.ThenAsync("debo ver al menos 3 clientes en la lista", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-CLI-04 - Actualizar cliente manteniendo documento unico propio")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-CLI-04 - Actualizar cliente manteniendo documento unico propio")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "client")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-cli-04")]
+        public async global::System.Threading.Tasks.Task PE_CLI_04_ActualizarClienteManteniendoDocumentoUnicoPropio()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "client",
+                    "pe",
+                    "pe-cli-04"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "23";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-CLI-04 - Actualizar cliente manteniendo documento unico propio", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 156
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 157
+  await testRunner.GivenAsync("existe un cliente creado con documento \"50000004\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 158
+  await testRunner.WhenAsync("hago clic en editar el cliente con documento \"50000004\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table12 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table12.AddRow(new string[] {
+                            "Nombre",
+                            "ClienteMismoDocPE"});
+                table12.AddRow(new string[] {
+                            "Email",
+                            "mismodoc.pe@example.com"});
+                table12.AddRow(new string[] {
+                            "Direccion",
+                            "Solo cambio nombre y email"});
+#line 159
+  await testRunner.AndAsync("actualizo el formulario de cliente con:", ((string)(null)), table12, "And ");
+#line hidden
+#line 164
+  await testRunner.AndAsync("hago clic en guardar cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 165
+  await testRunner.ThenAsync("debo ver mensaje de exito en cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-CLI-05 - Crear cliente con email formato valido complejo")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-CLI-05 - Crear cliente con email formato valido complejo")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "client")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-cli-05")]
+        public async global::System.Threading.Tasks.Task PE_CLI_05_CrearClienteConEmailFormatoValidoComplejo()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "client",
+                    "pe",
+                    "pe-cli-05"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "24";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-CLI-05 - Crear cliente con email formato valido complejo", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 168
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 169
+  await testRunner.WhenAsync("hago clic en agregar nuevo cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table13 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table13.AddRow(new string[] {
+                            "Nombre",
+                            "ClienteEmailComplejoPE"});
+                table13.AddRow(new string[] {
+                            "Email",
+                            "nombre.apellido+tag@subdominio.empresa.com.bo"});
+                table13.AddRow(new string[] {
+                            "Documento",
+                            "60000005"});
+                table13.AddRow(new string[] {
+                            "Direccion",
+                            "Direccion email complejo"});
+#line 170
+  await testRunner.AndAsync("lleno el formulario de cliente con los siguientes datos:", ((string)(null)), table13, "And ");
+#line hidden
+#line 176
+  await testRunner.AndAsync("hago clic en guardar cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 177
+  await testRunner.ThenAsync("debo ver mensaje de exito en cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-CLI-06 - Crear cliente con todos los campos completos")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Clientes - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-CLI-06 - Crear cliente con todos los campos completos")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "client")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-cli-06")]
+        public async global::System.Threading.Tasks.Task PE_CLI_06_CrearClienteConTodosLosCamposCompletos()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "client",
+                    "pe",
+                    "pe-cli-06"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "25";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-CLI-06 - Crear cliente con todos los campos completos", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 180
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 181
+  await testRunner.WhenAsync("hago clic en agregar nuevo cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table14 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table14.AddRow(new string[] {
+                            "Nombre",
+                            "Cliente Empresa Completa SA"});
+                table14.AddRow(new string[] {
+                            "Email",
+                            "contacto.comercial@empresa-completa.com.bo"});
+                table14.AddRow(new string[] {
+                            "Documento",
+                            "70000006"});
+                table14.AddRow(new string[] {
+                            "Direccion",
+                            "Av. Principal 1234, Edificio Central, Piso 5, Oficina 501, Zona Sur"});
+#line 182
+  await testRunner.AndAsync("lleno el formulario de cliente con los siguientes datos:", ((string)(null)), table14, "And ");
+#line hidden
+#line 188
+  await testRunner.AndAsync("hago clic en guardar cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 189
+  await testRunner.ThenAsync("debo ver mensaje de exito en cliente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -407,12 +1054,12 @@ await this.FeatureBackgroundAsync();
             
             async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.InitializeAsync()
             {
-                await CRUDDeClientes_UITestingFeature.FeatureSetupAsync();
+                await CRUDDeClientes_UITestingConPairwiseFeature.FeatureSetupAsync();
             }
             
             async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.DisposeAsync()
             {
-                await CRUDDeClientes_UITestingFeature.FeatureTearDownAsync();
+                await CRUDDeClientes_UITestingConPairwiseFeature.FeatureTearDownAsync();
             }
         }
     }

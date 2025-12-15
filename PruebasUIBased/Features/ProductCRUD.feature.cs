@@ -17,14 +17,14 @@ namespace PruebasUIBased.Features
     
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Reqnroll", "3.0.0.0")]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class CRUDDeProductos_UITestingFeature : object, global::Xunit.IClassFixture<CRUDDeProductos_UITestingFeature.FixtureData>, global::Xunit.IAsyncLifetime
+    public partial class CRUDDeProductos_UITestingConPairwiseFeature : object, global::Xunit.IClassFixture<CRUDDeProductos_UITestingConPairwiseFeature.FixtureData>, global::Xunit.IAsyncLifetime
     {
         
         private global::Reqnroll.ITestRunner testRunner;
         
         private static string[] featureTags = ((string[])(null));
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "CRUD de Productos - UI Testing", "Como usuario del sistema\r\nQuiero gestionar productos\r\nPara mantener el inventario" +
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "CRUD de Productos - UI Testing con Pairwise", "Como usuario del sistema\r\nQuiero gestionar productos\r\nPara mantener el inventario" +
                 " actualizado", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
         private global::Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
@@ -32,7 +32,7 @@ namespace PruebasUIBased.Features
 #line 1 "ProductCRUD.feature"
 #line hidden
         
-        public CRUDDeProductos_UITestingFeature(CRUDDeProductos_UITestingFeature.FixtureData fixtureData, global::Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public CRUDDeProductos_UITestingConPairwiseFeature(CRUDDeProductos_UITestingConPairwiseFeature.FixtureData fixtureData, global::Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
         }
@@ -121,7 +121,7 @@ namespace PruebasUIBased.Features
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/ProductCRUD.feature.ndjson", 11);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/ProductCRUD.feature.ndjson", 36);
         }
         
         async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.InitializeAsync()
@@ -149,38 +149,48 @@ namespace PruebasUIBased.Features
             await this.TestTearDownAsync();
         }
         
-        [global::Xunit.SkippableTheoryAttribute(DisplayName="CP-01 - Crear producto con combinaciones Pairwise")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "CP-01 - Crear producto con combinaciones Pairwise")]
+        [global::Xunit.SkippableTheoryAttribute(DisplayName="PW-PROD-01 - Crear producto con combinaciones Pairwise")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-PROD-01 - Crear producto con combinaciones Pairwise")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "product")]
         [global::Xunit.TraitAttribute("Category", "create")]
         [global::Xunit.TraitAttribute("Category", "pairwise")]
-        [global::Xunit.InlineDataAttribute("Producto Valid 1", "Desc valida", "MarcaA", "10.50", "100", "debo ver mensaje de exito en producto", "0", new string[0])]
-        [global::Xunit.InlineDataAttribute("Producto Valid 2", "", "MarcaB", "5.00", "1", "debo ver mensaje de exito en producto", "1", new string[0])]
-        [global::Xunit.InlineDataAttribute("Producto Valid 3", "Desc muy larga", "MarcaC", "999.99", "9999", "debo ver mensaje de exito en producto", "2", new string[0])]
-        [global::Xunit.InlineDataAttribute("", "Desc sin nombre", "MarcaSinNom", "10.00", "50", "debo ver error de validacion en producto", "3", new string[0])]
-        public async global::System.Threading.Tasks.Task CP_01_CrearProductoConCombinacionesPairwise(string nombre, string descripcion, string marca, string precio, string stock, string resultado, string @__pickleIndex, string[] exampleTags)
+        [global::Xunit.TraitAttribute("Category", "pw-prod-01")]
+        [global::Xunit.InlineDataAttribute("PW01", "ProdPairwise01", "Descripcion valida", "MarcaA", "10.50", "100", "1", "debo ver mensaje de exito en producto", "0", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW02", "ProdPairwise02", "", "MarcaB", "5.00", "1", "1", "debo ver mensaje de exito en producto", "1", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW03", "ProdDescLarga03", "Desc muy larga test", "MarcaC", "999.99", "9999", "1", "debo ver mensaje de exito en producto", "2", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW04", "ProdPairwise04", "Desc normal", "", "15.00", "50", "1", "debo ver mensaje de exito en producto", "3", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW05", "ProdPairwise05", "Desc test", "MarcaLarga", "0.01", "500", "1", "debo ver mensaje de exito en producto", "4", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW06", "ProdPairwise06", "", "MarcaD", "100.00", "10", "1", "debo ver mensaje de exito en producto", "5", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW07", "ProdStockAlto07", "Desc stock alto", "MarcaE", "50.00", "32767", "1", "debo ver mensaje de exito en producto", "6", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW08", "ProdPrecioAlto08", "Desc precio alto", "MarcaF", "9999.99", "25", "1", "debo ver mensaje de exito en producto", "7", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW09", "", "Desc sin nombre", "MarcaG", "20.00", "30", "1", "debo ver error de validacion en producto", "8", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW10", "ProdSinPrecio10", "Desc sin precio", "MarcaH", "0", "40", "1", "debo ver error de validacion en producto", "9", new string[0])]
+        public async global::System.Threading.Tasks.Task PW_PROD_01_CrearProductoConCombinacionesPairwise(string testID, string nombre, string descripcion, string marca, string precio, string stock, string categoria, string resultado, string @__pickleIndex, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "ui",
                     "product",
                     "create",
-                    "pairwise"};
+                    "pairwise",
+                    "pw-prod-01"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
             }
             string[] tagsOfScenario = @__tags;
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("TestID", testID);
             argumentsOfScenario.Add("Nombre", nombre);
             argumentsOfScenario.Add("Descripcion", descripcion);
             argumentsOfScenario.Add("Marca", marca);
             argumentsOfScenario.Add("Precio", precio);
             argumentsOfScenario.Add("Stock", stock);
+            argumentsOfScenario.Add("Categoria", categoria);
             argumentsOfScenario.Add("Resultado", resultado);
             string pickleIndex = @__pickleIndex;
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("CP-01 - Crear producto con combinaciones Pairwise", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-PROD-01 - Crear producto con combinaciones Pairwise", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 12
@@ -199,29 +209,29 @@ await this.FeatureBackgroundAsync();
 #line 13
   await testRunner.WhenAsync("hago clic en agregar nuevo producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-                global::Reqnroll.Table table5 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table15 = new global::Reqnroll.Table(new string[] {
                             "Campo",
                             "Valor"});
-                table5.AddRow(new string[] {
+                table15.AddRow(new string[] {
                             "Nombre",
                             string.Format("{0}", nombre)});
-                table5.AddRow(new string[] {
+                table15.AddRow(new string[] {
                             "Descripcion",
                             string.Format("{0}", descripcion)});
-                table5.AddRow(new string[] {
+                table15.AddRow(new string[] {
                             "Marca",
                             string.Format("{0}", marca)});
-                table5.AddRow(new string[] {
+                table15.AddRow(new string[] {
                             "Precio",
                             string.Format("{0}", precio)});
-                table5.AddRow(new string[] {
+                table15.AddRow(new string[] {
                             "Stock",
                             string.Format("{0}", stock)});
-                table5.AddRow(new string[] {
+                table15.AddRow(new string[] {
                             "Categoria",
-                            "1"});
+                            string.Format("{0}", categoria)});
 #line 14
-  await testRunner.AndAsync("lleno el formulario de producto con los siguientes datos:", ((string)(null)), table5, "And ");
+  await testRunner.AndAsync("lleno el formulario de producto con los siguientes datos:", ((string)(null)), table15, "And ");
 #line hidden
 #line 22
   await testRunner.AndAsync("hago clic en guardar producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
@@ -233,39 +243,47 @@ await this.FeatureBackgroundAsync();
             await this.ScenarioCleanupAsync();
         }
         
-        [global::Xunit.SkippableTheoryAttribute(DisplayName="CP-02 - Actualizar producto con combinaciones Pairwise")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "CP-02 - Actualizar producto con combinaciones Pairwise")]
+        [global::Xunit.SkippableTheoryAttribute(DisplayName="PW-PROD-02 - Actualizar producto con combinaciones Pairwise")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-PROD-02 - Actualizar producto con combinaciones Pairwise")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "product")]
         [global::Xunit.TraitAttribute("Category", "update")]
         [global::Xunit.TraitAttribute("Category", "pairwise")]
-        [global::Xunit.InlineDataAttribute("ProductoActualizado", "Desc actualizada", "15.00", "200", "debo ver mensaje de exito en producto", "4", new string[0])]
-        [global::Xunit.InlineDataAttribute("ProductoParaActualizar", "Nueva desc", "20.00", "150", "debo ver mensaje de exito en producto", "5", new string[0])]
-        [global::Xunit.InlineDataAttribute("ProductoNuevoPrecio", "", "25.50", "1", "debo ver mensaje de exito en producto", "6", new string[0])]
-        public async global::System.Threading.Tasks.Task CP_02_ActualizarProductoConCombinacionesPairwise(string nuevoNombre, string nuevaDescripcion, string nuevoPrecio, string nuevoStock, string resultado, string @__pickleIndex, string[] exampleTags)
+        [global::Xunit.TraitAttribute("Category", "pw-prod-02")]
+        [global::Xunit.InlineDataAttribute("PW11", "ProdActualizado11", "Desc actualizada", "15.00", "200", "debo ver mensaje de exito en producto", "10", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW12", "ProdBaseUpdate", "Nueva desc mismo nom", "20.00", "150", "debo ver mensaje de exito en producto", "11", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW13", "ProdNuevoPrecio13", "", "25.50", "1", "debo ver mensaje de exito en producto", "12", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW14", "ProdStockMod14", "Stock modificado", "30.00", "9999", "debo ver mensaje de exito en producto", "13", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW15", "ProdPrecioMin15", "Precio minimo update", "0.01", "100", "debo ver mensaje de exito en producto", "14", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW16", "ProdDescLargaUpd16", "Descripcion extensa para validar campos largos", "45.00", "75", "debo ver mensaje de exito en producto", "15", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW17", "ProdCompletoUpd17", "Actualizacion total", "99.99", "500", "debo ver mensaje de exito en producto", "16", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW18", "ProdFinalUpd18", "", "12.50", "250", "debo ver mensaje de exito en producto", "17", new string[0])]
+        public async global::System.Threading.Tasks.Task PW_PROD_02_ActualizarProductoConCombinacionesPairwise(string testID, string nuevoNombre, string nuevaDescripcion, string nuevoPrecio, string nuevoStock, string resultado, string @__pickleIndex, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "ui",
                     "product",
                     "update",
-                    "pairwise"};
+                    "pairwise",
+                    "pw-prod-02"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
             }
             string[] tagsOfScenario = @__tags;
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("TestID", testID);
             argumentsOfScenario.Add("NuevoNombre", nuevoNombre);
             argumentsOfScenario.Add("NuevaDescripcion", nuevaDescripcion);
             argumentsOfScenario.Add("NuevoPrecio", nuevoPrecio);
             argumentsOfScenario.Add("NuevoStock", nuevoStock);
             argumentsOfScenario.Add("Resultado", resultado);
             string pickleIndex = @__pickleIndex;
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("CP-02 - Actualizar producto con combinaciones Pairwise", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-PROD-02 - Actualizar producto con combinaciones Pairwise", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 33
+#line 39
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -278,60 +296,60 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line 6
 await this.FeatureBackgroundAsync();
 #line hidden
-#line 34
-  await testRunner.GivenAsync("existe un producto creado con nombre \"ProductoParaActualizar\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line 40
+  await testRunner.GivenAsync("existe un producto creado con nombre \"ProdBaseUpdate\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 35
-  await testRunner.WhenAsync("hago clic en editar producto \"ProductoParaActualizar\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line 41
+  await testRunner.WhenAsync("hago clic en editar producto \"ProdBaseUpdate\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-                global::Reqnroll.Table table6 = new global::Reqnroll.Table(new string[] {
+                global::Reqnroll.Table table16 = new global::Reqnroll.Table(new string[] {
                             "Campo",
                             "Valor"});
-                table6.AddRow(new string[] {
+                table16.AddRow(new string[] {
                             "Nombre",
                             string.Format("{0}", nuevoNombre)});
-                table6.AddRow(new string[] {
+                table16.AddRow(new string[] {
                             "Descripcion",
                             string.Format("{0}", nuevaDescripcion)});
-                table6.AddRow(new string[] {
+                table16.AddRow(new string[] {
                             "Precio",
                             string.Format("{0}", nuevoPrecio)});
-                table6.AddRow(new string[] {
+                table16.AddRow(new string[] {
                             "Stock",
                             string.Format("{0}", nuevoStock)});
-#line 36
-  await testRunner.AndAsync("actualizo el formulario de producto con:", ((string)(null)), table6, "And ");
-#line hidden
 #line 42
+  await testRunner.AndAsync("actualizo el formulario de producto con:", ((string)(null)), table16, "And ");
+#line hidden
+#line 48
   await testRunner.AndAsync("hago clic en guardar producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 43
+#line 49
   await testRunner.ThenAsync(string.Format("{0}", resultado), ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
         }
         
-        [global::Xunit.SkippableFactAttribute(DisplayName="CP-03 - Eliminar producto")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "CP-03 - Eliminar producto")]
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-PROD-01 - Crear producto con precio minimo valido (0.01)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-PROD-01 - Crear producto con precio minimo valido (0.01)")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "product")]
-        [global::Xunit.TraitAttribute("Category", "delete")]
-        [global::Xunit.TraitAttribute("Category", "happy")]
-        public async global::System.Threading.Tasks.Task CP_03_EliminarProducto()
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-prod-01")]
+        public async global::System.Threading.Tasks.Task BVA_PROD_01_CrearProductoConPrecioMinimoValido0_01()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
                     "product",
-                    "delete",
-                    "happy"};
+                    "bva",
+                    "bva-prod-01"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
-            string pickleIndex = "7";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("CP-03 - Eliminar producto", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string pickleIndex = "18";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-PROD-01 - Crear producto con precio minimo valido (0.01)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 52
+#line 63
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -344,39 +362,63 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line 6
 await this.FeatureBackgroundAsync();
 #line hidden
-#line 53
-  await testRunner.GivenAsync("existe un producto creado con nombre \"ProductoParaEliminar\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line 64
+  await testRunner.WhenAsync("hago clic en agregar nuevo producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 54
-  await testRunner.WhenAsync("hago clic en eliminar producto \"ProductoParaEliminar\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+                global::Reqnroll.Table table17 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table17.AddRow(new string[] {
+                            "Nombre",
+                            "ProdPrecioMinBVA"});
+                table17.AddRow(new string[] {
+                            "Descripcion",
+                            "Precio al minimo"});
+                table17.AddRow(new string[] {
+                            "Marca",
+                            "MarcaBVA"});
+                table17.AddRow(new string[] {
+                            "Precio",
+                            "0.01"});
+                table17.AddRow(new string[] {
+                            "Stock",
+                            "50"});
+                table17.AddRow(new string[] {
+                            "Categoria",
+                            "1"});
+#line 65
+  await testRunner.AndAsync("lleno el formulario de producto con los siguientes datos:", ((string)(null)), table17, "And ");
 #line hidden
-#line 55
-  await testRunner.ThenAsync("el producto \"ProductoParaEliminar\" no debe aparecer en la lista", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line 73
+  await testRunner.AndAsync("hago clic en guardar producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 74
+  await testRunner.ThenAsync("debo ver mensaje de exito en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
         }
         
-        [global::Xunit.SkippableFactAttribute(DisplayName="CP-04 - Listar productos activos")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "CP-04 - Listar productos activos")]
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-PROD-02 - Crear producto con stock minimo valido (1)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-PROD-02 - Crear producto con stock minimo valido (1)")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "product")]
-        [global::Xunit.TraitAttribute("Category", "read")]
-        [global::Xunit.TraitAttribute("Category", "happy")]
-        public async global::System.Threading.Tasks.Task CP_04_ListarProductosActivos()
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-prod-02")]
+        public async global::System.Threading.Tasks.Task BVA_PROD_02_CrearProductoConStockMinimoValido1()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
                     "product",
-                    "read",
-                    "happy"};
+                    "bva",
+                    "bva-prod-02"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
-            string pickleIndex = "8";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("CP-04 - Listar productos activos", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string pickleIndex = "19";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-PROD-02 - Crear producto con stock minimo valido (1)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 58
+#line 77
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -389,22 +431,950 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line 6
 await this.FeatureBackgroundAsync();
 #line hidden
-                global::Reqnroll.Table table7 = new global::Reqnroll.Table(new string[] {
-                            "Nombre"});
-                table7.AddRow(new string[] {
-                            "Producto A"});
-                table7.AddRow(new string[] {
-                            "Producto B"});
-                table7.AddRow(new string[] {
-                            "Producto C"});
-#line 59
-  await testRunner.GivenAsync("existen los siguientes productos en el sistema:", ((string)(null)), table7, "Given ");
+#line 78
+  await testRunner.WhenAsync("hago clic en agregar nuevo producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 64
+                global::Reqnroll.Table table18 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table18.AddRow(new string[] {
+                            "Nombre",
+                            "ProdStockMinBVA"});
+                table18.AddRow(new string[] {
+                            "Descripcion",
+                            "Stock al minimo"});
+                table18.AddRow(new string[] {
+                            "Marca",
+                            "MarcaBVA2"});
+                table18.AddRow(new string[] {
+                            "Precio",
+                            "25.00"});
+                table18.AddRow(new string[] {
+                            "Stock",
+                            "1"});
+                table18.AddRow(new string[] {
+                            "Categoria",
+                            "1"});
+#line 79
+  await testRunner.AndAsync("lleno el formulario de producto con los siguientes datos:", ((string)(null)), table18, "And ");
+#line hidden
+#line 87
+  await testRunner.AndAsync("hago clic en guardar producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 88
+  await testRunner.ThenAsync("debo ver mensaje de exito en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-PROD-03 - Crear producto con stock maximo valido (32767)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-PROD-03 - Crear producto con stock maximo valido (32767)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-prod-03")]
+        public async global::System.Threading.Tasks.Task BVA_PROD_03_CrearProductoConStockMaximoValido32767()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "bva",
+                    "bva-prod-03"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "20";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-PROD-03 - Crear producto con stock maximo valido (32767)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 91
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 92
+  await testRunner.WhenAsync("hago clic en agregar nuevo producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table19 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table19.AddRow(new string[] {
+                            "Nombre",
+                            "ProdStockMaxBVA"});
+                table19.AddRow(new string[] {
+                            "Descripcion",
+                            "Stock al maximo"});
+                table19.AddRow(new string[] {
+                            "Marca",
+                            "MarcaBVA3"});
+                table19.AddRow(new string[] {
+                            "Precio",
+                            "35.00"});
+                table19.AddRow(new string[] {
+                            "Stock",
+                            "32767"});
+                table19.AddRow(new string[] {
+                            "Categoria",
+                            "1"});
+#line 93
+  await testRunner.AndAsync("lleno el formulario de producto con los siguientes datos:", ((string)(null)), table19, "And ");
+#line hidden
+#line 101
+  await testRunner.AndAsync("hago clic en guardar producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 102
+  await testRunner.ThenAsync("debo ver mensaje de exito en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-PROD-04 - Crear producto con nombre de 1 caracter")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-PROD-04 - Crear producto con nombre de 1 caracter")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-prod-04")]
+        public async global::System.Threading.Tasks.Task BVA_PROD_04_CrearProductoConNombreDe1Caracter()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "bva",
+                    "bva-prod-04"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "21";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-PROD-04 - Crear producto con nombre de 1 caracter", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 105
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 106
+  await testRunner.WhenAsync("hago clic en agregar nuevo producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table20 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table20.AddRow(new string[] {
+                            "Nombre",
+                            "P"});
+                table20.AddRow(new string[] {
+                            "Descripcion",
+                            "Nombre minimo"});
+                table20.AddRow(new string[] {
+                            "Marca",
+                            "MarcaBVA4"});
+                table20.AddRow(new string[] {
+                            "Precio",
+                            "10.00"});
+                table20.AddRow(new string[] {
+                            "Stock",
+                            "20"});
+                table20.AddRow(new string[] {
+                            "Categoria",
+                            "1"});
+#line 107
+  await testRunner.AndAsync("lleno el formulario de producto con los siguientes datos:", ((string)(null)), table20, "And ");
+#line hidden
+#line 115
+  await testRunner.AndAsync("hago clic en guardar producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 116
+  await testRunner.ThenAsync("debo ver mensaje de exito en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-PROD-05 - Crear producto con nombre de 100 caracteres (maximo)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-PROD-05 - Crear producto con nombre de 100 caracteres (maximo)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-prod-05")]
+        public async global::System.Threading.Tasks.Task BVA_PROD_05_CrearProductoConNombreDe100CaracteresMaximo()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "bva",
+                    "bva-prod-05"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "22";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-PROD-05 - Crear producto con nombre de 100 caracteres (maximo)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 119
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 120
+  await testRunner.WhenAsync("hago clic en agregar nuevo producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table21 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table21.AddRow(new string[] {
+                            "Nombre",
+                            "ProductoConNombreDeCienCaracteresExactosParaProbarElLimiteMaximoPermitidoEnElCamp" +
+                                "oDeNombreDelSistema"});
+                table21.AddRow(new string[] {
+                            "Descripcion",
+                            "Nombre al maximo"});
+                table21.AddRow(new string[] {
+                            "Marca",
+                            "MarcaBVA5"});
+                table21.AddRow(new string[] {
+                            "Precio",
+                            "15.00"});
+                table21.AddRow(new string[] {
+                            "Stock",
+                            "30"});
+                table21.AddRow(new string[] {
+                            "Categoria",
+                            "1"});
+#line 121
+  await testRunner.AndAsync("lleno el formulario de producto con los siguientes datos:", ((string)(null)), table21, "And ");
+#line hidden
+#line 129
+  await testRunner.AndAsync("hago clic en guardar producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 130
+  await testRunner.ThenAsync("debo ver mensaje de exito en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-PROD-06 - Crear producto con precio maximo valido (9999.99)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-PROD-06 - Crear producto con precio maximo valido (9999.99)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-prod-06")]
+        public async global::System.Threading.Tasks.Task BVA_PROD_06_CrearProductoConPrecioMaximoValido9999_99()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "bva",
+                    "bva-prod-06"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "23";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-PROD-06 - Crear producto con precio maximo valido (9999.99)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 133
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 134
+  await testRunner.WhenAsync("hago clic en agregar nuevo producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table22 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table22.AddRow(new string[] {
+                            "Nombre",
+                            "ProdPrecioMaxBVA"});
+                table22.AddRow(new string[] {
+                            "Descripcion",
+                            "Precio al maximo"});
+                table22.AddRow(new string[] {
+                            "Marca",
+                            "MarcaBVA6"});
+                table22.AddRow(new string[] {
+                            "Precio",
+                            "9999.99"});
+                table22.AddRow(new string[] {
+                            "Stock",
+                            "15"});
+                table22.AddRow(new string[] {
+                            "Categoria",
+                            "1"});
+#line 135
+  await testRunner.AndAsync("lleno el formulario de producto con los siguientes datos:", ((string)(null)), table22, "And ");
+#line hidden
+#line 143
+  await testRunner.AndAsync("hago clic en guardar producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 144
+  await testRunner.ThenAsync("debo ver mensaje de exito en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-PROD-07 - Crear producto con marca de 1 caracter")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-PROD-07 - Crear producto con marca de 1 caracter")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-prod-07")]
+        public async global::System.Threading.Tasks.Task BVA_PROD_07_CrearProductoConMarcaDe1Caracter()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "bva",
+                    "bva-prod-07"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "24";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-PROD-07 - Crear producto con marca de 1 caracter", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 147
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 148
+  await testRunner.WhenAsync("hago clic en agregar nuevo producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table23 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table23.AddRow(new string[] {
+                            "Nombre",
+                            "ProdMarcaMinBVA"});
+                table23.AddRow(new string[] {
+                            "Descripcion",
+                            "Marca minima"});
+                table23.AddRow(new string[] {
+                            "Marca",
+                            "M"});
+                table23.AddRow(new string[] {
+                            "Precio",
+                            "20.00"});
+                table23.AddRow(new string[] {
+                            "Stock",
+                            "40"});
+                table23.AddRow(new string[] {
+                            "Categoria",
+                            "1"});
+#line 149
+  await testRunner.AndAsync("lleno el formulario de producto con los siguientes datos:", ((string)(null)), table23, "And ");
+#line hidden
+#line 157
+  await testRunner.AndAsync("hago clic en guardar producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 158
+  await testRunner.ThenAsync("debo ver mensaje de exito en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-PROD-08 - Crear producto con descripcion vacia (opcional)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-PROD-08 - Crear producto con descripcion vacia (opcional)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-prod-08")]
+        public async global::System.Threading.Tasks.Task BVA_PROD_08_CrearProductoConDescripcionVaciaOpcional()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "bva",
+                    "bva-prod-08"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "25";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-PROD-08 - Crear producto con descripcion vacia (opcional)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 161
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 162
+  await testRunner.WhenAsync("hago clic en agregar nuevo producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table24 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table24.AddRow(new string[] {
+                            "Nombre",
+                            "ProdSinDescBVA"});
+                table24.AddRow(new string[] {
+                            "Descripcion",
+                            ""});
+                table24.AddRow(new string[] {
+                            "Marca",
+                            "MarcaBVA8"});
+                table24.AddRow(new string[] {
+                            "Precio",
+                            "22.00"});
+                table24.AddRow(new string[] {
+                            "Stock",
+                            "55"});
+                table24.AddRow(new string[] {
+                            "Categoria",
+                            "1"});
+#line 163
+  await testRunner.AndAsync("lleno el formulario de producto con los siguientes datos:", ((string)(null)), table24, "And ");
+#line hidden
+#line 171
+  await testRunner.AndAsync("hago clic en guardar producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 172
+  await testRunner.ThenAsync("debo ver mensaje de exito en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-PROD-01 - Crear producto con nombre duplicado")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-PROD-01 - Crear producto con nombre duplicado")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-prod-01")]
+        public async global::System.Threading.Tasks.Task PE_PROD_01_CrearProductoConNombreDuplicado()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "pe",
+                    "pe-prod-01"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "26";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-PROD-01 - Crear producto con nombre duplicado", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 175
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 176
+  await testRunner.GivenAsync("existe un producto creado con nombre \"ProdDuplicadoPE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 177
+  await testRunner.WhenAsync("hago clic en agregar nuevo producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table25 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table25.AddRow(new string[] {
+                            "Nombre",
+                            "ProdDuplicadoPE"});
+                table25.AddRow(new string[] {
+                            "Descripcion",
+                            "Intentando duplicar"});
+                table25.AddRow(new string[] {
+                            "Marca",
+                            "MarcaPE"});
+                table25.AddRow(new string[] {
+                            "Precio",
+                            "30.00"});
+                table25.AddRow(new string[] {
+                            "Stock",
+                            "60"});
+                table25.AddRow(new string[] {
+                            "Categoria",
+                            "1"});
+#line 178
+  await testRunner.AndAsync("lleno el formulario de producto con los siguientes datos:", ((string)(null)), table25, "And ");
+#line hidden
+#line 186
+  await testRunner.AndAsync("hago clic en guardar producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 187
+  await testRunner.ThenAsync("debo ver error de validacion en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-PROD-02 - Eliminar producto existente (borrado logico)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-PROD-02 - Eliminar producto existente (borrado logico)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-prod-02")]
+        public async global::System.Threading.Tasks.Task PE_PROD_02_EliminarProductoExistenteBorradoLogico()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "pe",
+                    "pe-prod-02"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "27";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-PROD-02 - Eliminar producto existente (borrado logico)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 190
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 191
+  await testRunner.GivenAsync("existe un producto creado con nombre \"ProdParaEliminarPE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 192
+  await testRunner.WhenAsync("hago clic en eliminar producto \"ProdParaEliminarPE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 193
+  await testRunner.ThenAsync("el producto \"ProdParaEliminarPE\" no debe aparecer en la lista", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-PROD-03 - Listar productos activos")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-PROD-03 - Listar productos activos")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-prod-03")]
+        public async global::System.Threading.Tasks.Task PE_PROD_03_ListarProductosActivos()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "pe",
+                    "pe-prod-03"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "28";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-PROD-03 - Listar productos activos", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 196
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+                global::Reqnroll.Table table26 = new global::Reqnroll.Table(new string[] {
+                            "Nombre"});
+                table26.AddRow(new string[] {
+                            "ProdListadoA"});
+                table26.AddRow(new string[] {
+                            "ProdListadoB"});
+                table26.AddRow(new string[] {
+                            "ProdListadoC"});
+#line 197
+  await testRunner.GivenAsync("existen los siguientes productos en el sistema:", ((string)(null)), table26, "Given ");
+#line hidden
+#line 202
   await testRunner.WhenAsync("navego a la pagina de productos", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 65
+#line 203
   await testRunner.ThenAsync("debo ver al menos 3 productos en la lista", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-PROD-04 - Actualizar producto manteniendo nombre unico propio")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-PROD-04 - Actualizar producto manteniendo nombre unico propio")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-prod-04")]
+        public async global::System.Threading.Tasks.Task PE_PROD_04_ActualizarProductoManteniendoNombreUnicoPropio()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "pe",
+                    "pe-prod-04"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "29";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-PROD-04 - Actualizar producto manteniendo nombre unico propio", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 206
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 207
+  await testRunner.GivenAsync("existe un producto creado con nombre \"ProdMismoNombrePE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 208
+  await testRunner.WhenAsync("hago clic en editar producto \"ProdMismoNombrePE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table27 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table27.AddRow(new string[] {
+                            "Nombre",
+                            "ProdMismoNombrePE"});
+                table27.AddRow(new string[] {
+                            "Descripcion",
+                            "Solo cambio desc"});
+                table27.AddRow(new string[] {
+                            "Precio",
+                            "45.00"});
+                table27.AddRow(new string[] {
+                            "Stock",
+                            "80"});
+#line 209
+  await testRunner.AndAsync("actualizo el formulario de producto con:", ((string)(null)), table27, "And ");
+#line hidden
+#line 215
+  await testRunner.ThenAsync("debo ver mensaje de exito en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-PROD-05 - Crear producto con categoria valida existente")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-PROD-05 - Crear producto con categoria valida existente")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-prod-05")]
+        public async global::System.Threading.Tasks.Task PE_PROD_05_CrearProductoConCategoriaValidaExistente()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "pe",
+                    "pe-prod-05"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "30";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-PROD-05 - Crear producto con categoria valida existente", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 218
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 219
+  await testRunner.WhenAsync("hago clic en agregar nuevo producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table28 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table28.AddRow(new string[] {
+                            "Nombre",
+                            "ProdCatValidaPE"});
+                table28.AddRow(new string[] {
+                            "Descripcion",
+                            "Categoria valida"});
+                table28.AddRow(new string[] {
+                            "Marca",
+                            "MarcaPE5"});
+                table28.AddRow(new string[] {
+                            "Precio",
+                            "55.00"});
+                table28.AddRow(new string[] {
+                            "Stock",
+                            "90"});
+                table28.AddRow(new string[] {
+                            "Categoria",
+                            "1"});
+#line 220
+  await testRunner.AndAsync("lleno el formulario de producto con los siguientes datos:", ((string)(null)), table28, "And ");
+#line hidden
+#line 228
+  await testRunner.AndAsync("hago clic en guardar producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 229
+  await testRunner.ThenAsync("debo ver mensaje de exito en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-PROD-06 - Actualizar solo precio de producto")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-PROD-06 - Actualizar solo precio de producto")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-prod-06")]
+        public async global::System.Threading.Tasks.Task PE_PROD_06_ActualizarSoloPrecioDeProducto()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "pe",
+                    "pe-prod-06"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "31";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-PROD-06 - Actualizar solo precio de producto", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 232
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 233
+  await testRunner.GivenAsync("existe un producto creado con nombre \"ProdSoloPrecioPE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 234
+  await testRunner.WhenAsync("hago clic en editar producto \"ProdSoloPrecioPE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table29 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table29.AddRow(new string[] {
+                            "Nombre",
+                            "ProdSoloPrecioPE"});
+                table29.AddRow(new string[] {
+                            "Descripcion",
+                            ""});
+                table29.AddRow(new string[] {
+                            "Precio",
+                            "75.50"});
+                table29.AddRow(new string[] {
+                            "Stock",
+                            "100"});
+#line 235
+  await testRunner.AndAsync("actualizo el formulario de producto con:", ((string)(null)), table29, "And ");
+#line hidden
+#line 241
+  await testRunner.ThenAsync("debo ver mensaje de exito en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-PROD-07 - Actualizar solo stock de producto")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-PROD-07 - Actualizar solo stock de producto")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-prod-07")]
+        public async global::System.Threading.Tasks.Task PE_PROD_07_ActualizarSoloStockDeProducto()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "pe",
+                    "pe-prod-07"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "32";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-PROD-07 - Actualizar solo stock de producto", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 244
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 245
+  await testRunner.GivenAsync("existe un producto creado con nombre \"ProdSoloStockPE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 246
+  await testRunner.WhenAsync("hago clic en editar producto \"ProdSoloStockPE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table30 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table30.AddRow(new string[] {
+                            "Nombre",
+                            "ProdSoloStockPE"});
+                table30.AddRow(new string[] {
+                            "Descripcion",
+                            ""});
+                table30.AddRow(new string[] {
+                            "Precio",
+                            "35.00"});
+                table30.AddRow(new string[] {
+                            "Stock",
+                            "999"});
+#line 247
+  await testRunner.AndAsync("actualizo el formulario de producto con:", ((string)(null)), table30, "And ");
+#line hidden
+#line 253
+  await testRunner.ThenAsync("debo ver mensaje de exito en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-PROD-08 - Crear producto con todos los campos completos")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-PROD-08 - Crear producto con todos los campos completos")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "product")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-prod-08")]
+        public async global::System.Threading.Tasks.Task PE_PROD_08_CrearProductoConTodosLosCamposCompletos()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "product",
+                    "pe",
+                    "pe-prod-08"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "33";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-PROD-08 - Crear producto con todos los campos completos", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 256
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 257
+  await testRunner.WhenAsync("hago clic en agregar nuevo producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+                global::Reqnroll.Table table31 = new global::Reqnroll.Table(new string[] {
+                            "Campo",
+                            "Valor"});
+                table31.AddRow(new string[] {
+                            "Nombre",
+                            "ProdCompletoPE08"});
+                table31.AddRow(new string[] {
+                            "Descripcion",
+                            "Descripcion completa con todos los detalles del producto para prueba PE"});
+                table31.AddRow(new string[] {
+                            "Marca",
+                            "MarcaCompletaPE"});
+                table31.AddRow(new string[] {
+                            "Precio",
+                            "125.99"});
+                table31.AddRow(new string[] {
+                            "Stock",
+                            "250"});
+                table31.AddRow(new string[] {
+                            "Categoria",
+                            "1"});
+#line 258
+  await testRunner.AndAsync("lleno el formulario de producto con los siguientes datos:", ((string)(null)), table31, "And ");
+#line hidden
+#line 266
+  await testRunner.AndAsync("hago clic en guardar producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 267
+  await testRunner.ThenAsync("debo ver mensaje de exito en producto", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -417,12 +1387,12 @@ await this.FeatureBackgroundAsync();
             
             async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.InitializeAsync()
             {
-                await CRUDDeProductos_UITestingFeature.FeatureSetupAsync();
+                await CRUDDeProductos_UITestingConPairwiseFeature.FeatureSetupAsync();
             }
             
             async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.DisposeAsync()
             {
-                await CRUDDeProductos_UITestingFeature.FeatureTearDownAsync();
+                await CRUDDeProductos_UITestingConPairwiseFeature.FeatureTearDownAsync();
             }
         }
     }

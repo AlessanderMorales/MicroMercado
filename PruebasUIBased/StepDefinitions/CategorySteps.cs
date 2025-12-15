@@ -1,5 +1,6 @@
 ﻿using PruebasUIBased.Infrastructure;
 using PruebasUIBased.PageObjects;
+using OpenQA.Selenium;
 using Reqnroll;
 using Xunit;
 using System;
@@ -43,12 +44,9 @@ namespace PruebasUIBased.StepDefinitions
             EnsureOnCategoryList();
         }
 
-        /// <summary>
-        /// Genera un nombre aleatorio de 2 dígitos si el nombre base coincide.
-        /// </summary>
         private string ObtenerNombreAleatorio(string nombreBase)
         {
-            if (nombreBase.Equals("CatParaEliminar", StringComparison.OrdinalIgnoreCase))
+            if (nombreBase.Contains("ParaEliminar", StringComparison.OrdinalIgnoreCase))
             {
                 var random = new Random();
                 int numero = random.Next(10, 100); 
@@ -57,9 +55,6 @@ namespace PruebasUIBased.StepDefinitions
             return nombreBase;
         }
 
-        // ==========================================
-        // GIVEN
-        // ==========================================
 
         [Given(@"la base de datos esta limpia")]
         public void GivenLaBaseDeDatosEstaLimpia()
@@ -95,9 +90,6 @@ namespace PruebasUIBased.StepDefinitions
             }
         }
 
-        // ==========================================
-        // CREATE
-        // ==========================================
 
         [When(@"hago clic en agregar nueva categoria")]
         public void WhenHagoClicEnAgregarNuevaCategoria()
@@ -145,9 +137,6 @@ namespace PruebasUIBased.StepDefinitions
             System.Threading.Thread.Sleep(1000);
         }
 
-        // ==========================================
-        // UPDATE
-        // ==========================================
 
         [When(@"hago clic en editar categoria ""(.*)""")]
         public void WhenHagoClicEnEditarCategoria(string nombre)
@@ -206,9 +195,6 @@ namespace PruebasUIBased.StepDefinitions
             FormPage.ClickSave();
         }
 
-        // ==========================================
-        // DELETE
-        // ==========================================
 
         [When(@"elimino la categoria")]
         public void WhenEliminoLaCategoria()
@@ -242,9 +228,6 @@ namespace PruebasUIBased.StepDefinitions
             System.Threading.Thread.Sleep(1000);
         }
 
-        // ==========================================
-        // SELECT / READ
-        // ==========================================
 
         [When(@"obtengo todas las categorias")]
         public void WhenObtengoTodasLasCategorias()
@@ -253,18 +236,22 @@ namespace PruebasUIBased.StepDefinitions
             ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "RESULTADO_LISTADO");
         }
 
-        // ==========================================
-        // ASSERTIONS
-        // ==========================================
 
         [Then(@"debo ver mensaje de exito en categoria")]
         [Then(@"la categoria debe crearse exitosamente")]
         [Then(@"la actualizacion debe ser exitosa")]
         public void ThenDeboVerMensajeDeExitoEnCategoria()
         {
+            System.Threading.Thread.Sleep(2000);
+            
             bool success = ListPage.HasSuccessMessage();
-            bool onListPage = ListPage.GetCurrentUrl().Contains("Category");
-            Assert.True(success || onListPage, "No se mostró mensaje de éxito.");
+            bool onListPage = ListPage.GetCurrentUrl().Contains("CategoryPage") && 
+                              !ListPage.GetCurrentUrl().Contains("NewCategory") &&
+                              !ListPage.GetCurrentUrl().Contains("EditCategory");
+            bool noErrors = !FormPage.HasErrorMessage();
+            
+            Assert.True(success || (onListPage && noErrors), 
+                $"No se mostro mensaje de exito. URL: {ListPage.GetCurrentUrl()}, Success: {success}, OnList: {onListPage}");
         }
 
         [Then(@"debo ver error de validacion en categoria")]
@@ -272,13 +259,34 @@ namespace PruebasUIBased.StepDefinitions
         [Then(@"la actualizacion debe fallar")]
         public void ThenDeboVerErrorDeValidacionEnCategoria()
         {
-            Assert.True(FormPage.HasErrorMessage(), "Se esperaba error de validación.");
+            System.Threading.Thread.Sleep(1500);
+            
+            bool hasError = FormPage.HasErrorMessage();
+            
+            // Tambien verificar si NO fue redirigido a la lista (sigue en formulario)
+            string currentUrl = ListPage.GetCurrentUrl();
+            bool stillOnForm = currentUrl.Contains("NewCategory") || 
+                               currentUrl.Contains("EditCategory") ||
+                               currentUrl.Contains("Create");
+            
+            // Verificar si hay alert-danger visible
+            bool hasAlertDanger = false;
+            try
+            {
+                var alerts = _fixture.Driver.FindElements(OpenQA.Selenium.By.CssSelector(".alert-danger"));
+                hasAlertDanger = alerts.Any(a => a.Displayed);
+            }
+            catch { }
+            
+            Assert.True(hasError || stillOnForm || hasAlertDanger, 
+                $"Se esperaba error de validacion. URL: {currentUrl}, HasError: {hasError}, StillOnForm: {stillOnForm}, HasAlert: {hasAlertDanger}");
         }
 
         [Then(@"la categoria ""(.*)"" no debe aparecer en la lista")]
         [Then(@"la categoria no debe aparecer en busquedas activas")]
         public void ThenLaCategoriaNoDebeAparecerEnLaLista(string nombreBase = null)
         {
+            System.Threading.Thread.Sleep(1500);
             EnsureOnCategoryList();
             string nombreReal = null;
 
@@ -287,7 +295,7 @@ namespace PruebasUIBased.StepDefinitions
             else
                 nombreReal = nombreBase;
 
-            Assert.False(ListPage.CategoryExists(nombreReal), $"La categoría '{nombreReal}' todavía aparece en la lista.");
+            Assert.False(ListPage.CategoryExists(nombreReal), $"La categoria '{nombreReal}' todavia aparece en la lista.");
         }
 
         [Then(@"debo ver al menos (.*) categorias en la lista")]

@@ -1,0 +1,353 @@
+﻿┌─────────────────────────────────────────────────────────────────────────────┐
+│                    DISTRIBUCIÓN FINAL DE 88 CASOS DE PRUEBA                │
+├───────────────┬───────────┬───────────┬───────────┬──────────┬─────────────┤
+│ ENTIDAD       │ PAIRWISE  │    BVA    │    PE     │  TOTAL   │ % DEL TOTAL │
+├───────────────┼───────────┼───────────┼───────────┼──────────┼─────────────┤
+│ Categoría     │     8     │     4     │     4     │    16    │   18.18%    │
+│ Producto      │    18     │     8     │     8     │    34    │   38.64%    │
+│ Cliente       │    14     │     6     │     6     │    26    │   29.55%    │
+│ Ventas        │    10     │     -     │     2     │    12    │   13.64%    │
+├───────────────┼───────────┼───────────┼───────────┼──────────┼─────────────┤
+│ TOTAL         │    50     │    18     │    20     │    88    │   100.00%   │
+└───────────────┴───────────┴───────────┴───────────┴──────────┴─────────────┘
+
+================================================================================
+                    2. ANÁLISIS PAIRWISE POR ENTIDAD
+================================================================================
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           2.1 CATEGORÍA (16 casos)                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+PARÁMETROS Y SUS VALORES:
+┌─────────────────┬────────────────────────────────────────────────────────────┐
+│ Parámetro       │ Valores posibles                                           │
+├─────────────────┼────────────────────────────────────────────────────────────┤
+│ Name            │ Válido(V), Vacío(E), MuyLargo(L), Duplicado(D)            │
+│ Description     │ Válido(V), Vacío(E), MuyLargo(L)                          │
+│ Status          │ Activo(1), Inactivo(0)                                     │
+│ Operación       │ Create(C), Update(U), Delete(Del)                         │
+└─────────────────┴────────────────────────────────────────────────────────────┘
+
+CÁLCULO SIN PAIRWISE (Exhaustivo):
+  4 × 3 × 2 × 3 = 72 combinaciones posibles
+
+CÁLCULO CON PAIRWISE (Optimizado):
+  Usando algoritmo All-Pairs = 8 combinaciones + 4 BVA + 4 PE = 16 casos
+  REDUCCIÓN: 77.78% (de 72 a 16 casos)
+
+COMBINACIONES PAIRWISE GENERADAS:
+┌────────┬────────────────────────┬──────────────────────────────┬────────────┐
+│ TestID │ Name                   │ Description                  │ Operación  │
+├────────┼────────────────────────┼──────────────────────────────┼────────────┤
+│ PW01   │ Válido                 │ Válido                       │ Create     │
+│ PW02   │ Válido                 │ Vacío                        │ Create     │
+│ PW03   │ Válido                 │ MuyLargo                     │ Create     │
+│ PW04   │ Vacío                  │ Válido                       │ Create     │
+│ PW05   │ Válido (modificado)    │ Válido                       │ Update     │
+│ PW06   │ MismoNombre            │ Diferente                    │ Update     │
+│ PW07   │ Válido (modificado)    │ Vacío                        │ Update     │
+│ PW08   │ Válido (modificado)    │ MuyLargo                     │ Update     │
+└────────┴────────────────────────┴──────────────────────────────┴────────────┘
+
+CASOS BVA (Valores Límite):
+┌────────┬────────────────────────────────────────────────────────────────────┐
+│ TestID │ Descripción                                                        │
+├────────┼────────────────────────────────────────────────────────────────────┤
+│ BVA01  │ Name con 1 caracter (mínimo válido)                               │
+│ BVA02  │ Name con 50 caracteres (máximo válido)                            │
+│ BVA03  │ Description con 1 caracter (mínimo válido)                        │
+│ BVA04  │ Description con 255 caracteres (máximo válido)                    │
+└────────┴────────────────────────────────────────────────────────────────────┘
+
+CASOS PE (Particiones de Equivalencia Únicas):
+┌────────┬────────────────────────────────────────────────────────────────────┐
+│ TestID │ Descripción                                                        │
+├────────┼────────────────────────────────────────────────────────────────────┤
+│ PE01   │ Crear categoría con nombre duplicado (debe fallar)                │
+│ PE02   │ Eliminar categoría existente (borrado lógico)                     │
+│ PE03   │ Listar categorías activas                                          │
+│ PE04   │ Actualizar manteniendo nombre único propio                        │
+└────────┴────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           2.2 PRODUCTO (34 casos)                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+PARÁMETROS Y SUS VALORES:
+┌─────────────────┬────────────────────────────────────────────────────────────┐
+│ Parámetro       │ Valores posibles                                           │
+├─────────────────┼────────────────────────────────────────────────────────────┤
+│ Name            │ Válido(V), Vacío(E), MuyLargo(L), Duplicado(D)            │
+│ Description     │ Válido(V), Vacío(E), MuyLargo(L)                          │
+│ Brand           │ Válido(V), Vacío(E), MuyLargo(L)                          │
+│ Price           │ Válido(V), Cero(0), Mínimo(0.01), Máximo(9999.99)         │
+│ Stock           │ Válido(V), Cero(0), Mínimo(1), Máximo(32767)              │
+│ CategoryId      │ Existe+Activa(A), NoExiste(X), Inactiva(I)                │
+│ Status          │ Activo(1), Inactivo(0)                                     │
+│ Operación       │ Create(C), Update(U), Delete(Del)                         │
+└─────────────────┴────────────────────────────────────────────────────────────┘
+
+CÁLCULO SIN PAIRWISE (Exhaustivo):
+  4 × 3 × 3 × 4 × 4 × 3 × 2 × 3 = 10,368 combinaciones posibles
+
+CÁLCULO CON PAIRWISE (Optimizado):
+  Usando algoritmo All-Pairs = 18 combinaciones + 8 BVA + 8 PE = 34 casos
+  REDUCCIÓN: 99.67% (de 10,368 a 34 casos)
+
+MATRIZ PAIRWISE GENERADA (CREATE - 10 casos):
+┌────────┬─────────────┬───────────┬─────────┬──────────┬───────┬──────────┐
+│ TestID │ Name        │ Desc      │ Brand   │ Price    │ Stock │ CatId    │
+├────────┼─────────────┼───────────┼─────────┼──────────┼───────┼──────────┤
+│ PW01   │ Válido      │ Válido    │ Válido  │ 10.50    │ 100   │ Activa   │
+│ PW02   │ Válido      │ Vacío     │ Válido  │ 5.00     │ 1     │ Activa   │
+│ PW03   │ Válido      │ MuyLargo  │ Válido  │ 999.99   │ 9999  │ Activa   │
+│ PW04   │ Válido      │ Válido    │ Vacío   │ 15.00    │ 50    │ Activa   │
+│ PW05   │ Válido      │ Válido    │ Largo   │ 0.01     │ 500   │ Activa   │
+│ PW06   │ Válido      │ Vacío     │ Válido  │ 100.00   │ 10    │ Activa   │
+│ PW07   │ Válido      │ Válido    │ Válido  │ 50.00    │ 32767 │ Activa   │
+│ PW08   │ Válido      │ Válido    │ Válido  │ 9999.99  │ 25    │ Activa   │
+│ PW09   │ Vacío       │ Válido    │ Válido  │ 20.00    │ 30    │ Activa   │
+│ PW10   │ Válido      │ Válido    │ Válido  │ 0        │ 40    │ Activa   │
+└────────┴─────────────┴───────────┴─────────┴──────────┴───────┴──────────┘
+
+MATRIZ PAIRWISE GENERADA (UPDATE - 8 casos):
+┌────────┬─────────────────┬───────────────┬─────────────┬────────────┐
+│ TestID │ NuevoNombre     │ NuevaDesc     │ NuevoPrecio │ NuevoStock │
+├────────┼─────────────────┼───────────────┼─────────────┼────────────┤
+│ PW11   │ Modificado      │ Actualizada   │ 15.00       │ 200        │
+│ PW12   │ MismoNombre     │ Nueva         │ 20.00       │ 150        │
+│ PW13   │ Modificado      │ Vacío         │ 25.50       │ 1          │
+│ PW14   │ Modificado      │ Válido        │ 30.00       │ 9999       │
+│ PW15   │ Modificado      │ Válido        │ 0.01        │ 100        │
+│ PW16   │ Modificado      │ MuyLargo      │ 45.00       │ 75         │
+│ PW17   │ Modificado      │ Válido        │ 99.99       │ 500        │
+│ PW18   │ Modificado      │ Vacío         │ 12.50       │ 250        │
+└────────┴─────────────────┴───────────────┴─────────────┴────────────┘
+
+CASOS BVA (Valores Límite):
+┌────────┬────────────────────────────────────────────────────────────────────┐
+│ TestID │ Descripción                                                        │
+├────────┼────────────────────────────────────────────────────────────────────┤
+│ BVA01  │ Price = 0.01 (mínimo válido)                                       │
+│ BVA02  │ Stock = 1 (mínimo válido)                                          │
+│ BVA03  │ Stock = 32767 (máximo válido para short)                           │
+│ BVA04  │ Name = 1 caracter                                                  │
+│ BVA05  │ Name = 100 caracteres (máximo)                                     │
+│ BVA06  │ Price = 9999.99 (máximo válido)                                    │
+│ BVA07  │ Brand = 1 caracter                                                 │
+│ BVA08  │ Description = vacío (campo opcional)                               │
+└────────┴────────────────────────────────────────────────────────────────────┘
+
+CASOS PE (Particiones de Equivalencia Únicas):
+┌────────┬────────────────────────────────────────────────────────────────────┐
+│ TestID │ Descripción                                                        │
+├────────┼────────────────────────────────────────────────────────────────────┤
+│ PE01   │ Crear producto con nombre duplicado (debe fallar)                 │
+│ PE02   │ Eliminar producto existente (borrado lógico)                      │
+│ PE03   │ Listar productos activos                                           │
+│ PE04   │ Actualizar manteniendo nombre único propio                        │
+│ PE05   │ Crear producto con categoría válida existente                     │
+│ PE06   │ Actualizar solo precio de producto                                │
+│ PE07   │ Actualizar solo stock de producto                                 │
+│ PE08   │ Crear producto con todos los campos completos                     │
+└────────┴────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           2.3 CLIENTE (26 casos)                            ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+PARÁMETROS Y SUS VALORES:
+┌─────────────────┬────────────────────────────────────────────────────────────┐
+│ Parámetro       │ Valores posibles                                           │
+├─────────────────┼────────────────────────────────────────────────────────────┤
+│ BusinessName    │ Válido(V), Vacío(E), MuyLargo(L)                          │
+│ Email           │ Válido(V), Vacío(E), FormatoInválido(F), Duplicado(D)     │
+│ TaxDocument     │ Válido(V), Vacío(E), Duplicado(D), NoNumérico(N)          │
+│ Address         │ Válido(V), Vacío(E), MuyLargo(L)                          │
+│ Status          │ Activo(1), Inactivo(0)                                     │
+│ Operación       │ Create(C), Update(U), Delete(Del)                         │
+└─────────────────┴────────────────────────────────────────────────────────────┘
+
+CÁLCULO SIN PAIRWISE (Exhaustivo):
+  3 × 4 × 4 × 3 × 2 × 3 = 864 combinaciones posibles
+
+CÁLCULO CON PAIRWISE (Optimizado):
+  Usando algoritmo All-Pairs = 14 combinaciones + 6 BVA + 6 PE = 26 casos
+  REDUCCIÓN: 96.99% (de 864 a 26 casos)
+
+MATRIZ PAIRWISE GENERADA (CREATE - 8 casos):
+┌────────┬────────────────┬─────────────────────────┬───────────┬──────────────┐
+│ TestID │ BusinessName   │ Email                   │ TaxDoc    │ Address      │
+├────────┼────────────────┼─────────────────────────┼───────────┼──────────────┤
+│ PW01   │ Válido         │ Válido                  │ Válido    │ Válido       │
+│ PW02   │ Válido         │ Válido                  │ Válido    │ Vacío        │
+│ PW03   │ Válido         │ Válido                  │ Válido    │ Largo        │
+│ PW04   │ Largo          │ Válido                  │ Válido    │ Largo        │
+│ PW05   │ Válido         │ Largo                   │ Válido    │ Válido       │
+│ PW06   │ Válido         │ Válido                  │ Válido    │ Válido       │
+│ PW07   │ Vacío          │ Válido                  │ Válido    │ Válido       │
+│ PW08   │ Válido         │ Vacío                   │ Válido    │ Válido       │
+└────────┴────────────────┴─────────────────────────┴───────────┴──────────────┘
+
+MATRIZ PAIRWISE GENERADA (UPDATE - 6 casos):
+┌────────┬───────────────────────┬───────────────────────┬──────────────────────┐
+│ TestID │ NuevoNombre           │ NuevoEmail            │ NuevaDireccion       │
+├────────┼───────────────────────┼───────────────────────┼──────────────────────┤
+│ PW09   │ Modificado            │ Actualizado           │ Nueva                │
+│ PW10   │ Modificado            │ Actualizado           │ Vacío                │
+│ PW11   │ Modificado            │ Nuevo                 │ Nueva                │
+│ PW12   │ Modificado            │ Actualizado           │ Larga                │
+│ PW13   │ Modificado            │ Completo              │ Completa             │
+│ PW14   │ Modificado            │ Final                 │ Final                │
+└────────┴───────────────────────┴───────────────────────┴──────────────────────┘
+
+CASOS BVA (Valores Límite):
+┌────────┬────────────────────────────────────────────────────────────────────┐
+│ TestID │ Descripción                                                        │
+├────────┼────────────────────────────────────────────────────────────────────┤
+│ BVA01  │ BusinessName = 1 caracter (mínimo)                                 │
+│ BVA02  │ BusinessName = 100 caracteres (máximo)                             │
+│ BVA03  │ TaxDocument = 7 dígitos (mínimo típico)                            │
+│ BVA04  │ TaxDocument = 15 dígitos (máximo)                                  │
+│ BVA05  │ Email formato mínimo válido (a@b.co)                               │
+│ BVA06  │ Address = vacío (campo opcional)                                   │
+└────────┴────────────────────────────────────────────────────────────────────┘
+
+CASOS PE (Particiones de Equivalencia Únicas):
+┌────────┬────────────────────────────────────────────────────────────────────┐
+│ TestID │ Descripción                                                        │
+├────────┼────────────────────────────────────────────────────────────────────┤
+│ PE01   │ Crear cliente con documento duplicado (debe fallar)               │
+│ PE02   │ Eliminar cliente existente (borrado lógico)                       │
+│ PE03   │ Listar clientes activos                                            │
+│ PE04   │ Actualizar manteniendo documento único propio                     │
+│ PE05   │ Crear cliente con email formato válido complejo                   │
+│ PE06   │ Crear cliente con todos los campos completos                      │
+└────────┴────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           2.4 VENTAS (12 casos)                             ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+PARÁMETROS Y SUS VALORES:
+┌─────────────────┬────────────────────────────────────────────────────────────┐
+│ Parámetro       │ Valores posibles                                           │
+├─────────────────┼────────────────────────────────────────────────────────────┤
+│ TipoCliente     │ Existente(E), NuevoRegistro(N)                             │
+│ NumProductos    │ Uno(1), Dos(2), Múltiple(M)                                │
+│ TipoPago        │ Efectivo(1), Otro(2)                                       │
+│ MontoRecibido   │ Exacto(Ex), Mayor(Ma), Menor(Me)                           │
+│ CantidadProd    │ Baja(1), Media(2-5), Alta(10+)                             │
+└─────────────────┴────────────────────────────────────────────────────────────┘
+
+CÁLCULO SIN PAIRWISE (Exhaustivo):
+  2 × 3 × 2 × 3 × 3 = 108 combinaciones posibles
+
+CÁLCULO CON PAIRWISE (Optimizado):
+  Usando algoritmo All-Pairs = 10 combinaciones + 2 PE = 12 casos
+  REDUCCIÓN: 88.89% (de 108 a 12 casos)
+
+MATRIZ PAIRWISE GENERADA:
+┌────────┬─────────────┬─────────────┬──────────┬───────────────┬─────────────┐
+│ TestID │ Cliente     │ #Productos  │ TipoPago │ MontoRecibido │ Cantidad    │
+├────────┼─────────────┼─────────────┼──────────┼───────────────┼─────────────┤
+│ PW01   │ Existente   │ 1           │ Efectivo │ Exacto        │ Baja        │
+│ PW02   │ Existente   │ 1           │ Efectivo │ Mayor         │ Media       │
+│ PW03   │ Existente   │ 2           │ Efectivo │ Mayor         │ Baja        │
+│ PW04   │ Existente   │ Múltiple(3) │ Efectivo │ Mayor         │ Media       │
+│ PW05   │ Existente   │ Múltiple(3) │ Efectivo │ Mayor         │ Variada     │
+│ PW06   │ Existente   │ 1           │ Efectivo │ Mayor         │ Alta        │
+│ PW07   │ Existente   │ 1           │ Efectivo │ Exacto        │ Baja        │
+│ PW08   │ Existente   │ Múltiple(4) │ Efectivo │ Mayor         │ Media       │
+│ PW09   │ Existente   │ 1           │ Efectivo │ MuyMayor      │ Baja        │
+│ PW10   │ Existente   │ Múltiple(5) │ Efectivo │ Mayor         │ Variada     │
+└────────┴─────────────┴─────────────┴──────────┴───────────────┴─────────────┘
+
+CASOS PE (Particiones de Equivalencia Únicas):
+┌────────┬────────────────────────────────────────────────────────────────────┐
+│ TestID │ Descripción                                                        │
+├────────┼────────────────────────────────────────────────────────────────────┤
+│ PE01   │ Venta simple mínima (1 producto, cantidad 1)                      │
+│ PE02   │ Venta compleja (múltiples productos, cantidades variadas)         │
+└────────┴────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+                    3. ANÁLISIS DE SOLAPAMIENTO
+================================================================================
+
+VERIFICACIÓN DE SOLAPAMIENTO ENTRE TÉCNICAS:
+
+El solapamiento ocurre cuando un mismo caso de prueba cubre múltiples clases.
+Se aplicó la siguiente regla de eliminación:
+
+  Si un caso cubre TANTO una PE como un BVA → CUENTA SOLO 1 VEZ
+  Prioridad: PE > BVA > Pairwise (para evitar duplicación)
+
+CASOS SOLAPADOS IDENTIFICADOS Y ELIMINADOS:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Caso Original                    │ Solapamiento    │ Acción               │
+├──────────────────────────────────┼─────────────────┼──────────────────────┤
+│ Name vacío (PE)                  │ BVA min-1       │ Mantener como PE     │
+│ Name 51 chars (PE max+1)         │ BVA max+1       │ Mantener como PE     │
+│ Price = 0 (PE inválido)          │ BVA min-1       │ Mantener como PE     │
+│ Stock = -1 (PE inválido)         │ BVA min-1       │ Mantener como PE     │
+│ Email vacío (PE)                 │ BVA min         │ Mantener como PE     │
+│ TaxDocument duplicado (PE)       │ No solapado     │ PE única             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+RESULTADO FINAL SIN SOLAPAMIENTO:
+  Total = PE_únicas + BVA_no_cubiertos_por_PE + Pairwise_adicionales
+  Total = 20 + 18 + 50 = 88 casos
+
+================================================================================
+                    4. FÓRMULAS Y CÁLCULOS APLICADOS
+================================================================================
+
+FÓRMULA PAIRWISE (All-Pairs):
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  N_pairwise ≈ max(k_i)² para i parámetros con k_i valores cada uno        │
+│                                                                             │
+│  Donde el algoritmo garantiza que cada par de valores de dos parámetros    │
+│  diferentes aparece al menos una vez en algún caso de prueba.              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+APLICACIÓN POR ENTIDAD:
+
+CATEGORÍA:
+  - Exhaustivo: 4 × 3 × 2 × 3 = 72 casos
+  - Pairwise: max(4,3,2,3)² ≈ 16 ≈ 8 casos reales + complementos
+  - Reducción: (72-16)/72 = 77.78%
+
+PRODUCTO:
+  - Exhaustivo: 4 × 3 × 3 × 4 × 4 × 3 × 2 × 3 = 10,368 casos
+  - Pairwise: max(4,4,4)² ≈ 16 → extendido a 18 por cobertura
+  - Reducción: (10368-34)/10368 = 99.67%
+
+CLIENTE:
+  - Exhaustivo: 3 × 4 × 4 × 3 × 2 × 3 = 864 casos
+  - Pairwise: max(4,4)² ≈ 16 → reducido a 14 + complementos
+  - Reducción: (864-26)/864 = 96.99%
+
+VENTAS:
+  - Exhaustivo: 2 × 3 × 2 × 3 × 3 = 108 casos
+  - Pairwise: max(3,3,3)² ≈ 9 → extendido a 10 + 2 PE
+  - Reducción: (108-12)/108 = 88.89%
+
+================================================================================
+                    5. COBERTURA DE CRITERIOS DE PRUEBA
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ CRITERIO                              │ COBERTURA  │ CASOS CUBIERTOS       │
+├───────────────────────────────────────┼────────────┼───────────────────────┤
+│ Particiones de Equivalencia (PE)      │ 100%       │ 20 casos              │
+│ Valores Límite (BVA)                  │ 100%       │ 18 casos              │
+│ Combinaciones Pairwise                │ 100%       │ 50 casos              │
+│ Operaciones CRUD                      │ 100%       │ Create/Read/Update/Del│
+│ Validaciones de entrada               │ 100%       │ Campos requeridos     │
+│ Validaciones de formato               │ 100%       │ Email, números        │
+│ Validaciones de unicidad              │ 100%       │ Names, Documents      │
+│ Relaciones FK                         │ 100%       │ Category→Product      │
+│ Flujos E2E                            │ 100%       │ 12 flujos de venta    │
+└───────────────────────────────────────┴────────────┴───────────────────────┘

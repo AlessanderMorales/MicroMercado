@@ -18,7 +18,6 @@ namespace PruebasUIBased.Infrastructure
                     Directory.CreateDirectory(folderPath);
                 }
                 string cleanTitle = Regex.Replace(scenarioTitle, "[^a-zA-Z0-9-_]", "_");
-                // Cortar si es muy largo para evitar error de Windows
                 if (cleanTitle.Length > 50) cleanTitle = cleanTitle.Substring(0, 50);
                 string timeStamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
                 string fileName = $"{status}_{cleanTitle}_{timeStamp}.png";

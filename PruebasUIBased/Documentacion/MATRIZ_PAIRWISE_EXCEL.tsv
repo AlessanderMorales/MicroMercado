@@ -1,0 +1,202 @@
+MATRIZ PAIRWISE - MICROMERCADO - 88 CASOS DE PRUEBA UI										
+Fecha: 2024	Framework: Reqnroll + Selenium	Total: 88 pruebas								
+										
+================================================================================										
+CATEGORÍA - 16 CASOS										
+================================================================================										
+										
+ID	name	description	operacion		name (descripción)	description (descripción)	operacion (descripción)	técnica	resultado esperado
+PW-CAT-01	N1	D1	OP1		Válido (1-50 chars)	Válido (1-255 chars)	Create	Pairwise	Éxito - mensaje confirmación
+PW-CAT-02	N1	D2	OP1		Válido	Vacío (opcional)	Create	Pairwise	Éxito - mensaje confirmación
+PW-CAT-03	N1	D3	OP1		Válido	Muy largo (límite)	Create	Pairwise	Éxito - mensaje confirmación
+PW-CAT-04	N2	D1	OP1		Vacío	Válido	Create	Pairwise	Error - validación requerido
+PW-CAT-05	N1	D1	OP2		Modificado	Actualizada	Update	Pairwise	Éxito - mensaje confirmación
+PW-CAT-06	N1	D2	OP2		Mismo nombre	Diferente desc	Update	Pairwise	Éxito - permite mismo nombre propio
+PW-CAT-07	N1	D2	OP2		Modificado	Vacío	Update	Pairwise	Éxito - mensaje confirmación
+PW-CAT-08	N1	D3	OP2		Modificado	Muy larga	Update	Pairwise	Éxito - mensaje confirmación
+BVA-CAT-01	N1	D1	OP1		1 caracter (mínimo)	Válido	Create	BVA	Éxito - límite inferior
+BVA-CAT-02	N1	D1	OP1		50 caracteres (máximo)	Válido	Create	BVA	Éxito - límite superior
+BVA-CAT-03	N1	D1	OP1		Válido	1 caracter (mínimo)	Create	BVA	Éxito - límite inferior
+BVA-CAT-04	N1	D1	OP1		Válido	255 caracteres (máximo)	Create	BVA	Éxito - límite superior
+PE-CAT-01	N4	D1	OP1		Duplicado (ya existe)	Válido	Create	PE	Error - nombre duplicado
+PE-CAT-02	N1	D1	OP3		Existente	-	Delete	PE	Éxito - borrado lógico
+PE-CAT-03	N1	D1	OP4		-	-	List	PE	Éxito - ver ?3 categorías
+PE-CAT-04	N1	D2	OP2		Mismo nombre propio	Solo cambia desc	Update	PE	Éxito - sin error duplicado
+										
+================================================================================										
+PRODUCTO - 34 CASOS										
+================================================================================										
+										
+ID	name	description	brand	price	stock	catId	técnica	resultado esperado	
+PW-PROD-01	N1	D1	B1	P1	S1	C1	Pairwise	Éxito	Válido completo
+PW-PROD-02	N1	D2	B1	P1	S1	C1	Pairwise	Éxito	Desc vacía OK
+PW-PROD-03	N1	D3	B1	P1	S1	C1	Pairwise	Éxito	Desc larga
+PW-PROD-04	N1	D1	B2	P1	S1	C1	Pairwise	Éxito	Marca vacía OK
+PW-PROD-05	N1	D1	B3	P1	S1	C1	Pairwise	Éxito	Marca larga
+PW-PROD-06	N1	D2	B1	P1	S1	C1	Pairwise	Éxito	Combinación 6
+PW-PROD-07	N1	D1	B1	P1	S4	C1	Pairwise	Éxito	Stock alto
+PW-PROD-08	N1	D1	B1	P4	S1	C1	Pairwise	Éxito	Precio alto
+PW-PROD-09	N2	D1	B1	P1	S1	C1	Pairwise	Error	Nombre vacío
+PW-PROD-10	N1	D1	B1	P2	S1	C1	Pairwise	Error	Precio cero
+PW-PROD-11	N1	D1	B1	P1	S1	C1	Pairwise	Éxito	Update válido
+PW-PROD-12	N1	D1	B1	P1	S1	C1	Pairwise	Éxito	Mismo nombre upd
+PW-PROD-13	N1	D2	B1	P1	S1	C1	Pairwise	Éxito	Update desc vacía
+PW-PROD-14	N1	D1	B1	P1	S4	C1	Pairwise	Éxito	Update stock alto
+PW-PROD-15	N1	D1	B1	P1	S1	C1	Pairwise	Éxito	Update precio min
+PW-PROD-16	N1	D3	B1	P1	S1	C1	Pairwise	Éxito	Update desc larga
+PW-PROD-17	N1	D1	B1	P1	S1	C1	Pairwise	Éxito	Update completo
+PW-PROD-18	N1	D2	B1	P1	S1	C1	Pairwise	Éxito	Update final
+BVA-PROD-01	N1	D1	B1	P1	S1	C1	BVA	Éxito	Precio = 0.01
+BVA-PROD-02	N1	D1	B1	P1	S1	C1	BVA	Éxito	Stock = 1
+BVA-PROD-03	N1	D1	B1	P1	S4	C1	BVA	Éxito	Stock = 32767
+BVA-PROD-04	N1	D1	B1	P1	S1	C1	BVA	Éxito	Nombre 1 char
+BVA-PROD-05	N1	D1	B1	P1	S1	C1	BVA	Éxito	Nombre 100 chars
+BVA-PROD-06	N1	D1	B1	P4	S1	C1	BVA	Éxito	Precio = 9999.99
+BVA-PROD-07	N1	D1	B1	P1	S1	C1	BVA	Éxito	Marca 1 char
+BVA-PROD-08	N1	D2	B1	P1	S1	C1	BVA	Éxito	Desc vacía opcional
+PE-PROD-01	N4	D1	B1	P1	S1	C1	PE	Error	Nombre duplicado
+PE-PROD-02	N1	D1	B1	P1	S1	C1	PE	Éxito	Delete lógico
+PE-PROD-03	N1	D1	B1	P1	S1	C1	PE	Éxito	List ?3 productos
+PE-PROD-04	N1	D1	B1	P1	S1	C1	PE	Éxito	Mismo nombre propio
+PE-PROD-05	N1	D1	B1	P1	S1	C1	PE	Éxito	Cat válida existe
+PE-PROD-06	N1	D1	B1	P1	S1	C1	PE	Éxito	Solo precio upd
+PE-PROD-07	N1	D1	B1	P1	S1	C1	PE	Éxito	Solo stock upd
+PE-PROD-08	N1	D1	B1	P1	S1	C1	PE	Éxito	Todos campos OK
+										
+================================================================================										
+CLIENTE - 26 CASOS										
+================================================================================										
+										
+ID	businessName	email	taxDocument	address		descripción BN	descripción EM	descripción TD	técnica	resultado
+PW-CLI-01	BN1	EM1	TD1	A1		Válido	Válido	Válido	Pairwise	Éxito
+PW-CLI-02	BN1	EM1	TD1	A2		Válido	Válido	Válido (vacío dir)	Pairwise	Éxito
+PW-CLI-03	BN1	EM1	TD1	A3		Válido	Válido	Válido (dir larga)	Pairwise	Éxito
+PW-CLI-04	BN3	EM1	TD1	A3		Largo	Válido	Válido	Pairwise	Éxito
+PW-CLI-05	BN1	EM1	TD1	A1		Válido	Largo	Válido	Pairwise	Éxito
+PW-CLI-06	BN1	EM1	TD1	A1		Válido	Válido	Válido	Pairwise	Éxito
+PW-CLI-07	BN2	EM1	TD1	A1		Vacío	Válido	Válido	Pairwise	Error
+PW-CLI-08	BN1	EM2	TD1	A1		Válido	Vacío	Válido	Pairwise	Error
+PW-CLI-09	BN1	EM1	TD1	A1		Actualizado	Actualizado	-	Pairwise	Éxito upd
+PW-CLI-10	BN1	EM1	TD1	A2		Modificado	Modificado	(vacío)	Pairwise	Éxito upd
+PW-CLI-11	BN1	EM1	TD1	A1		NuevoEmail	Nuevo	-	Pairwise	Éxito upd
+PW-CLI-12	BN1	EM1	TD1	A3		DirLarga	Válido	(larga)	Pairwise	Éxito upd
+PW-CLI-13	BN1	EM1	TD1	A1		Completo	Completo	-	Pairwise	Éxito upd
+PW-CLI-14	BN1	EM1	TD1	A1		Final	Final	-	Pairwise	Éxito upd
+BVA-CLI-01	BN1	EM1	TD1	A1		1 char (mín)	Válido	Válido	BVA	Éxito
+BVA-CLI-02	BN3	EM1	TD1	A1		100 chars (máx)	Válido	Válido	BVA	Éxito
+BVA-CLI-03	BN1	EM1	TD5	A1		Válido	Válido	7 dígitos (mín)	BVA	Éxito
+BVA-CLI-04	BN1	EM1	TD1	A1		Válido	Válido	15 dígitos (máx)	BVA	Éxito
+BVA-CLI-05	BN1	EM1	TD1	A1		Válido	a@b.co (mín)	Válido	BVA	Éxito
+BVA-CLI-06	BN1	EM1	TD1	A2		Válido	Válido	Válido (dir vacía)	BVA	Éxito
+PE-CLI-01	BN1	EM1	TD4	A1		Válido	Válido	Duplicado	PE	Error
+PE-CLI-02	BN1	EM1	TD1	A1		Existente	-	-	PE	Éxito delete
+PE-CLI-03	BN1	EM1	TD1	A1		-	-	-	PE	List ?3
+PE-CLI-04	BN1	EM1	TD1	A1		MismoDoc	-	-	PE	Éxito upd propio
+PE-CLI-05	BN1	EM1	TD1	A1		Válido	Complejo	Válido	PE	Éxito
+PE-CLI-06	BN1	EM1	TD1	A1		Empresa SA	Comercial	Completo	PE	Éxito
+										
+================================================================================										
+VENTAS - 12 CASOS										
+================================================================================										
+										
+ID	cliente	productos	cantidad	pago		desc cliente	desc productos	desc cantidad	desc pago	técnica	resultado
+PW-SALES-01	CL1	PR1	QT1	PG1		Existente	1 producto	Baja (1)	Exacto	Pairwise	Éxito
+PW-SALES-02	CL1	PR1	QT2	PG2		Existente	1 producto	Media (2)	Mayor (cambio)	Pairwise	Éxito
+PW-SALES-03	CL1	PR2	QT1	PG2		Existente	2 productos	Baja	Mayor	Pairwise	Éxito
+PW-SALES-04	CL1	PR3	QT2	PG2		Existente	3+ productos	Media	Mayor	Pairwise	Éxito
+PW-SALES-05	CL1	PR3	QT2	PG2		Existente	Diferentes cat	Variada	Mayor	Pairwise	Éxito
+PW-SALES-06	CL1	PR1	QT3	PG2		Existente	1 producto	Alta (10)	Mayor	Pairwise	Éxito
+PW-SALES-07	CL1	PR1	QT1	PG1		Existente	1 producto	Baja	Exacto	Pairwise	Éxito
+PW-SALES-08	CL1	PR3	QT2	PG2		Existente	4 productos	Media	Mayor	Pairwise	Éxito
+PW-SALES-09	CL1	PR1	QT1	PG2		Existente	1 producto	Baja	Muy mayor	Pairwise	Éxito
+PW-SALES-10	CL1	PR3	QT2	PG2		Existente	5 productos	Variada	Mayor	Pairwise	Éxito
+PE-SALES-01	CL1	PR1	QT1	PG2		Existente	1 prod (mín)	1	Mayor	PE	Éxito
+PE-SALES-02	CL1	PR3	QT3	PG2		Existente	Múltiples	Variadas	Mayor	PE	Éxito
+										
+================================================================================										
+RESUMEN ESTADÍSTICO										
+================================================================================										
+										
+Entidad	Pairwise	BVA	PE	Total	Exhaustivo	Reducción %					
+Categoría	8	4	4	16	72	77.78%					
+Producto	18	8	8	34	10368	99.67%					
+Cliente	14	6	6	26	864	96.99%					
+Ventas	10	0	2	12	108	88.89%					
+TOTAL	50	18	20	88	11412	99.23%					
+										
+================================================================================										
+CLASES DE EQUIVALENCIA - LEYENDA										
+================================================================================										
+										
+CATEGORÍA										
+Código	Descripción									
+N1	Name: Válido (1-50 caracteres alfanuméricos)									
+N2	Name: Vacío									
+N3	Name: Muy largo (>50 caracteres)									
+N4	Name: Duplicado (ya existe)									
+D1	Description: Válido (1-255 caracteres)									
+D2	Description: Vacío (opcional)									
+D3	Description: Muy largo (>255 caracteres)									
+OP1	Operación: Create									
+OP2	Operación: Update									
+OP3	Operación: Delete									
+OP4	Operación: Read/List									
+										
+PRODUCTO										
+Código	Descripción									
+N1	Name: Válido (1-100 caracteres)									
+N2	Name: Vacío									
+N3	Name: Muy largo (>100 caracteres)									
+N4	Name: Duplicado									
+D1	Description: Válido									
+D2	Description: Vacío (opcional)									
+D3	Description: Muy largo									
+B1	Brand: Válido									
+B2	Brand: Vacío									
+B3	Brand: Muy largo									
+P1	Price: Válido (0.01-9999.99)									
+P2	Price: Cero (inválido)									
+P3	Price: Negativo (inválido)									
+P4	Price: Muy alto (?9999.99)									
+S1	Stock: Válido (1-32767)									
+S2	Stock: Cero									
+S3	Stock: Negativo (inválido)									
+S4	Stock: Muy alto (32767)									
+C1	CategoryId: Existe y activa									
+C2	CategoryId: No existe									
+C3	CategoryId: Inactiva									
+										
+CLIENTE										
+Código	Descripción									
+BN1	BusinessName: Válido (1-100 caracteres)									
+BN2	BusinessName: Vacío									
+BN3	BusinessName: Muy largo (>100 caracteres)									
+EM1	Email: Formato válido (user@domain.com)									
+EM2	Email: Vacío									
+EM3	Email: Sin "@" (inválido)									
+EM4	Email: Sin "." (inválido)									
+EM5	Email: Con espacios (inválido)									
+EM6	Email: Duplicado									
+TD1	TaxDocument: Válido (7-15 dígitos numéricos)									
+TD2	TaxDocument: Vacío									
+TD3	TaxDocument: Con letras (inválido)									
+TD4	TaxDocument: Duplicado									
+TD5	TaxDocument: Muy corto (<7 dígitos)									
+A1	Address: Válido									
+A2	Address: Vacío (opcional)									
+A3	Address: Muy largo									
+										
+VENTAS										
+Código	Descripción									
+CL1	Cliente: Existente y activo									
+CL2	Cliente: No existe									
+CL3	Cliente: Inactivo									
+PR1	Productos: 1 producto									
+PR2	Productos: 2 productos									
+PR3	Productos: Múltiples (3+)									
+QT1	Cantidad: Baja (1)									
+QT2	Cantidad: Media (2-5)									
+QT3	Cantidad: Alta (10+)									
+PG1	Pago: Efectivo exacto									
+PG2	Pago: Efectivo mayor (con cambio)									
+PG3	Pago: Efectivo menor (insuficiente)									

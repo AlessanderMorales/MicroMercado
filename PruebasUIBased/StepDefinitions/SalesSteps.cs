@@ -71,11 +71,14 @@ namespace PruebasUIBased.StepDefinitions
         [Then(@"la venta debe procesarse exitosamente")]
         public void ThenLaVentaDebeProcesarseExitosamente()
         {
+            System.Threading.Thread.Sleep(2000);
+            
             bool successMsg = SalesPage.HasSuccessMessage();
             bool cartEmpty = SalesPage.GetCartItemCount() == 0;
+            bool hasError = SalesPage.HasErrorMessage();
 
-            Assert.True(successMsg || cartEmpty, "La venta falló: El carrito sigue lleno y no hay mensaje de éxito.");
-            Assert.False(SalesPage.HasErrorMessage(), "Se encontró un mensaje de error en la pantalla.");
+            Assert.True(successMsg || cartEmpty, $"La venta fallo: cartEmpty={cartEmpty}, successMsg={successMsg}");
+            Assert.False(hasError, "Se encontro un mensaje de error en la pantalla.");
         }
 
         [Then(@"el carrito debe estar vacio")]

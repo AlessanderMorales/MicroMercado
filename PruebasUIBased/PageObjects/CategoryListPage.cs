@@ -6,9 +6,6 @@ using System.Linq;
 
 namespace PruebasUIBased.PageObjects
 {
-    /// <summary>
-    /// Page Object para la página de listado de Categorías (Optimizado)
-    /// </summary>
     public class CategoryListPage : BasePage
     {
         private readonly WebDriverWait _wait;
@@ -56,12 +53,37 @@ namespace PruebasUIBased.PageObjects
         public void ClickDeleteCategory(string categoryName)
         {
             FilterTable(categoryName);
+            System.Threading.Thread.Sleep(500);
             var row = FindRowWithWait(categoryName);
 
             if (row != null)
             {
-                var deleteButton = row.FindElement(By.CssSelector(".btn-danger, button[onclick*='confirmDeleteCategory']"));
+                IWebElement deleteButton = null;
+                var deleteSelectors = new[]
+                {
+                    By.CssSelector(".btn-danger"),
+                    By.CssSelector("button[onclick*='confirmDelete']"),
+                    By.CssSelector("button[data-bs-toggle='modal']"),
+                    By.XPath(".//button[contains(@class, 'btn-danger')]")
+                };
+
+                foreach (var selector in deleteSelectors)
+                {
+                    try
+                    {
+                        deleteButton = row.FindElement(selector);
+                        if (deleteButton != null && deleteButton.Displayed) break;
+                    }
+                    catch { }
+                }
+
+                if (deleteButton == null)
+                {
+                    throw new Exception($"No se encontro el boton de eliminar para '{categoryName}'.");
+                }
+
                 ClickWithJs(deleteButton);
+                System.Threading.Thread.Sleep(500);
 
                 try
                 {
@@ -74,14 +96,14 @@ namespace PruebasUIBased.PageObjects
                 }
                 catch (WebDriverTimeoutException)
                 {
-                    throw new Exception("El modal de eliminación no apareció o el botón no respondió.");
+                    throw new Exception("El modal de eliminacion no aparecio o el boton no respondio.");
                 }
 
                 System.Threading.Thread.Sleep(1000); 
             }
             else
             {
-                throw new Exception($"No se pudo eliminar: La categoría '{categoryName}' no aparece en la tabla.");
+                throw new Exception($"No se pudo eliminar: La categoria '{categoryName}' no aparece en la tabla.");
             }
         }
 
@@ -115,8 +137,6 @@ namespace PruebasUIBased.PageObjects
             try { return _wait.Until(ExpectedConditions.ElementIsVisible(_errorAlert)).Displayed; }
             catch { return false; }
         }
-
-        // --- MÉTODOS PRIVADOS (Helpers) ---
 
         private void FilterTable(string text)
         {

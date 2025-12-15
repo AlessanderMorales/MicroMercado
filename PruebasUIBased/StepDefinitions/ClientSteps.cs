@@ -1,4 +1,4 @@
-﻿using PruebasUIBased.Infrastructure; // Asegúrate de tener este using para las fotos
+﻿using PruebasUIBased.Infrastructure;
 using PruebasUIBased.PageObjects;
 using Reqnroll;
 using Xunit;
@@ -49,10 +49,21 @@ namespace PruebasUIBased.StepDefinitions
             if (!ListPage.ClientExists(documento))
             {
                 ListPage.ClickAddNewClient();
-                FormPage.FillClientForm($"Cliente {documento}", $"test{documento}@test.com", documento, "Dirección Test");
+                FormPage.FillClientForm($"Cliente {documento}", $"test{documento}@test.com", documento, "Direccion Test");
                 FormPage.ClickSave();
-                System.Threading.Thread.Sleep(1000);
-                EnsureOnClientList();
+                System.Threading.Thread.Sleep(2000);
+                
+                // Forzar navegacion a la lista y esperar
+                ListPage.NavigateTo($"{_fixture.BaseUrl}/ClientPage");
+                System.Threading.Thread.Sleep(1500);
+                
+                // Verificar que el cliente fue creado
+                if (!ListPage.ClientExists(documento))
+                {
+                    // Recargar la pagina una vez mas
+                    _fixture.Driver.Navigate().Refresh();
+                    System.Threading.Thread.Sleep(1500);
+                }
             }
             _scenarioContext["LastClientDocument"] = documento;
             _scenarioContext["TargetTaxDocument"] = documento;
@@ -72,9 +83,6 @@ namespace PruebasUIBased.StepDefinitions
             }
         }
 
-        // ==========================================
-        // CREATE
-        // ==========================================
 
         [When(@"hago clic en agregar nuevo cliente")]
         public void WhenHagoClicEnAgregarNuevoCliente()
@@ -130,9 +138,6 @@ namespace PruebasUIBased.StepDefinitions
             System.Threading.Thread.Sleep(1000);
         }
 
-        // ==========================================
-        // UPDATE
-        // ==========================================
 
         [When(@"hago clic en editar el cliente con documento ""(.*)""")]
         public void WhenHagoClicEnEditarElClienteConDocumento(string documento)
@@ -204,9 +209,6 @@ namespace PruebasUIBased.StepDefinitions
             FormPage.ClickSave();
         }
 
-        // ==========================================
-        // DELETE
-        // ==========================================
 
         [When(@"hago clic en eliminar el cliente con documento ""(.*)""")]
         public void WhenHagoClicEnEliminarElClienteConDocumento(string documento)
@@ -226,19 +228,28 @@ namespace PruebasUIBased.StepDefinitions
             WhenHagoClicEnEliminarElClienteConDocumento(doc);
         }
 
-        // ==========================================
-        // ASSERTIONS
-        // ==========================================
 
         [Then(@"debo ver mensaje de exito en cliente")]
         [Then(@"el cliente debe crearse exitosamente")]
         [Then(@"la actualizacion debe ser exitosa")]
         public void ThenDeboVerMensajeDeExitoEnCliente()
         {
+            // Esperar a que la pagina cargue completamente
+            System.Threading.Thread.Sleep(2000);
+            
+            // Verificar si estamos en la lista de clientes (redireccion exitosa)
+            bool onListPage = ListPage.GetCurrentUrl().Contains("/ClientPage") && 
+                              !ListPage.GetCurrentUrl().Contains("NewClient") &&
+                              !ListPage.GetCurrentUrl().Contains("EditClient");
+            
+            // Verificar mensaje de exito
             bool hasSuccess = ListPage.HasSuccessMessage();
-            bool onListPage = ListPage.GetCurrentUrl().Contains("/ClientPage");
+            
+            // Verificar que no hay errores de validacion visibles
+            bool noErrors = !FormPage.HasErrorMessage();
 
-            Assert.True(hasSuccess || onListPage, "No se mostró mensaje de éxito.");
+            Assert.True(hasSuccess || (onListPage && noErrors), 
+                $"No se mostro mensaje de exito. URL: {ListPage.GetCurrentUrl()}, Success: {hasSuccess}, OnList: {onListPage}, NoErrors: {noErrors}");
         }
 
         [Then(@"debo ver error de validacion en cliente")]
@@ -255,11 +266,13 @@ namespace PruebasUIBased.StepDefinitions
         [Then(@"el cliente no debe aparecer en busquedas activas")]
         public void ThenElClienteConDocumentoNoDebeAparecerEnLaLista(string documento = null)
         {
+            System.Threading.Thread.Sleep(1500);
+            
             if (documento == null && _scenarioContext.ContainsKey("TargetTaxDocument"))
                 documento = _scenarioContext["TargetTaxDocument"].ToString();
 
             EnsureOnClientList();
-            Assert.False(ListPage.ClientExists(documento), $"El cliente {documento} no debería aparecer en la lista.");
+            Assert.False(ListPage.ClientExists(documento), $"El cliente {documento} todavia aparece en la lista.");
         }
 
         [Then(@"debo ver al menos (.*) clientes en la lista")]
@@ -280,9 +293,6 @@ namespace PruebasUIBased.StepDefinitions
             ThenDeboVerMensajeDeExitoEnCliente();
         }
 
-        // ==========================================
-        // SELECT / READ (CL-08)
-        // ==========================================
 
         [Given(@"existe un cliente ""(.*)"" con TaxDocument ""(.*)""")]
         public void GivenExisteUnClienteConNombreYDoc(string nombre, string documento)

@@ -121,8 +121,6 @@ namespace PruebasUIBased.PageObjects
             Driver.Navigate().GoToUrl(url);
         }
 
-        // --- Helpers ---
-
         private void FilterTable(string text)
         {
             try

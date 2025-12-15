@@ -1,0 +1,250 @@
+================================================================================
+                    MATRIZ PAIRWISE - 88 CASOS DE PRUEBA UI
+                        PROYECTO: MICROMERCADO - PruebasUIBased
+================================================================================
+
+Fecha: 2024
+Framework: Reqnroll + Selenium WebDriver
+Técnicas: Pairwise Testing + BVA + Particiones de Equivalencia
+Total: 88 pruebas automatizadas
+
+================================================================================
+                            LEYENDA DE CLASES
+================================================================================
+
+CATEGORÍA - Clases de Equivalencia:
+??????????????????????????????????????????????????????????????????????????????
+? Código      ? Descripción                                                  ?
+??????????????????????????????????????????????????????????????????????????????
+? N1          ? Name: Válido (1-50 caracteres alfanuméricos)                 ?
+? N2          ? Name: Vacío                                                  ?
+? N3          ? Name: Muy largo (>50 caracteres)                             ?
+? N4          ? Name: Duplicado (ya existe)                                  ?
+? D1          ? Description: Válido (1-255 caracteres)                       ?
+? D2          ? Description: Vacío (opcional)                                ?
+? D3          ? Description: Muy largo (>255 caracteres)                     ?
+? OP1         ? Operación: Create                                            ?
+? OP2         ? Operación: Update                                            ?
+? OP3         ? Operación: Delete                                            ?
+? OP4         ? Operación: Read/List                                         ?
+??????????????????????????????????????????????????????????????????????????????
+
+PRODUCTO - Clases de Equivalencia:
+??????????????????????????????????????????????????????????????????????????????
+? Código      ? Descripción                                                  ?
+??????????????????????????????????????????????????????????????????????????????
+? N1          ? Name: Válido (1-100 caracteres)                              ?
+? N2          ? Name: Vacío                                                  ?
+? N3          ? Name: Muy largo (>100 caracteres)                            ?
+? N4          ? Name: Duplicado                                              ?
+? D1          ? Description: Válido                                          ?
+? D2          ? Description: Vacío (opcional)                                ?
+? D3          ? Description: Muy largo                                       ?
+? B1          ? Brand: Válido                                                ?
+? B2          ? Brand: Vacío                                                 ?
+? B3          ? Brand: Muy largo                                             ?
+? P1          ? Price: Válido (0.01-9999.99)                                 ?
+? P2          ? Price: Cero (inválido)                                       ?
+? P3          ? Price: Negativo (inválido)                                   ?
+? P4          ? Price: Muy alto (>9999.99)                                   ?
+? S1          ? Stock: Válido (1-32767)                                      ?
+? S2          ? Stock: Cero                                                  ?
+? S3          ? Stock: Negativo (inválido)                                   ?
+? S4          ? Stock: Muy alto (>32767)                                     ?
+? C1          ? CategoryId: Existe y activa                                  ?
+? C2          ? CategoryId: No existe                                        ?
+? C3          ? CategoryId: Inactiva                                         ?
+??????????????????????????????????????????????????????????????????????????????
+
+CLIENTE - Clases de Equivalencia:
+??????????????????????????????????????????????????????????????????????????????
+? Código      ? Descripción                                                  ?
+??????????????????????????????????????????????????????????????????????????????
+? BN1         ? BusinessName: Válido (1-100 caracteres)                      ?
+? BN2         ? BusinessName: Vacío                                          ?
+? BN3         ? BusinessName: Muy largo (>100 caracteres)                    ?
+? EM1         ? Email: Formato válido (user@domain.com)                      ?
+? EM2         ? Email: Vacío                                                 ?
+? EM3         ? Email: Sin "@" (inválido)                                    ?
+? EM4         ? Email: Sin "." (inválido)                                    ?
+? EM5         ? Email: Con espacios (inválido)                               ?
+? EM6         ? Email: Duplicado                                             ?
+? TD1         ? TaxDocument: Válido (7-15 dígitos numéricos)                 ?
+? TD2         ? TaxDocument: Vacío                                           ?
+? TD3         ? TaxDocument: Con letras (inválido)                           ?
+? TD4         ? TaxDocument: Duplicado                                       ?
+? TD5         ? TaxDocument: Muy corto (<7 dígitos)                          ?
+? A1          ? Address: Válido                                              ?
+? A2          ? Address: Vacío (opcional)                                    ?
+? A3          ? Address: Muy largo                                           ?
+??????????????????????????????????????????????????????????????????????????????
+
+VENTAS - Clases de Equivalencia:
+??????????????????????????????????????????????????????????????????????????????
+? Código      ? Descripción                                                  ?
+??????????????????????????????????????????????????????????????????????????????
+? CL1         ? Cliente: Existente y activo                                  ?
+? CL2         ? Cliente: No existe                                           ?
+? CL3         ? Cliente: Inactivo                                            ?
+? PR1         ? Productos: 1 producto                                        ?
+? PR2         ? Productos: 2 productos                                       ?
+? PR3         ? Productos: Múltiples (3+)                                    ?
+? QT1         ? Cantidad: Baja (1)                                           ?
+? QT2         ? Cantidad: Media (2-5)                                        ?
+? QT3         ? Cantidad: Alta (10+)                                         ?
+? PG1         ? Pago: Efectivo exacto                                        ?
+? PG2         ? Pago: Efectivo mayor (con cambio)                            ?
+? PG3         ? Pago: Efectivo menor (insuficiente)                          ?
+??????????????????????????????????????????????????????????????????????????????
+
+================================================================================
+                    MATRIZ PAIRWISE - CATEGORÍA (16 casos)
+================================================================================
+
+category	name	description	operacion		name	description	operacion	resultado
+1	N1	D1	OP1			Válido	Válido	Create	Éxito
+2	N1	D2	OP1			Válido	Vacío	Create	Éxito
+3	N1	D3	OP1			Válido	Muy largo	Create	Éxito
+4	N2	D1	OP1			Vacío	Válido	Create	Error validación
+5	N1	D1	OP2			Válido	Válido	Update	Éxito
+6	N1	D2	OP2			MismoNombre	Diferente	Update	Éxito
+7	N1	D2	OP2			Modificado	Vacío	Update	Éxito
+8	N1	D3	OP2			Modificado	Muy largo	Update	Éxito
+9	N1	D1	OP1			1 char (BVA)	Válido	Create	Éxito
+10	N1	D1	OP1			50 chars (BVA)	Válido	Create	Éxito
+11	N1	D1	OP1			Válido	1 char (BVA)	Create	Éxito
+12	N1	D1	OP1			Válido	255 chars (BVA)	Create	Éxito
+13	N4	D1	OP1			Duplicado	Válido	Create	Error duplicado
+14	N1	D1	OP3			Existente	-	Delete	Éxito
+15	N1	D1	OP4			-	-	List	Ver ?3
+16	N1	D2	OP2			MismoNombre	Solo desc	Update	Éxito
+
+================================================================================
+                    MATRIZ PAIRWISE - PRODUCTO (34 casos)
+================================================================================
+
+product	name	description	brand	price	stock	catId		name	description	brand	price	stock	catId	resultado
+1	N1	D1	B1	P1	S1	C1		Válido	Válido	Válido	10.50	100	Activa	Éxito
+2	N1	D2	B1	P1	S1	C1		Válido	Vacío	Válido	5.00	1	Activa	Éxito
+3	N1	D3	B1	P1	S1	C1		Válido	Muy largo	Válido	999.99	9999	Activa	Éxito
+4	N1	D1	B2	P1	S1	C1		Válido	Válido	Vacío	15.00	50	Activa	Éxito
+5	N1	D1	B3	P1	S1	C1		Válido	Válido	Largo	0.01	500	Activa	Éxito
+6	N1	D2	B1	P1	S1	C1		Válido	Vacío	Válido	100.00	10	Activa	Éxito
+7	N1	D1	B1	P1	S4	C1		Válido	Válido	Válido	50.00	32767	Activa	Éxito
+8	N1	D1	B1	P4	S1	C1		Válido	Válido	Válido	9999.99	25	Activa	Éxito
+9	N2	D1	B1	P1	S1	C1		Vacío	Válido	Válido	20.00	30	Activa	Error
+10	N1	D1	B1	P2	S1	C1		Válido	Válido	Válido	0	40	Activa	Error
+11	N1	D1	B1	P1	S1	C1		Actualiz	Actualiz	-	15.00	200	Activa	Éxito
+12	N1	D1	B1	P1	S1	C1		MismoNom	Nueva	-	20.00	150	Activa	Éxito
+13	N1	D2	B1	P1	S1	C1		Modific	Vacío	-	25.50	1	Activa	Éxito
+14	N1	D1	B1	P1	S4	C1		Modific	Válido	-	30.00	9999	Activa	Éxito
+15	N1	D1	B1	P1	S1	C1		Modific	Válido	-	0.01	100	Activa	Éxito
+16	N1	D3	B1	P1	S1	C1		Modific	Largo	-	45.00	75	Activa	Éxito
+17	N1	D1	B1	P1	S1	C1		Modific	Válido	-	99.99	500	Activa	Éxito
+18	N1	D2	B1	P1	S1	C1		Modific	Vacío	-	12.50	250	Activa	Éxito
+19	N1	D1	B1	P1	S1	C1		0.01 (BVA)	-	-	0.01	50	Activa	Éxito
+20	N1	D1	B1	P1	S1	C1		-	-	-	25.00	1 (BVA)	Activa	Éxito
+21	N1	D1	B1	P1	S4	C1		-	-	-	35.00	32767 BVA	Activa	Éxito
+22	N1	D1	B1	P1	S1	C1		1 char	-	-	10.00	20	Activa	Éxito
+23	N1	D1	B1	P1	S1	C1		100 chars	-	-	15.00	30	Activa	Éxito
+24	N1	D1	B1	P4	S1	C1		-	-	-	9999.99 BVA	15	Activa	Éxito
+25	N1	D1	B1	P1	S1	C1		-	-	1 char	20.00	40	Activa	Éxito
+26	N1	D2	B1	P1	S1	C1		-	Vacío BVA	-	22.00	55	Activa	Éxito
+27	N4	D1	B1	P1	S1	C1		Duplicado	-	-	30.00	60	Activa	Error
+28	N1	D1	B1	P1	S1	C1		Existente	-	-	-	-	-	Delete OK
+29	N1	D1	B1	P1	S1	C1		-	-	-	-	-	-	List ?3
+30	N1	D1	B1	P1	S1	C1		MismoNom	-	-	45.00	80	Activa	Éxito
+31	N1	D1	B1	P1	S1	C1		-	-	-	55.00	90	Activa	Éxito
+32	N1	D1	B1	P1	S1	C1		SoloPrecio	-	-	75.50	100	Activa	Éxito
+33	N1	D1	B1	P1	S1	C1		SoloStock	-	-	35.00	999	Activa	Éxito
+34	N1	D1	B1	P1	S1	C1		Completo	Completo	Completo	125.99	250	Activa	Éxito
+
+================================================================================
+                    MATRIZ PAIRWISE - CLIENTE (26 casos)
+================================================================================
+
+client	businessName	email	taxDocument	address		businessName	email	taxDocument	address	resultado
+1	BN1	EM1	TD1	A1		Válido	Válido	Válido	Válido	Éxito
+2	BN1	EM1	TD1	A2		Válido	Válido	Válido	Vacío	Éxito
+3	BN1	EM1	TD1	A3		Válido	Válido	Válido	Largo	Éxito
+4	BN3	EM1	TD1	A3		Largo	Válido	Válido	Largo	Éxito
+5	BN1	EM1	TD1	A1		Válido	Largo	Válido	Válido	Éxito
+6	BN1	EM1	TD1	A1		Válido	Válido	Válido	Válido	Éxito
+7	BN2	EM1	TD1	A1		Vacío	Válido	Válido	Válido	Error
+8	BN1	EM2	TD1	A1		Válido	Vacío	Válido	Válido	Error
+9	BN1	EM1	TD1	A1		Actualiz	Actualiz	-	Nueva	Éxito
+10	BN1	EM1	TD1	A2		Modific	Modific	-	Vacío	Éxito
+11	BN1	EM1	TD1	A1		NuevoEmail	Nuevo	-	Nueva	Éxito
+12	BN1	EM1	TD1	A3		DirLarga	Válido	-	Larga	Éxito
+13	BN1	EM1	TD1	A1		Completo	Completo	-	Completa	Éxito
+14	BN1	EM1	TD1	A1		Final	Final	-	Final	Éxito
+15	BN1	EM1	TD1	A1		1 char (BVA)	-	-	-	Éxito
+16	BN3	EM1	TD1	A1		100 chars (BVA)	-	-	-	Éxito
+17	BN1	EM1	TD5	A1		-	-	7 digs (BVA)	-	Éxito
+18	BN1	EM1	TD1	A1		-	-	15 digs (BVA)	-	Éxito
+19	BN1	EM1	TD1	A1		-	min (BVA)	-	-	Éxito
+20	BN1	EM1	TD1	A2		-	-	-	Vacío (BVA)	Éxito
+21	BN1	EM1	TD4	A1		-	-	Duplicado	-	Error
+22	BN1	EM1	TD1	A1		Existente	-	-	-	Delete OK
+23	BN1	EM1	TD1	A1		-	-	-	-	List ?3
+24	BN1	EM1	TD1	A1		MismoDoc	-	-	-	Éxito
+25	BN1	EM1	TD1	A1		-	Complejo	-	-	Éxito
+26	BN1	EM1	TD1	A1		Empresa SA	Comercial	-	Completa	Éxito
+
+================================================================================
+                    MATRIZ PAIRWISE - VENTAS (12 casos)
+================================================================================
+
+sale	cliente	productos	cantidad	pago		cliente	productos	cantidad	pago	resultado
+1	CL1	PR1	QT1	PG1		Existente	1 prod	Baja	Exacto	Éxito
+2	CL1	PR1	QT2	PG2		Existente	1 prod	Media	Mayor	Éxito
+3	CL1	PR2	QT1	PG2		Existente	2 prod	Baja	Mayor	Éxito
+4	CL1	PR3	QT2	PG2		Existente	3+ prod	Media	Mayor	Éxito
+5	CL1	PR3	QT2	PG2		Existente	3+ dif cat	Variada	Mayor	Éxito
+6	CL1	PR1	QT3	PG2		Existente	1 prod	Alta	Mayor	Éxito
+7	CL1	PR1	QT1	PG1		Existente	1 prod	Baja	Exacto	Éxito
+8	CL1	PR3	QT2	PG2		Existente	4 prod	Media	Mayor	Éxito
+9	CL1	PR1	QT1	PG2		Existente	1 prod	Baja	Muy mayor	Éxito
+10	CL1	PR3	QT2	PG2		Existente	5 prod	Variada	Mayor	Éxito
+11	CL1	PR1	QT1	PG2		Existente	1 prod	1	Mayor	Éxito (PE)
+12	CL1	PR3	QT3	PG2		Existente	Múltiple	Variada	Mayor	Éxito (PE)
+
+================================================================================
+                    RESUMEN DE COMBINACIONES
+================================================================================
+
+???????????????????????????????????????????????????????????????????????????????
+? ENTIDAD     ? PAIRWISE ?   BVA   ?    PE    ?  TOTAL  ? EXHAUSTIVO ? REDUC.?
+??????????????????????????????????????????????????????????????????????????????
+? Categoría   ?    8     ?    4    ?    4     ?   16    ?     72     ? 77.8% ?
+? Producto    ?   18     ?    8    ?    8     ?   34    ?   10,368   ? 99.7% ?
+? Cliente     ?   14     ?    6    ?    6     ?   26    ?    864     ? 97.0% ?
+? Ventas      ?   10     ?    -    ?    2     ?   12    ?    108     ? 88.9% ?
+??????????????????????????????????????????????????????????????????????????????
+? TOTAL       ?   50     ?   18    ?   20     ?   88    ?  11,412    ? 99.2% ?
+??????????????????????????????????????????????????????????????????????????????
+
+================================================================================
+                    DETALLE DE CASOS POR TÉCNICA
+================================================================================
+
+PAIRWISE (50 casos):
+- PW-CAT-01 a PW-CAT-08: 8 combinaciones Categoría
+- PW-PROD-01 a PW-PROD-18: 18 combinaciones Producto  
+- PW-CLI-01 a PW-CLI-14: 14 combinaciones Cliente
+- PW-SALES-01 a PW-SALES-10: 10 combinaciones Ventas
+
+BVA - Valores Límite (18 casos):
+- BVA-CAT-01 a BVA-CAT-04: 4 límites Categoría
+- BVA-PROD-01 a BVA-PROD-08: 8 límites Producto
+- BVA-CLI-01 a BVA-CLI-06: 6 límites Cliente
+
+PE - Particiones Equivalencia (20 casos):
+- PE-CAT-01 a PE-CAT-04: 4 particiones Categoría
+- PE-PROD-01 a PE-PROD-08: 8 particiones Producto
+- PE-CLI-01 a PE-CLI-06: 6 particiones Cliente
+- PE-SALES-01 a PE-SALES-02: 2 particiones Ventas
+
+================================================================================
+                              FIN DE MATRIZ
+================================================================================

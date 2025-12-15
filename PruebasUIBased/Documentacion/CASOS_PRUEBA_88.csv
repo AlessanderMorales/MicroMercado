@@ -1,0 +1,89 @@
+ID,Entidad,Nombre,Descripcion,Marca,Precio,Stock,Categoria,Email,Documento,Direccion,Cliente,Productos,Cantidad,Pago,Tecnica,Resultado,Descripcion Detallada
+PW-CAT-01,Categoria,N1,D1,,,,,,,,,,,,Pairwise,Exito,Crear categoria valida con descripcion valida
+PW-CAT-02,Categoria,N1,D2,,,,,,,,,,,,Pairwise,Exito,Crear categoria valida sin descripcion
+PW-CAT-03,Categoria,N1,D3,,,,,,,,,,,,Pairwise,Exito,Crear categoria con descripcion muy larga
+PW-CAT-04,Categoria,N2,D1,,,,,,,,,,,,Pairwise,Error,Crear categoria sin nombre - debe fallar
+PW-CAT-05,Categoria,N1,D1,,,,,,,,,,,,Pairwise,Exito,Actualizar categoria con datos validos
+PW-CAT-06,Categoria,N1,D2,,,,,,,,,,,,Pairwise,Exito,Actualizar manteniendo mismo nombre
+PW-CAT-07,Categoria,N1,D2,,,,,,,,,,,,Pairwise,Exito,Actualizar con descripcion vacia
+PW-CAT-08,Categoria,N1,D3,,,,,,,,,,,,Pairwise,Exito,Actualizar con descripcion muy larga
+BVA-CAT-01,Categoria,1char,D1,,,,,,,,,,,,BVA,Exito,Nombre con 1 caracter (minimo valido)
+BVA-CAT-02,Categoria,50chars,D1,,,,,,,,,,,,BVA,Exito,Nombre con 50 caracteres (maximo valido)
+BVA-CAT-03,Categoria,N1,1char,,,,,,,,,,,,BVA,Exito,Descripcion con 1 caracter (minimo valido)
+BVA-CAT-04,Categoria,N1,255chars,,,,,,,,,,,,BVA,Exito,Descripcion con 255 caracteres (maximo valido)
+PE-CAT-01,Categoria,N4,D1,,,,,,,,,,,,PE,Error,Crear con nombre duplicado - debe fallar
+PE-CAT-02,Categoria,N1,D1,,,,,,,,,,,,PE,Exito,Eliminar categoria existente (borrado logico)
+PE-CAT-03,Categoria,N1,D1,,,,,,,,,,,,PE,Exito,Listar categorias activas (minimo 3)
+PE-CAT-04,Categoria,N1,D2,,,,,,,,,,,,PE,Exito,Actualizar solo descripcion manteniendo nombre propio
+PW-PROD-01,Producto,N1,D1,B1,10.50,100,C1,,,,,,,Pairwise,Exito,Crear producto valido completo
+PW-PROD-02,Producto,N1,D2,B1,5.00,1,C1,,,,,,,Pairwise,Exito,Crear producto sin descripcion
+PW-PROD-03,Producto,N1,D3,B1,999.99,9999,C1,,,,,,,Pairwise,Exito,Crear producto con descripcion larga
+PW-PROD-04,Producto,N1,D1,B2,15.00,50,C1,,,,,,,Pairwise,Exito,Crear producto sin marca
+PW-PROD-05,Producto,N1,D1,B3,0.01,500,C1,,,,,,,Pairwise,Exito,Crear producto con marca larga
+PW-PROD-06,Producto,N1,D2,B1,100.00,10,C1,,,,,,,Pairwise,Exito,Combinacion pairwise 6
+PW-PROD-07,Producto,N1,D1,B1,50.00,32767,C1,,,,,,,Pairwise,Exito,Crear con stock maximo
+PW-PROD-08,Producto,N1,D1,B1,9999.99,25,C1,,,,,,,Pairwise,Exito,Crear con precio maximo
+PW-PROD-09,Producto,N2,D1,B1,20.00,30,C1,,,,,,,Pairwise,Error,Crear sin nombre - debe fallar
+PW-PROD-10,Producto,N1,D1,B1,0,40,C1,,,,,,,Pairwise,Error,Crear con precio cero - debe fallar
+PW-PROD-11,Producto,N1,D1,B1,15.00,200,C1,,,,,,,Pairwise,Exito,Actualizar producto valido
+PW-PROD-12,Producto,N1,D1,B1,20.00,150,C1,,,,,,,Pairwise,Exito,Actualizar manteniendo mismo nombre
+PW-PROD-13,Producto,N1,D2,B1,25.50,1,C1,,,,,,,Pairwise,Exito,Actualizar con descripcion vacia
+PW-PROD-14,Producto,N1,D1,B1,30.00,9999,C1,,,,,,,Pairwise,Exito,Actualizar con stock alto
+PW-PROD-15,Producto,N1,D1,B1,0.01,100,C1,,,,,,,Pairwise,Exito,Actualizar con precio minimo
+PW-PROD-16,Producto,N1,D3,B1,45.00,75,C1,,,,,,,Pairwise,Exito,Actualizar con descripcion larga
+PW-PROD-17,Producto,N1,D1,B1,99.99,500,C1,,,,,,,Pairwise,Exito,Actualizacion completa
+PW-PROD-18,Producto,N1,D2,B1,12.50,250,C1,,,,,,,Pairwise,Exito,Actualizacion final
+BVA-PROD-01,Producto,N1,D1,B1,0.01,50,C1,,,,,,,BVA,Exito,Precio minimo valido 0.01
+BVA-PROD-02,Producto,N1,D1,B1,25.00,1,C1,,,,,,,BVA,Exito,Stock minimo valido 1
+BVA-PROD-03,Producto,N1,D1,B1,35.00,32767,C1,,,,,,,BVA,Exito,Stock maximo valido 32767
+BVA-PROD-04,Producto,1char,D1,B1,10.00,20,C1,,,,,,,BVA,Exito,Nombre 1 caracter (minimo)
+BVA-PROD-05,Producto,100chars,D1,B1,15.00,30,C1,,,,,,,BVA,Exito,Nombre 100 caracteres (maximo)
+BVA-PROD-06,Producto,N1,D1,B1,9999.99,15,C1,,,,,,,BVA,Exito,Precio maximo valido 9999.99
+BVA-PROD-07,Producto,N1,D1,1char,20.00,40,C1,,,,,,,BVA,Exito,Marca 1 caracter (minimo)
+BVA-PROD-08,Producto,N1,D2,B1,22.00,55,C1,,,,,,,BVA,Exito,Descripcion vacia (opcional)
+PE-PROD-01,Producto,N4,D1,B1,30.00,60,C1,,,,,,,PE,Error,Crear con nombre duplicado - debe fallar
+PE-PROD-02,Producto,N1,D1,B1,,,C1,,,,,,,PE,Exito,Eliminar producto (borrado logico)
+PE-PROD-03,Producto,N1,D1,B1,,,C1,,,,,,,PE,Exito,Listar productos activos (minimo 3)
+PE-PROD-04,Producto,N1,D1,B1,45.00,80,C1,,,,,,,PE,Exito,Actualizar manteniendo nombre unico propio
+PE-PROD-05,Producto,N1,D1,B1,55.00,90,C1,,,,,,,PE,Exito,Crear con categoria valida existente
+PE-PROD-06,Producto,N1,D1,B1,75.50,100,C1,,,,,,,PE,Exito,Actualizar solo precio
+PE-PROD-07,Producto,N1,D1,B1,35.00,999,C1,,,,,,,PE,Exito,Actualizar solo stock
+PE-PROD-08,Producto,N1,D1,B1,125.99,250,C1,,,,,,,PE,Exito,Crear con todos los campos completos
+PW-CLI-01,Cliente,BN1,,,,,,EM1,TD1,A1,,,,Pairwise,Exito,Crear cliente valido completo
+PW-CLI-02,Cliente,BN1,,,,,,EM1,TD1,A2,,,,Pairwise,Exito,Crear cliente sin direccion
+PW-CLI-03,Cliente,BN1,,,,,,EM1,TD1,A3,,,,Pairwise,Exito,Crear cliente con direccion larga
+PW-CLI-04,Cliente,BN3,,,,,,EM1,TD1,A3,,,,Pairwise,Exito,Crear cliente con nombre largo
+PW-CLI-05,Cliente,BN1,,,,,,EM1,TD1,A1,,,,Pairwise,Exito,Crear cliente con email largo
+PW-CLI-06,Cliente,BN1,,,,,,EM1,TD1,A1,,,,Pairwise,Exito,Combinacion pairwise 6
+PW-CLI-07,Cliente,BN2,,,,,,EM1,TD1,A1,,,,Pairwise,Error,Crear sin nombre - debe fallar
+PW-CLI-08,Cliente,BN1,,,,,,EM2,TD1,A1,,,,Pairwise,Error,Crear sin email - debe fallar
+PW-CLI-09,Cliente,BN1,,,,,,EM1,TD1,A1,,,,Pairwise,Exito,Actualizar cliente valido
+PW-CLI-10,Cliente,BN1,,,,,,EM1,TD1,A2,,,,Pairwise,Exito,Actualizar sin direccion
+PW-CLI-11,Cliente,BN1,,,,,,EM1,TD1,A1,,,,Pairwise,Exito,Actualizar nuevo email
+PW-CLI-12,Cliente,BN1,,,,,,EM1,TD1,A3,,,,Pairwise,Exito,Actualizar con direccion larga
+PW-CLI-13,Cliente,BN1,,,,,,EM1,TD1,A1,,,,Pairwise,Exito,Actualizacion completa
+PW-CLI-14,Cliente,BN1,,,,,,EM1,TD1,A1,,,,Pairwise,Exito,Actualizacion final
+BVA-CLI-01,Cliente,1char,,,,,,EM1,TD1,A1,,,,BVA,Exito,Nombre 1 caracter (minimo)
+BVA-CLI-02,Cliente,100chars,,,,,,EM1,TD1,A1,,,,BVA,Exito,Nombre 100 caracteres (maximo)
+BVA-CLI-03,Cliente,BN1,,,,,,EM1,7digs,A1,,,,BVA,Exito,Documento 7 digitos (minimo)
+BVA-CLI-04,Cliente,BN1,,,,,,EM1,15digs,A1,,,,BVA,Exito,Documento 15 digitos (maximo)
+BVA-CLI-05,Cliente,BN1,,,,,,min@b.co,TD1,A1,,,,BVA,Exito,Email formato minimo valido
+BVA-CLI-06,Cliente,BN1,,,,,,EM1,TD1,A2,,,,BVA,Exito,Direccion vacia (opcional)
+PE-CLI-01,Cliente,BN1,,,,,,EM1,TD4,A1,,,,PE,Error,Crear con documento duplicado - debe fallar
+PE-CLI-02,Cliente,BN1,,,,,,EM1,TD1,A1,,,,PE,Exito,Eliminar cliente (borrado logico)
+PE-CLI-03,Cliente,BN1,,,,,,EM1,TD1,A1,,,,PE,Exito,Listar clientes activos (minimo 3)
+PE-CLI-04,Cliente,BN1,,,,,,EM1,TD1,A1,,,,PE,Exito,Actualizar manteniendo documento unico propio
+PE-CLI-05,Cliente,BN1,,,,,,complejo@sub.dom.com,TD1,A1,,,,PE,Exito,Crear con email formato complejo valido
+PE-CLI-06,Cliente,BN1,,,,,,EM1,TD1,A1,,,,PE,Exito,Crear con todos los campos completos
+PW-SALES-01,Ventas,,,,,,,,,,,CL1,PR1,QT1,PG1,Pairwise,Exito,Venta 1 producto pago exacto
+PW-SALES-02,Ventas,,,,,,,,,,,CL1,PR1,QT2,PG2,Pairwise,Exito,Venta 1 producto con cambio
+PW-SALES-03,Ventas,,,,,,,,,,,CL1,PR2,QT1,PG2,Pairwise,Exito,Venta 2 productos diferentes
+PW-SALES-04,Ventas,,,,,,,,,,,CL1,PR3,QT2,PG2,Pairwise,Exito,Venta multiples productos
+PW-SALES-05,Ventas,,,,,,,,,,,CL1,PR3,QT2,PG2,Pairwise,Exito,Venta productos diferentes categorias
+PW-SALES-06,Ventas,,,,,,,,,,,CL1,PR1,QT3,PG2,Pairwise,Exito,Venta cantidad alta 1 producto
+PW-SALES-07,Ventas,,,,,,,,,,,CL1,PR1,QT1,PG1,Pairwise,Exito,Venta monto exacto sin cambio
+PW-SALES-08,Ventas,,,,,,,,,,,CL1,PR3,QT2,PG2,Pairwise,Exito,Venta 4 productos lacteos
+PW-SALES-09,Ventas,,,,,,,,,,,CL1,PR1,QT1,PG2,Pairwise,Exito,Venta con cambio grande
+PW-SALES-10,Ventas,,,,,,,,,,,CL1,PR3,QT2,PG2,Pairwise,Exito,Venta 5 productos diferentes
+PE-SALES-01,Ventas,,,,,,,,,,,CL1,PR1,QT1,PG2,PE,Exito,Venta simple minima
+PE-SALES-02,Ventas,,,,,,,,,,,CL1,PR3,QT3,PG2,PE,Exito,Venta compleja multiples productos

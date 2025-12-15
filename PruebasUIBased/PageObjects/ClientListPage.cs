@@ -10,27 +10,16 @@ namespace PruebasUIBased.PageObjects
     {
         private readonly WebDriverWait _wait;
 
-        // --- SELECTORES BASADOS EN TU HTML PROPORCIONADO ---
-
-        // HTML: <a asp-page="/NewClient" ...>
         private readonly By _addNewClientButton = By.CssSelector("a[href*='NewClient']");
 
-        // HTML: <table id="categoryTable" ...> (Cuidado: usa ID de categoría por error de copy-paste en la app)
         private readonly By _clientRows = By.CssSelector("#categoryTable tbody tr");
 
-        // HTML: DataTables genera input type='search'
         private readonly By _searchBox = By.CssSelector("input[type='search']");
 
-        // --- MODAL DE ELIMINACIÓN ---
-
-        // HTML: <div class="modal fade" id="deleteConfirmationModal" ...>
         private readonly By _deleteModal = By.Id("deleteConfirmationModal");
 
-        // HTML: <form method="post" id="deleteClientForm" ...>
-        // ESTA ERA LA CLAVE DEL ERROR: Aquí se llama deleteClientForm, no deleteCategoryForm
         private readonly By _confirmDeleteButton = By.CssSelector("#deleteClientForm button[type='submit']");
 
-        // Alertas de éxito/error
         private readonly By _successAlert = By.CssSelector(".alert-success");
         private readonly By _errorAlert = By.CssSelector(".alert-danger");
 
@@ -50,16 +39,43 @@ namespace PruebasUIBased.PageObjects
 
         public void ClickEditClient(string documento)
         {
+            // Primero filtrar la tabla
+            FilterTable(documento);
+            System.Threading.Thread.Sleep(500);
+            
             var row = FindRowWithWait(documento);
             if (row != null)
             {
-                var editButton = row.FindElement(By.CssSelector("a[href*='EditClient'], a.btn-warning"));
+                // Buscar el boton de editar con multiples selectores
+                IWebElement editButton = null;
+                var editSelectors = new[]
+                {
+                    By.CssSelector("a[href*='EditClient']"),
+                    By.CssSelector("a.btn-warning"),
+                    By.CssSelector(".btn-warning"),
+                    By.XPath(".//a[contains(@class, 'btn-warning')]")
+                };
+
+                foreach (var selector in editSelectors)
+                {
+                    try
+                    {
+                        editButton = row.FindElement(selector);
+                        if (editButton != null && editButton.Displayed) break;
+                    }
+                    catch { }
+                }
+
+                if (editButton == null)
+                {
+                    throw new Exception($"No se encontro el boton de editar en la fila para '{documento}'");
+                }
 
                 ClickWithJs(editButton);
             }
             else
             {
-                throw new Exception($"No se encontró el botón de editar para '{documento}'");
+                throw new Exception($"No se encontro el boton de editar para '{documento}'");
             }
         }
 
@@ -127,8 +143,6 @@ namespace PruebasUIBased.PageObjects
             try { return _wait.Until(ExpectedConditions.ElementIsVisible(_errorAlert)).Displayed; }
             catch { return false; }
         }
-
-        // --- HELPERS ---
 
         private void FilterTable(string text)
         {

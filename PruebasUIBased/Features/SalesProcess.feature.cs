@@ -17,14 +17,14 @@ namespace PruebasUIBased.Features
     
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Reqnroll", "3.0.0.0")]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class ProcesoPrincipalDeVentas_UITestingFeature : object, global::Xunit.IClassFixture<ProcesoPrincipalDeVentas_UITestingFeature.FixtureData>, global::Xunit.IAsyncLifetime
+    public partial class ProcesoDeVentas_UITestingConPairwiseFeature : object, global::Xunit.IClassFixture<ProcesoDeVentas_UITestingConPairwiseFeature.FixtureData>, global::Xunit.IAsyncLifetime
     {
         
         private global::Reqnroll.ITestRunner testRunner;
         
         private static string[] featureTags = ((string[])(null));
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "Proceso Principal de Ventas - UI Testing", "Como usuario del sistema\r\nQuiero realizar ventas completas\r\nPara gestionar transa" +
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "Proceso de Ventas - UI Testing con Pairwise", "Como usuario del sistema\r\nQuiero realizar ventas completas\r\nPara gestionar transa" +
                 "cciones con clientes", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
         private global::Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
@@ -32,7 +32,7 @@ namespace PruebasUIBased.Features
 #line 1 "SalesProcess.feature"
 #line hidden
         
-        public ProcesoPrincipalDeVentas_UITestingFeature(ProcesoPrincipalDeVentas_UITestingFeature.FixtureData fixtureData, global::Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public ProcesoDeVentas_UITestingConPairwiseFeature(ProcesoDeVentas_UITestingConPairwiseFeature.FixtureData fixtureData, global::Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
         }
@@ -118,7 +118,7 @@ namespace PruebasUIBased.Features
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/SalesProcess.feature.ndjson", 5);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/SalesProcess.feature.ndjson", 14);
         }
         
         async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.InitializeAsync()
@@ -146,24 +146,26 @@ namespace PruebasUIBased.Features
             await this.TestTearDownAsync();
         }
         
-        [global::Xunit.SkippableFactAttribute(DisplayName="VP-01 - Venta con un solo producto en efectivo")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso Principal de Ventas - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "VP-01 - Venta con un solo producto en efectivo")]
+        [global::Xunit.SkippableFactAttribute(DisplayName="PW-SALES-01 - Venta con un producto y pago exacto en efectivo")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso de Ventas - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-SALES-01 - Venta con un producto y pago exacto en efectivo")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "sales")]
-        [global::Xunit.TraitAttribute("Category", "happy")]
-        public async global::System.Threading.Tasks.Task VP_01_VentaConUnSoloProductoEnEfectivo()
+        [global::Xunit.TraitAttribute("Category", "pairwise")]
+        [global::Xunit.TraitAttribute("Category", "pw-sales-01")]
+        public async global::System.Threading.Tasks.Task PW_SALES_01_VentaConUnProductoYPagoExactoEnEfectivo()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
                     "sales",
-                    "happy"};
+                    "pairwise",
+                    "pw-sales-01"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "0";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("VP-01 - Venta con un solo producto en efectivo", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-SALES-01 - Venta con un producto y pago exacto en efectivo", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 11
+#line 12
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -176,118 +178,54 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line 6
 await this.FeatureBackgroundAsync();
 #line hidden
-#line 12
+#line 13
   await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 13
-  await testRunner.WhenAsync("agrego el producto \"Yogurt\" con cantidad 2 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
-#line hidden
 #line 14
-  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+  await testRunner.WhenAsync("agrego el producto \"Yogurt\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 15
-  await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 16
-  await testRunner.AndAsync("ingreso efectivo recibido \"50.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+  await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 17
-  await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+  await testRunner.AndAsync("ingreso efectivo recibido \"10.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 18
-  await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+  await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 19
+  await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 20
   await testRunner.AndAsync("debo ver un mensaje de exito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
         }
         
-        [global::Xunit.SkippableFactAttribute(DisplayName="VP-02 - Venta con multiples productos en efectivo")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso Principal de Ventas - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "VP-02 - Venta con multiples productos en efectivo")]
+        [global::Xunit.SkippableFactAttribute(DisplayName="PW-SALES-02 - Venta con un producto y efectivo mayor (con cambio)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso de Ventas - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-SALES-02 - Venta con un producto y efectivo mayor (con cambio)")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "sales")]
-        [global::Xunit.TraitAttribute("Category", "complex")]
-        public async global::System.Threading.Tasks.Task VP_02_VentaConMultiplesProductosEnEfectivo()
+        [global::Xunit.TraitAttribute("Category", "pairwise")]
+        [global::Xunit.TraitAttribute("Category", "pw-sales-02")]
+        public async global::System.Threading.Tasks.Task PW_SALES_02_VentaConUnProductoYEfectivoMayorConCambio()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
                     "sales",
-                    "complex"};
+                    "pairwise",
+                    "pw-sales-02"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "1";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("VP-02 - Venta con multiples productos en efectivo", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-SALES-02 - Venta con un producto y efectivo mayor (con cambio)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 22
-  this.ScenarioInitialize(scenarioInfo, ruleInfo);
-#line hidden
-            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                await testRunner.SkipScenarioAsync();
-            }
-            else
-            {
-                await this.ScenarioStartAsync();
-#line 6
-await this.FeatureBackgroundAsync();
-#line hidden
 #line 23
-    await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
-#line hidden
-#line 24
-    await testRunner.WhenAsync("agrego el producto \"Yogurt Bebible Sabor Durazno Pil 1000 Gr\" con cantidad 3 al c" +
-                        "arrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
-#line hidden
-#line 25
-    await testRunner.AndAsync("agrego el producto \"Leche de Soya sabor Banana Soy 946 Ml\" con cantidad 2 al carr" +
-                        "ito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 26
-    await testRunner.AndAsync("agrego el producto \"Mantequilla sin Sal Pil 200 Gr\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 27
-    await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 28
-    await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 29
-    await testRunner.AndAsync("ingreso efectivo recibido \"200.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 30
-    await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 32
-    await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
-#line hidden
-#line 33
-    await testRunner.AndAsync("el carrito debe estar vacio", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-            }
-            await this.ScenarioCleanupAsync();
-        }
-        
-        [global::Xunit.SkippableFactAttribute(DisplayName="VP-03 - Venta con productos de diferentes categorias")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso Principal de Ventas - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "VP-03 - Venta con productos de diferentes categorias")]
-        [global::Xunit.TraitAttribute("Category", "ui")]
-        [global::Xunit.TraitAttribute("Category", "sales")]
-        [global::Xunit.TraitAttribute("Category", "happy")]
-        public async global::System.Threading.Tasks.Task VP_03_VentaConProductosDeDiferentesCategorias()
-        {
-            string[] tagsOfScenario = new string[] {
-                    "ui",
-                    "sales",
-                    "happy"};
-            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
-            string pickleIndex = "2";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("VP-03 - Venta con productos de diferentes categorias", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
-            string[] tagsOfRule = ((string[])(null));
-            global::Reqnroll.RuleInfo ruleInfo = null;
-#line 36
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -300,34 +238,670 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line 6
 await this.FeatureBackgroundAsync();
 #line hidden
-#line 37
+#line 24
   await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 38
+#line 25
   await testRunner.WhenAsync("agrego el producto \"Yogurt\" con cantidad 2 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 39
-  await testRunner.AndAsync("agrego el producto \"Manzana\" con cantidad 3 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 40
-  await testRunner.AndAsync("agrego el producto \"Pasta Dental\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 41
+#line 26
   await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 42
+#line 27
   await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 43
-  await testRunner.AndAsync("ingreso efectivo recibido \"200.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line 28
+  await testRunner.AndAsync("ingreso efectivo recibido \"50.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 44
+#line 29
   await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 45
+#line 30
   await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
+#line 31
+  await testRunner.AndAsync("el carrito debe estar vacio", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PW-SALES-03 - Venta con dos productos diferentes")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso de Ventas - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-SALES-03 - Venta con dos productos diferentes")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "sales")]
+        [global::Xunit.TraitAttribute("Category", "pairwise")]
+        [global::Xunit.TraitAttribute("Category", "pw-sales-03")]
+        public async global::System.Threading.Tasks.Task PW_SALES_03_VentaConDosProductosDiferentes()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "sales",
+                    "pairwise",
+                    "pw-sales-03"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "2";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-SALES-03 - Venta con dos productos diferentes", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 34
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 35
+  await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 36
+  await testRunner.WhenAsync("agrego el producto \"Yogurt Bebible Sabor Durazno Pil 1000 Gr\" con cantidad 2 al c" +
+                        "arrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 37
+  await testRunner.AndAsync("agrego el producto \"Leche de Soya sabor Banana Soy 946 Ml\" con cantidad 1 al carr" +
+                        "ito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 38
+  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 39
+  await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 40
+  await testRunner.AndAsync("ingreso efectivo recibido \"50.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 41
+  await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 42
+  await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PW-SALES-04 - Venta con multiples productos (3+)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso de Ventas - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-SALES-04 - Venta con multiples productos (3+)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "sales")]
+        [global::Xunit.TraitAttribute("Category", "pairwise")]
+        [global::Xunit.TraitAttribute("Category", "pw-sales-04")]
+        public async global::System.Threading.Tasks.Task PW_SALES_04_VentaConMultiplesProductos3()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "sales",
+                    "pairwise",
+                    "pw-sales-04"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "3";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-SALES-04 - Venta con multiples productos (3+)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 45
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
 #line 46
+  await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 47
+  await testRunner.WhenAsync("agrego el producto \"Yogurt Bebible Sabor Durazno Pil 1000 Gr\" con cantidad 3 al c" +
+                        "arrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 48
+  await testRunner.AndAsync("agrego el producto \"Leche de Soya sabor Banana Soy 946 Ml\" con cantidad 2 al carr" +
+                        "ito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 49
+  await testRunner.AndAsync("agrego el producto \"Mantequilla sin Sal Pil 200 Gr\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 50
+  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 51
+  await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 52
+  await testRunner.AndAsync("ingreso efectivo recibido \"200.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 53
+  await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 54
+  await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 55
+  await testRunner.AndAsync("el carrito debe estar vacio", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PW-SALES-05 - Venta con productos de diferentes categorias")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso de Ventas - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-SALES-05 - Venta con productos de diferentes categorias")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "sales")]
+        [global::Xunit.TraitAttribute("Category", "pairwise")]
+        [global::Xunit.TraitAttribute("Category", "pw-sales-05")]
+        public async global::System.Threading.Tasks.Task PW_SALES_05_VentaConProductosDeDiferentesCategorias()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "sales",
+                    "pairwise",
+                    "pw-sales-05"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "4";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-SALES-05 - Venta con productos de diferentes categorias", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 58
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 59
+  await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 60
+  await testRunner.WhenAsync("agrego el producto \"Yogurt\" con cantidad 2 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 61
+  await testRunner.AndAsync("agrego el producto \"Manzana\" con cantidad 3 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 62
+  await testRunner.AndAsync("agrego el producto \"Pasta Dental\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 63
+  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 64
+  await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 65
+  await testRunner.AndAsync("ingreso efectivo recibido \"200.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 66
+  await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 67
+  await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 68
+  await testRunner.AndAsync("debo ver un mensaje de exito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PW-SALES-06 - Venta con cantidad alta de un solo producto")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso de Ventas - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-SALES-06 - Venta con cantidad alta de un solo producto")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "sales")]
+        [global::Xunit.TraitAttribute("Category", "pairwise")]
+        [global::Xunit.TraitAttribute("Category", "pw-sales-06")]
+        public async global::System.Threading.Tasks.Task PW_SALES_06_VentaConCantidadAltaDeUnSoloProducto()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "sales",
+                    "pairwise",
+                    "pw-sales-06"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "5";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-SALES-06 - Venta con cantidad alta de un solo producto", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 71
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 72
+  await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 73
+  await testRunner.WhenAsync("agrego el producto \"Yogurt\" con cantidad 10 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 74
+  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 75
+  await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 76
+  await testRunner.AndAsync("ingreso efectivo recibido \"150.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 77
+  await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 78
+  await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PW-SALES-07 - Venta con monto exacto sin cambio")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso de Ventas - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-SALES-07 - Venta con monto exacto sin cambio")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "sales")]
+        [global::Xunit.TraitAttribute("Category", "pairwise")]
+        [global::Xunit.TraitAttribute("Category", "pw-sales-07")]
+        public async global::System.Threading.Tasks.Task PW_SALES_07_VentaConMontoExactoSinCambio()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "sales",
+                    "pairwise",
+                    "pw-sales-07"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "6";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-SALES-07 - Venta con monto exacto sin cambio", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 81
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 82
+  await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 83
+  await testRunner.WhenAsync("agrego el producto \"Yogurt Bebible Sabor Durazno Pil 1000 Gr\" con cantidad 1 al c" +
+                        "arrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 84
+  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 85
+  await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 86
+  await testRunner.AndAsync("ingreso efectivo recibido \"10.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 87
+  await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 88
+  await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PW-SALES-08 - Venta con productos lacteos multiples")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso de Ventas - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-SALES-08 - Venta con productos lacteos multiples")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "sales")]
+        [global::Xunit.TraitAttribute("Category", "pairwise")]
+        [global::Xunit.TraitAttribute("Category", "pw-sales-08")]
+        public async global::System.Threading.Tasks.Task PW_SALES_08_VentaConProductosLacteosMultiples()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "sales",
+                    "pairwise",
+                    "pw-sales-08"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "7";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-SALES-08 - Venta con productos lacteos multiples", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 91
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 92
+  await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 93
+  await testRunner.WhenAsync("agrego el producto \"Yogurt Bebible Sabor Durazno Pil 1000 Gr\" con cantidad 2 al c" +
+                        "arrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 94
+  await testRunner.AndAsync("agrego el producto \"Leche de Soya sabor Banana Soy 946 Ml\" con cantidad 2 al carr" +
+                        "ito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 95
+  await testRunner.AndAsync("agrego el producto \"Mantequilla con Sal Pil 900 Gr\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 96
+  await testRunner.AndAsync("agrego el producto \"Mantequilla sin Sal Pil 200 Gr\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 97
+  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 98
+  await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 99
+  await testRunner.AndAsync("ingreso efectivo recibido \"150.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 100
+  await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 101
+  await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 102
+  await testRunner.AndAsync("el carrito debe estar vacio", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PW-SALES-09 - Venta con cambio grande")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso de Ventas - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-SALES-09 - Venta con cambio grande")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "sales")]
+        [global::Xunit.TraitAttribute("Category", "pairwise")]
+        [global::Xunit.TraitAttribute("Category", "pw-sales-09")]
+        public async global::System.Threading.Tasks.Task PW_SALES_09_VentaConCambioGrande()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "sales",
+                    "pairwise",
+                    "pw-sales-09"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "8";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-SALES-09 - Venta con cambio grande", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 105
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 106
+  await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 107
+  await testRunner.WhenAsync("agrego el producto \"Yogurt\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 108
+  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 109
+  await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 110
+  await testRunner.AndAsync("ingreso efectivo recibido \"500.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 111
+  await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 112
+  await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PW-SALES-10 - Venta con 5 productos diferentes")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso de Ventas - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-SALES-10 - Venta con 5 productos diferentes")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "sales")]
+        [global::Xunit.TraitAttribute("Category", "pairwise")]
+        [global::Xunit.TraitAttribute("Category", "pw-sales-10")]
+        public async global::System.Threading.Tasks.Task PW_SALES_10_VentaCon5ProductosDiferentes()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "sales",
+                    "pairwise",
+                    "pw-sales-10"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "9";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-SALES-10 - Venta con 5 productos diferentes", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 115
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 116
+  await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 117
+  await testRunner.WhenAsync("agrego el producto \"Yogurt Bebible Sabor Durazno Pil 1000 Gr\" con cantidad 1 al c" +
+                        "arrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 118
+  await testRunner.AndAsync("agrego el producto \"Leche de Soya sabor Banana Soy 946 Ml\" con cantidad 1 al carr" +
+                        "ito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 119
+  await testRunner.AndAsync("agrego el producto \"Mantequilla sin Sal Pil 200 Gr\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 120
+  await testRunner.AndAsync("agrego el producto \"Manzana\" con cantidad 2 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 121
+  await testRunner.AndAsync("agrego el producto \"Pasta Dental\" con cantidad 1 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 122
+  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 123
+  await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 124
+  await testRunner.AndAsync("ingreso efectivo recibido \"300.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 125
+  await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 126
+  await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 127
+  await testRunner.AndAsync("el carrito debe estar vacio", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-SALES-01 - Venta simple minima (1 producto cantidad 1)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso de Ventas - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-SALES-01 - Venta simple minima (1 producto cantidad 1)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "sales")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-sales-01")]
+        public async global::System.Threading.Tasks.Task PE_SALES_01_VentaSimpleMinima1ProductoCantidad1()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "sales",
+                    "pe",
+                    "pe-sales-01"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "10";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-SALES-01 - Venta simple minima (1 producto cantidad 1)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 130
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 131
+  await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 132
+  await testRunner.WhenAsync("agrego el producto \"Yogurt Bebible Sabor Durazno Pil 1000 Gr\" con cantidad 1 al c" +
+                        "arrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 133
+  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 134
+  await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 135
+  await testRunner.AndAsync("ingreso efectivo recibido \"20.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 136
+  await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 137
+  await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 138
+  await testRunner.AndAsync("el carrito debe estar vacio", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-SALES-02 - Venta compleja con multiples productos y cantidades variadas")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Proceso de Ventas - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-SALES-02 - Venta compleja con multiples productos y cantidades variadas")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "sales")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-sales-02")]
+        public async global::System.Threading.Tasks.Task PE_SALES_02_VentaComplejaConMultiplesProductosYCantidadesVariadas()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "sales",
+                    "pe",
+                    "pe-sales-02"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "11";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-SALES-02 - Venta compleja con multiples productos y cantidades variadas", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 141
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 142
+  await testRunner.GivenAsync("que existe un cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 143
+  await testRunner.WhenAsync("agrego el producto \"Yogurt Bebible Sabor Durazno Pil 1000 Gr\" con cantidad 5 al c" +
+                        "arrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 144
+  await testRunner.AndAsync("agrego el producto \"Leche de Soya sabor Banana Soy 946 Ml\" con cantidad 3 al carr" +
+                        "ito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 145
+  await testRunner.AndAsync("agrego el producto \"Mantequilla con Sal Pil 900 Gr\" con cantidad 2 al carrito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 146
+  await testRunner.AndAsync("busco el cliente con documento \"9404688\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 147
+  await testRunner.AndAsync("selecciono tipo de pago \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 148
+  await testRunner.AndAsync("ingreso efectivo recibido \"500.00\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 149
+  await testRunner.AndAsync("confirmo la venta", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 150
+  await testRunner.ThenAsync("la venta debe procesarse exitosamente", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 151
   await testRunner.AndAsync("debo ver un mensaje de exito", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
@@ -341,12 +915,12 @@ await this.FeatureBackgroundAsync();
             
             async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.InitializeAsync()
             {
-                await ProcesoPrincipalDeVentas_UITestingFeature.FeatureSetupAsync();
+                await ProcesoDeVentas_UITestingConPairwiseFeature.FeatureSetupAsync();
             }
             
             async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.DisposeAsync()
             {
-                await ProcesoPrincipalDeVentas_UITestingFeature.FeatureTearDownAsync();
+                await ProcesoDeVentas_UITestingConPairwiseFeature.FeatureTearDownAsync();
             }
         }
     }

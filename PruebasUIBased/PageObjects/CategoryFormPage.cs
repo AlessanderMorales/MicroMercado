@@ -10,17 +10,13 @@ namespace PruebasUIBased.PageObjects
     {
         private readonly WebDriverWait _wait;
 
-        // --- SELECTORES PARA CREACIÓN (Asumiendo modelo NewCategory) ---
-        // Si tu HTML usa asp-for="NewCategory.Name", el ID es este:
         private readonly By _newName = By.Id("NewCategory_Name");
         private readonly By _newDesc = By.Id("NewCategory_Description");
 
-        // --- SELECTORES PARA EDICIÓN (Confirmado en tu HTML anterior UpdateCategory) ---
         private readonly By _updateName = By.Id("UpdateCategory_Name");
         private readonly By _updateDesc = By.Id("UpdateCategory_Description");
         private readonly By _updateStatus = By.Id("UpdateCategory_Status");
 
-        // Botones y Alertas
         private readonly By _saveButton = By.CssSelector("button[type='submit']");
         private readonly By _validationSummary = By.CssSelector(".text-danger ul li, .validation-summary-errors");
         private readonly By _fieldErrors = By.CssSelector(".field-validation-error, .text-danger");
@@ -30,19 +26,14 @@ namespace PruebasUIBased.PageObjects
             _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         }
 
-        /// <summary>
-        /// Llena el formulario de CREACIÓN
-        /// </summary>
         public void FillCategoryForm(string name, string description)
         {
             try
             {
-                // Esperamos el campo de CREACIÓN
                 _wait.Until(ExpectedConditions.ElementIsVisible(_newName));
             }
             catch (WebDriverTimeoutException)
             {
-                // Si falla, intentamos buscar con el ID antiguo por si acaso el modelo se llama diferente
                 try
                 {
                     var fallback = Driver.FindElement(By.Id("CreateCategory_Name"));
@@ -58,9 +49,6 @@ namespace PruebasUIBased.PageObjects
             EnterText(_newDesc, description);
         }
 
-        /// <summary>
-        /// Llena el formulario de ACTUALIZACIÓN
-        /// </summary>
         public void UpdateCategoryForm(string name, string description)
         {
             try
@@ -86,18 +74,46 @@ namespace PruebasUIBased.PageObjects
 
         public bool HasErrorMessage()
         {
+            System.Threading.Thread.Sleep(500);
+            
+            // Verificar mensaje de error en alerta
             try
             {
-                if (_wait.Until(ExpectedConditions.ElementIsVisible(_validationSummary)).Displayed)
+                var alertDanger = Driver.FindElements(By.CssSelector(".alert-danger"));
+                if (alertDanger.Any(a => a.Displayed && !string.IsNullOrWhiteSpace(a.Text)))
+                    return true;
+            }
+            catch { }
+            
+            // Verificar validation summary
+            try
+            {
+                var summaryElements = Driver.FindElements(_validationSummary);
+                if (summaryElements.Any(e => e.Displayed && !string.IsNullOrWhiteSpace(e.Text)))
                     return true;
             }
             catch { }
 
+            // Verificar errores de campo
             var errors = Driver.FindElements(_fieldErrors);
-            return errors.Any(e => e.Displayed && !string.IsNullOrWhiteSpace(e.Text) && e.Text != "*");
+            if (errors.Any(e => e.Displayed && !string.IsNullOrWhiteSpace(e.Text) && e.Text != "*"))
+                return true;
+            
+            // Verificar si seguimos en el formulario de creacion (no hubo redireccion)
+            string currentUrl = Driver.Url;
+            if (currentUrl.Contains("NewCategory") || currentUrl.Contains("Create"))
+            {
+                // Estamos todavia en el formulario, puede ser un error
+                var nameField = Driver.FindElements(_newName);
+                if (nameField.Any(f => f.Displayed))
+                {
+                    // El formulario sigue visible, probablemente hubo error
+                    return true;
+                }
+            }
+            
+            return false;
         }
-
-        // --- Helpers ---
 
         private void EnterText(By locator, string text)
         {

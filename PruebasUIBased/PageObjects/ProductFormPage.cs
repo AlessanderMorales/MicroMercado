@@ -5,12 +5,8 @@ using System.Linq;
 
 namespace PruebasUIBased.PageObjects
 {
-    /// <summary>
-    /// Page Object para la página de crear/editar Producto
-    /// </summary>
     public class ProductFormPage : BasePage
     {
-        // Locators - Create
         private readonly By _createNameInput = By.Id("NewProduct_Name");
         private readonly By _createDescriptionInput = By.Id("NewProduct_Description");
         private readonly By _createBrandInput = By.Id("NewProduct_Brand");
@@ -18,7 +14,6 @@ namespace PruebasUIBased.PageObjects
         private readonly By _createStockInput = By.Id("NewProduct_Stock");
         private readonly By _createCategorySelect = By.Id("NewProduct_CategoryId");
 
-        // Locators - Update (EditProduct)
         private readonly By _updateNameInput = By.Id("EditProduct_Name");
         private readonly By _updateDescriptionInput = By.Id("EditProduct_Description");
         private readonly By _updateBrandInput = By.Id("EditProduct_Brand");
@@ -26,7 +21,6 @@ namespace PruebasUIBased.PageObjects
         private readonly By _updateStockInput = By.Id("EditProduct_Stock");
         private readonly By _updateCategorySelect = By.Id("EditProduct_CategoryId");
 
-        // Common
         private readonly By _saveButton = By.CssSelector("button[type='submit']");
         private readonly By _cancelButton = By.CssSelector("a[href*='Product']");
         private readonly By _successAlert = By.CssSelector(".alert-success");
@@ -34,9 +28,6 @@ namespace PruebasUIBased.PageObjects
 
         public ProductFormPage(IWebDriver driver) : base(driver) { }
 
-        /// <summary>
-        /// Llena el formulario de producto (para crear)
-        /// </summary>
         public void FillProductForm(string name, string description, string brand, decimal price, int stock, string categoryId)
         {
             TypeText(_createNameInput, name);
@@ -47,9 +38,6 @@ namespace PruebasUIBased.PageObjects
             SelectDropdownByValue(_createCategorySelect, categoryId);
         }
 
-        /// <summary>
-        /// Llena el formulario de producto (para actualizar)
-        /// </summary>
         public void UpdateProductForm(string name, string description, string brand, decimal price, int stock, string categoryId)
         {
             System.Threading.Thread.Sleep(2000);
@@ -79,9 +67,6 @@ namespace PruebasUIBased.PageObjects
             }
         }
 
-        /// <summary>
-        /// Hace clic en el botón de guardar
-        /// </summary>
         public void ClickSave()
         {
             var btn = Driver.FindElement(By.XPath("//button[@type='submit' or contains(text(),'Guardar') or contains(text(),'Save')]"));
@@ -90,25 +75,16 @@ namespace PruebasUIBased.PageObjects
             System.Threading.Thread.Sleep(1000);
         }
 
-        /// <summary>
-        /// Hace clic en el botón de cancelar
-        /// </summary>
         public void ClickCancel()
         {
             ClickElement(_cancelButton);
         }
 
-        /// <summary>
-        /// Verifica si hay un mensaje de éxito
-        /// </summary>
         public bool HasSuccessMessage()
         {
             return IsElementVisible(_successAlert);
         }
 
-        /// <summary>
-        /// Verifica si hay un mensaje de error
-        /// </summary>
         public bool HasErrorMessage()
         {
             System.Threading.Thread.Sleep(500); 

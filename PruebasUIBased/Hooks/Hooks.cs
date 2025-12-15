@@ -1,5 +1,5 @@
-﻿using PruebasUIBased.Infrastructure; // Importante para ver el Helper
-using Reqnroll; // o TechTalk.SpecFlow
+﻿using PruebasUIBased.Infrastructure;
+using Reqnroll;
 using System;
 
 namespace PruebasUIBased.Hooks

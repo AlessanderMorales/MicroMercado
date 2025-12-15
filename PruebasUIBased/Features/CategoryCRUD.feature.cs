@@ -17,14 +17,14 @@ namespace PruebasUIBased.Features
     
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Reqnroll", "3.0.0.0")]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class CRUDDeCategorias_UITestingFeature : object, global::Xunit.IClassFixture<CRUDDeCategorias_UITestingFeature.FixtureData>, global::Xunit.IAsyncLifetime
+    public partial class CRUDDeCategorias_UITestingConPairwiseFeature : object, global::Xunit.IClassFixture<CRUDDeCategorias_UITestingConPairwiseFeature.FixtureData>, global::Xunit.IAsyncLifetime
     {
         
         private global::Reqnroll.ITestRunner testRunner;
         
         private static string[] featureTags = ((string[])(null));
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "CRUD de Categorias - UI Testing", "Como usuario del sistema\r\nQuiero gestionar categorias\r\nPara organizar los product" +
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "CRUD de Categorias - UI Testing con Pairwise", "Como usuario del sistema\r\nQuiero gestionar categorias\r\nPara organizar los product" +
                 "os", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
         private global::Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
@@ -32,7 +32,7 @@ namespace PruebasUIBased.Features
 #line 1 "CategoryCRUD.feature"
 #line hidden
         
-        public CRUDDeCategorias_UITestingFeature(CRUDDeCategorias_UITestingFeature.FixtureData fixtureData, global::Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public CRUDDeCategorias_UITestingConPairwiseFeature(CRUDDeCategorias_UITestingConPairwiseFeature.FixtureData fixtureData, global::Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
         }
@@ -118,7 +118,7 @@ namespace PruebasUIBased.Features
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/CategoryCRUD.feature.ndjson", 11);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/CategoryCRUD.feature.ndjson", 18);
         }
         
         async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.InitializeAsync()
@@ -146,35 +146,39 @@ namespace PruebasUIBased.Features
             await this.TestTearDownAsync();
         }
         
-        [global::Xunit.SkippableTheoryAttribute(DisplayName="CC-01 - Crear categoria con combinaciones Pairwise")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "CC-01 - Crear categoria con combinaciones Pairwise")]
+        [global::Xunit.SkippableTheoryAttribute(DisplayName="PW-CAT-01 - Crear categoria con combinaciones Pairwise")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-CAT-01 - Crear categoria con combinaciones Pairwise")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "category")]
         [global::Xunit.TraitAttribute("Category", "create")]
         [global::Xunit.TraitAttribute("Category", "pairwise")]
-        [global::Xunit.InlineDataAttribute("Cat Valida 1", "Descripcion valida normal", "debo ver mensaje de exito en categoria", "0", new string[0])]
-        [global::Xunit.InlineDataAttribute("Cat Valida 2", "", "debo ver mensaje de exito en categoria", "1", new string[0])]
-        [global::Xunit.InlineDataAttribute("Cat Muy Larga Nombre", "Descripcion con 255 caracteres max", "debo ver mensaje de exito en categoria", "2", new string[0])]
-        [global::Xunit.InlineDataAttribute("", "Descripcion sin nombre", "debo ver error de validacion en categoria", "3", new string[0])]
-        public async global::System.Threading.Tasks.Task CC_01_CrearCategoriaConCombinacionesPairwise(string nombre, string descripcion, string resultado, string @__pickleIndex, string[] exampleTags)
+        [global::Xunit.TraitAttribute("Category", "pw-cat-01")]
+        [global::Xunit.InlineDataAttribute("PW01", "CatPairwise01", "Descripcion valida normal", "debo ver mensaje de exito en categoria", "0", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW02", "CatPairwise02", "", "debo ver mensaje de exito en categoria", "1", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW03", "CatDescLarga03", "Esta es una descripcion muy larga que tiene muchos caracteres para probar el limi" +
+            "te maximo permitido en el campo", "debo ver mensaje de exito en categoria", "2", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW04", "", "Descripcion sin nombre categoria", "debo ver error de validacion en categoria", "3", new string[0])]
+        public async global::System.Threading.Tasks.Task PW_CAT_01_CrearCategoriaConCombinacionesPairwise(string testID, string nombre, string descripcion, string resultado, string @__pickleIndex, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "ui",
                     "category",
                     "create",
-                    "pairwise"};
+                    "pairwise",
+                    "pw-cat-01"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
             }
             string[] tagsOfScenario = @__tags;
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("TestID", testID);
             argumentsOfScenario.Add("Nombre", nombre);
             argumentsOfScenario.Add("Descripcion", descripcion);
             argumentsOfScenario.Add("Resultado", resultado);
             string pickleIndex = @__pickleIndex;
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("CC-01 - Crear categoria con combinaciones Pairwise", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-CAT-01 - Crear categoria con combinaciones Pairwise", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 11
@@ -206,34 +210,39 @@ await this.FeatureBackgroundAsync();
             await this.ScenarioCleanupAsync();
         }
         
-        [global::Xunit.SkippableTheoryAttribute(DisplayName="CC-02 - Actualizar categoria con combinaciones Pairwise")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "CC-02 - Actualizar categoria con combinaciones Pairwise")]
+        [global::Xunit.SkippableTheoryAttribute(DisplayName="PW-CAT-02 - Actualizar categoria con combinaciones Pairwise")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PW-CAT-02 - Actualizar categoria con combinaciones Pairwise")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "category")]
         [global::Xunit.TraitAttribute("Category", "update")]
         [global::Xunit.TraitAttribute("Category", "pairwise")]
-        [global::Xunit.InlineDataAttribute("CatActualizada", "Nueva descripcion valida", "debo ver mensaje de exito en categoria", "4", new string[0])]
-        [global::Xunit.InlineDataAttribute("CatModificada", "Descripcion modificada", "debo ver mensaje de exito en categoria", "5", new string[0])]
-        [global::Xunit.InlineDataAttribute("NombreNuevo", "", "debo ver mensaje de exito en categoria", "6", new string[0])]
-        public async global::System.Threading.Tasks.Task CC_02_ActualizarCategoriaConCombinacionesPairwise(string nuevoNombre, string nuevaDescripcion, string resultado, string @__pickleIndex, string[] exampleTags)
+        [global::Xunit.TraitAttribute("Category", "pw-cat-02")]
+        [global::Xunit.InlineDataAttribute("PW05", "CatActualizada05", "Nueva descripcion valida actualizada", "debo ver mensaje de exito en categoria", "4", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW06", "CatBaseUpdate", "Mismo nombre diferente descripcion", "debo ver mensaje de exito en categoria", "5", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW07", "CatModificada07", "", "debo ver mensaje de exito en categoria", "6", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW08", "CatDescLargaUpd08", "Descripcion actualizada muy extensa para validar que el sistema acepta textos lar" +
+            "gos correctamente", "debo ver mensaje de exito en categoria", "7", new string[0])]
+        public async global::System.Threading.Tasks.Task PW_CAT_02_ActualizarCategoriaConCombinacionesPairwise(string testID, string nuevoNombre, string nuevaDescripcion, string resultado, string @__pickleIndex, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "ui",
                     "category",
                     "update",
-                    "pairwise"};
+                    "pairwise",
+                    "pw-cat-02"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
             }
             string[] tagsOfScenario = @__tags;
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("TestID", testID);
             argumentsOfScenario.Add("NuevoNombre", nuevoNombre);
             argumentsOfScenario.Add("NuevaDescripcion", nuevaDescripcion);
             argumentsOfScenario.Add("Resultado", resultado);
             string pickleIndex = @__pickleIndex;
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("CC-02 - Actualizar categoria con combinaciones Pairwise", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PW-CAT-02 - Actualizar categoria con combinaciones Pairwise", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 25
@@ -250,10 +259,10 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 await this.FeatureBackgroundAsync();
 #line hidden
 #line 26
-  await testRunner.GivenAsync("existe una categoria creada con nombre \"CatBase\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+  await testRunner.GivenAsync("existe una categoria creada con nombre \"CatBaseUpdate\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 27
-  await testRunner.WhenAsync("hago clic en editar categoria \"CatBase\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+  await testRunner.WhenAsync("hago clic en editar categoria \"CatBaseUpdate\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 28
   await testRunner.AndAsync(string.Format("actualizo el formulario con nombre \"{0}\" y descripcion \"{1}\"", nuevoNombre, nuevaDescripcion), ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
@@ -268,26 +277,26 @@ await this.FeatureBackgroundAsync();
             await this.ScenarioCleanupAsync();
         }
         
-        [global::Xunit.SkippableFactAttribute(DisplayName="CC-03 - Eliminar categoria")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "CC-03 - Eliminar categoria")]
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-CAT-01 - Crear categoria con nombre de 1 caracter (minimo)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-CAT-01 - Crear categoria con nombre de 1 caracter (minimo)")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "category")]
-        [global::Xunit.TraitAttribute("Category", "delete")]
-        [global::Xunit.TraitAttribute("Category", "happy")]
-        public async global::System.Threading.Tasks.Task CC_03_EliminarCategoria()
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-cat-01")]
+        public async global::System.Threading.Tasks.Task BVA_CAT_01_CrearCategoriaConNombreDe1CaracterMinimo()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
                     "category",
-                    "delete",
-                    "happy"};
+                    "bva",
+                    "bva-cat-01"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
-            string pickleIndex = "7";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("CC-03 - Eliminar categoria", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string pickleIndex = "8";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-CAT-01 - Crear categoria con nombre de 1 caracter (minimo)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 39
+#line 40
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -300,39 +309,285 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line 6
 await this.FeatureBackgroundAsync();
 #line hidden
-#line 40
-  await testRunner.GivenAsync("existe una categoria creada con nombre \"CatParaEliminar\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
-#line hidden
 #line 41
-  await testRunner.WhenAsync("hago clic en eliminar categoria \"CatParaEliminar\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+  await testRunner.WhenAsync("hago clic en agregar nueva categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 42
-  await testRunner.ThenAsync("la categoria \"CatParaEliminar\" no debe aparecer en la lista", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+  await testRunner.AndAsync("lleno el formulario de categoria con nombre \"A\" y descripcion \"Categoria con nomb" +
+                        "re minimo\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 43
+  await testRunner.AndAsync("hago clic en guardar categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 44
+  await testRunner.ThenAsync("debo ver mensaje de exito en categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
         }
         
-        [global::Xunit.SkippableFactAttribute(DisplayName="CC-04 - Listar categorias activas")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing")]
-        [global::Xunit.TraitAttribute("Description", "CC-04 - Listar categorias activas")]
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-CAT-02 - Crear categoria con nombre de 50 caracteres (maximo valido)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-CAT-02 - Crear categoria con nombre de 50 caracteres (maximo valido)")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "category")]
-        [global::Xunit.TraitAttribute("Category", "read")]
-        [global::Xunit.TraitAttribute("Category", "happy")]
-        public async global::System.Threading.Tasks.Task CC_04_ListarCategoriasActivas()
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-cat-02")]
+        public async global::System.Threading.Tasks.Task BVA_CAT_02_CrearCategoriaConNombreDe50CaracteresMaximoValido()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
                     "category",
-                    "read",
-                    "happy"};
+                    "bva",
+                    "bva-cat-02"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
-            string pickleIndex = "8";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("CC-04 - Listar categorias activas", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string pickleIndex = "9";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-CAT-02 - Crear categoria con nombre de 50 caracteres (maximo valido)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 45
+#line 47
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 48
+  await testRunner.WhenAsync("hago clic en agregar nueva categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 49
+  await testRunner.AndAsync("lleno el formulario de categoria con nombre \"CategoriaConNombreDeCincuentaCaracte" +
+                        "resExac\" y descripcion \"Nombre al limite maximo\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 50
+  await testRunner.AndAsync("hago clic en guardar categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 51
+  await testRunner.ThenAsync("debo ver mensaje de exito en categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-CAT-03 - Crear categoria con descripcion de 1 caracter (minimo)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-CAT-03 - Crear categoria con descripcion de 1 caracter (minimo)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "category")]
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-cat-03")]
+        public async global::System.Threading.Tasks.Task BVA_CAT_03_CrearCategoriaConDescripcionDe1CaracterMinimo()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "category",
+                    "bva",
+                    "bva-cat-03"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "10";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-CAT-03 - Crear categoria con descripcion de 1 caracter (minimo)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 54
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 55
+  await testRunner.WhenAsync("hago clic en agregar nueva categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 56
+  await testRunner.AndAsync("lleno el formulario de categoria con nombre \"CatDescMinBVA\" y descripcion \"D\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 57
+  await testRunner.AndAsync("hago clic en guardar categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 58
+  await testRunner.ThenAsync("debo ver mensaje de exito en categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-CAT-04 - Crear categoria con descripcion de 255 caracteres (maximo)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "BVA-CAT-04 - Crear categoria con descripcion de 255 caracteres (maximo)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "category")]
+        [global::Xunit.TraitAttribute("Category", "bva")]
+        [global::Xunit.TraitAttribute("Category", "bva-cat-04")]
+        public async global::System.Threading.Tasks.Task BVA_CAT_04_CrearCategoriaConDescripcionDe255CaracteresMaximo()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "category",
+                    "bva",
+                    "bva-cat-04"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "11";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-CAT-04 - Crear categoria con descripcion de 255 caracteres (maximo)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 61
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 62
+  await testRunner.WhenAsync("hago clic en agregar nueva categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 63
+  await testRunner.AndAsync(@"lleno el formulario de categoria con nombre ""CatDescMaxBVA"" y descripcion ""Esta descripcion tiene exactamente doscientos cincuenta y cinco caracteres para probar el limite maximo permitido en el campo de descripcion de categoria del sistema MicroMercado que estamos probando ahora mismo con pruebas automatizadas de Reqnroll""", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 64
+  await testRunner.AndAsync("hago clic en guardar categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 65
+  await testRunner.ThenAsync("debo ver mensaje de exito en categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-CAT-01 - Crear categoria con nombre duplicado")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-CAT-01 - Crear categoria con nombre duplicado")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "category")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-cat-01")]
+        public async global::System.Threading.Tasks.Task PE_CAT_01_CrearCategoriaConNombreDuplicado()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "category",
+                    "pe",
+                    "pe-cat-01"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "12";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-CAT-01 - Crear categoria con nombre duplicado", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 68
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 69
+  await testRunner.GivenAsync("existe una categoria creada con nombre \"CatDuplicadaPE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 70
+  await testRunner.WhenAsync("hago clic en agregar nueva categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 71
+  await testRunner.AndAsync("lleno el formulario de categoria con nombre \"CatDuplicadaPE\" y descripcion \"Inten" +
+                        "tando duplicar\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 72
+  await testRunner.AndAsync("hago clic en guardar categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 73
+  await testRunner.ThenAsync("debo ver error de validacion en categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-CAT-02 - Eliminar categoria existente (borrado logico)")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-CAT-02 - Eliminar categoria existente (borrado logico)")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "category")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-cat-02")]
+        public async global::System.Threading.Tasks.Task PE_CAT_02_EliminarCategoriaExistenteBorradoLogico()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "category",
+                    "pe",
+                    "pe-cat-02"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "13";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-CAT-02 - Eliminar categoria existente (borrado logico)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 76
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 77
+  await testRunner.GivenAsync("existe una categoria creada con nombre \"CatParaEliminarPE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 78
+  await testRunner.WhenAsync("hago clic en eliminar categoria \"CatParaEliminarPE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 79
+  await testRunner.ThenAsync("la categoria \"CatParaEliminarPE\" no debe aparecer en la lista", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-CAT-03 - Listar categorias activas")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-CAT-03 - Listar categorias activas")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "category")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-cat-03")]
+        public async global::System.Threading.Tasks.Task PE_CAT_03_ListarCategoriasActivas()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "category",
+                    "pe",
+                    "pe-cat-03"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "14";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-CAT-03 - Listar categorias activas", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 82
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -348,19 +603,71 @@ await this.FeatureBackgroundAsync();
                 global::Reqnroll.Table table1 = new global::Reqnroll.Table(new string[] {
                             "Nombre"});
                 table1.AddRow(new string[] {
-                            "Categoria A"});
+                            "CatListadoA"});
                 table1.AddRow(new string[] {
-                            "Categoria B"});
+                            "CatListadoB"});
                 table1.AddRow(new string[] {
-                            "Categoria C"});
-#line 46
+                            "CatListadoC"});
+#line 83
   await testRunner.GivenAsync("existen las siguientes categorias en el sistema:", ((string)(null)), table1, "Given ");
 #line hidden
-#line 51
+#line 88
   await testRunner.WhenAsync("navego a la pagina de categorias", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 52
+#line 89
   await testRunner.ThenAsync("debo ver al menos 3 categorias en la lista", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="PE-CAT-04 - Actualizar categoria manteniendo nombre unico propio")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing con Pairwise")]
+        [global::Xunit.TraitAttribute("Description", "PE-CAT-04 - Actualizar categoria manteniendo nombre unico propio")]
+        [global::Xunit.TraitAttribute("Category", "ui")]
+        [global::Xunit.TraitAttribute("Category", "category")]
+        [global::Xunit.TraitAttribute("Category", "pe")]
+        [global::Xunit.TraitAttribute("Category", "pe-cat-04")]
+        public async global::System.Threading.Tasks.Task PE_CAT_04_ActualizarCategoriaManteniendoNombreUnicoPropio()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ui",
+                    "category",
+                    "pe",
+                    "pe-cat-04"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "15";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("PE-CAT-04 - Actualizar categoria manteniendo nombre unico propio", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 92
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 6
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 93
+  await testRunner.GivenAsync("existe una categoria creada con nombre \"CatMismoNombrePE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 94
+  await testRunner.WhenAsync("hago clic en editar categoria \"CatMismoNombrePE\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 95
+  await testRunner.AndAsync("actualizo el formulario con nombre \"CatMismoNombrePE\" y descripcion \"Solo cambio " +
+                        "descripcion no nombre\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 96
+  await testRunner.AndAsync("hago clic en guardar categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 97
+  await testRunner.ThenAsync("debo ver mensaje de exito en categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -373,12 +680,12 @@ await this.FeatureBackgroundAsync();
             
             async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.InitializeAsync()
             {
-                await CRUDDeCategorias_UITestingFeature.FeatureSetupAsync();
+                await CRUDDeCategorias_UITestingConPairwiseFeature.FeatureSetupAsync();
             }
             
             async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.DisposeAsync()
             {
-                await CRUDDeCategorias_UITestingFeature.FeatureTearDownAsync();
+                await CRUDDeCategorias_UITestingConPairwiseFeature.FeatureTearDownAsync();
             }
         }
     }

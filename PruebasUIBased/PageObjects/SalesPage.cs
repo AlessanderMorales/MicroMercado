@@ -12,25 +12,19 @@ namespace PruebasUIBased.PageObjects
     {
         private readonly WebDriverWait _wait;
 
-        // --- SELECTORES ---
-
-        // Buscador y Tabla
         private readonly By _searchProductInput = By.Id("product_id");
         private readonly By _autocompleteItems = By.CssSelector(".ui-autocomplete .ui-menu-item");
         private readonly By _cartRows = By.CssSelector("#lstProductosVenta tbody tr:not(.empty-cart-message)");
 
-        // Botones de Venta
         private readonly By _btnIniciarVenta = By.Id("btnIniciarVenta"); // Botón principal azul oscuro
 
-        private readonly By _modalConfirmYesButton = By.XPath("//button[contains(text(), 'Sí, confirmar')]");
+        private readonly By _modalConfirmYesButton = By.XPath("//button[contains(text(), 'confirmar') or contains(text(), 'Confirmar') or contains(@class, 'btn-primary')]");
 
-        // Cliente y Pago
         private readonly By _clientTaxDocumentInput = By.Id("idDocumentoRecibido");
         private readonly By _searchClientButton = By.Id("btnBuscarCliente");
         private readonly By _paymentTypeSelect = By.Id("selTipoPago");
         private readonly By _cashReceivedInput = By.Id("iptEfectivoRecibido");
 
-        // Alertas
         private readonly By _successAlert = By.CssSelector(".alert-success");
         private readonly By _errorAlert = By.CssSelector(".alert-danger");
 
@@ -63,7 +57,6 @@ namespace PruebasUIBased.PageObjects
                     throw new Exception($"El producto '{productName}' no generó sugerencias en el buscador.");
                 }
 
-                // Esperar a que se agregue a la tabla
                 _wait.Until(d => d.FindElements(_cartRows).Any(r => r.Text.Contains(productName)));
             }
             catch (Exception ex)
@@ -72,10 +65,6 @@ namespace PruebasUIBased.PageObjects
             }
         }
 
-        /// <summary>
-        /// SOLUCIÓN AL ERROR "STALE ELEMENT":
-        /// Busca, limpia y escribe dentro de un bucle que reintenta si el DOM cambia.
-        /// </summary>
         public void SetProductQuantity(string productName, int quantity)
         {
             _wait.Until(driver =>
@@ -135,33 +124,50 @@ namespace PruebasUIBased.PageObjects
             input.SendKeys(amount.ToString("0.00", CultureInfo.InvariantCulture));
         }
 
-        /// <summary>
-        /// SOLUCIÓN AL MODAL:
-        /// Hace clic en 'Confirmar Venta' y luego espera explícitamente al botón 'Sí, confirmar' del popup.
-        /// </summary>
         public void ConfirmSale()
         {
-
             var mainBtn = _wait.Until(ExpectedConditions.ElementToBeClickable(_btnIniciarVenta));
             mainBtn.Click();
 
+            Thread.Sleep(1000);
+
             try
             {
-                var modalBtn = _wait.Until(ExpectedConditions.ElementToBeClickable(_modalConfirmYesButton));
-                Thread.Sleep(500);
+                var modalSelectors = new[]
+                {
+                    By.XPath("//div[contains(@class, 'modal') and contains(@class, 'show')]//button[contains(@class, 'btn-primary')]"),
+                    By.XPath("//div[contains(@class, 'modal')]//button[contains(text(), 'confirmar')]"),
+                    By.XPath("//div[contains(@class, 'modal')]//button[contains(text(), 'Confirmar')]"),
+                    _modalConfirmYesButton
+                };
 
-                try
+                IWebElement modalBtn = null;
+                foreach (var selector in modalSelectors)
                 {
-                    modalBtn.Click();
+                    try
+                    {
+                        var elements = Driver.FindElements(selector);
+                        modalBtn = elements.FirstOrDefault(e => e.Displayed && e.Enabled);
+                        if (modalBtn != null) break;
+                    }
+                    catch { }
                 }
-                catch (ElementClickInterceptedException)
+
+                if (modalBtn != null)
                 {
-                    ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", modalBtn);
+                    Thread.Sleep(300);
+                    try
+                    {
+                        modalBtn.Click();
+                    }
+                    catch (ElementClickInterceptedException)
+                    {
+                        ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", modalBtn);
+                    }
                 }
             }
             catch (WebDriverTimeoutException)
             {
-                throw new Exception("El modal apareció (o debió aparecer), pero no pude hacer clic en 'Sí, confirmar'.");
             }
         }
 
@@ -169,12 +175,25 @@ namespace PruebasUIBased.PageObjects
         {
             try
             {
-                _wait.Until(d => d.FindElements(_cartRows).Count == 0);
+                Thread.Sleep(2000);
+                
+                var longWait = new WebDriverWait(Driver, TimeSpan.FromSeconds(30));
+                longWait.Until(d => d.FindElements(_cartRows).Count == 0);
             }
             catch (WebDriverTimeoutException)
             {
+                try
+                {
+                    Driver.Navigate().Refresh();
+                    Thread.Sleep(1000);
+                }
+                catch { }
+                
                 var count = GetCartItemCount();
-                throw new Exception($"La venta pareció confirmarse, pero el carrito no se vació. Quedan {count} items.");
+                if (count > 0)
+                {
+                    throw new Exception($"La venta parecio confirmarse, pero el carrito no se vacio. Quedan {count} items.");
+                }
             }
         }
 

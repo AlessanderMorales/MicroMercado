@@ -1,0 +1,29 @@
+en 
+Scenario: BVA-CLI-01 - Crear cliente con nombre de 1 caracter (minimo)
+la cantidad de caracteres minimo es de 3 por eso da error
+
+en
+Scenario: BVA-CLI-04 - Crear cliente con documento de 15 digitos (maximo)
+el documento tiene que ser entre 6 a 9 digitos por eso da error
+
+en
+Scenario: BVA-PROD-01 - Crear producto con precio minimo valido (0.01)
+Scenario: BVA-PROD-02 - Crear producto con stock minimo valido (1)
+Scenario: BVA-PROD-03 - Crear producto con stock maximo valido (32767)
+Scenario: BVA-PROD-04 - Crear producto con nombre de 1 caracter
+Scenario: BVA-PROD-06 - Crear producto con precio maximo valido (9999.99)
+Scenario: BVA-PROD-07 - Crear producto con marca de 1 caracter
+Scenario: BVA-PROD-08 - Crear producto con descripcion vacia (opcional)
+Scenario: PE-PROD-05 - Crear producto con categoria valida existente
+Scenario Outline: PW-PROD-01 - Crear producto con combinaciones Pairwise
+Scenario Outline: PW-PROD-01 - Crear producto con combinaciones Pairwise
+Scenario Outline: PW-PROD-01 - Crear producto con combinaciones Pairwise
+Scenario Outline: PW-PROD-01 - Crear producto con combinaciones Pairwise
+Scenario Outline: PW-PROD-01 - Crear producto con combinaciones Pairwise
+Scenario Outline: PW-PROD-01 - Crear producto con combinaciones Pairwise
+Scenario Outline: PW-PROD-01 - Crear producto con combinaciones Pairwise
+Scenario Outline: PW-PROD-01 - Crear producto con combinaciones Pairwise
+el error que tienen es que dicen que el nombre ya existe asi que hay que 
+eliminar primero el nombre y luego volver a hacer la pueba asi para que no haya erroers
+y una vez que la prueba pase que se vuevla a eliminar el nombre, esto para estas prueabs 
+
