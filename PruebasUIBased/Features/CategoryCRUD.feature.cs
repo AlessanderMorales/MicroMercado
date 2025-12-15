@@ -156,8 +156,7 @@ namespace PruebasUIBased.Features
         [global::Xunit.TraitAttribute("Category", "pw-cat-01")]
         [global::Xunit.InlineDataAttribute("PW01", "CatPairwise01", "Descripcion valida normal", "debo ver mensaje de exito en categoria", "0", new string[0])]
         [global::Xunit.InlineDataAttribute("PW02", "CatPairwise02", "", "debo ver mensaje de exito en categoria", "1", new string[0])]
-        [global::Xunit.InlineDataAttribute("PW03", "CatDescLarga03", "Esta es una descripcion muy larga que tiene muchos caracteres para probar el limi" +
-            "te maximo permitido en el campo", "debo ver mensaje de exito en categoria", "2", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW03", "CatDescLarga03", "Esta es una descripcion muy larga que tiene muchos caracteres", "debo ver mensaje de exito en categoria", "2", new string[0])]
         [global::Xunit.InlineDataAttribute("PW04", "", "Descripcion sin nombre categoria", "debo ver error de validacion en categoria", "3", new string[0])]
         public async global::System.Threading.Tasks.Task PW_CAT_01_CrearCategoriaConCombinacionesPairwise(string testID, string nombre, string descripcion, string resultado, string @__pickleIndex, string[] exampleTags)
         {
@@ -221,8 +220,7 @@ await this.FeatureBackgroundAsync();
         [global::Xunit.InlineDataAttribute("PW05", "CatActualizada05", "Nueva descripcion valida actualizada", "debo ver mensaje de exito en categoria", "4", new string[0])]
         [global::Xunit.InlineDataAttribute("PW06", "CatBaseUpdate", "Mismo nombre diferente descripcion", "debo ver mensaje de exito en categoria", "5", new string[0])]
         [global::Xunit.InlineDataAttribute("PW07", "CatModificada07", "", "debo ver mensaje de exito en categoria", "6", new string[0])]
-        [global::Xunit.InlineDataAttribute("PW08", "CatDescLargaUpd08", "Descripcion actualizada muy extensa para validar que el sistema acepta textos lar" +
-            "gos correctamente", "debo ver mensaje de exito en categoria", "7", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW08", "CatDescLargaUpd08", "Descripcion actualizada muy extensa para validar", "debo ver mensaje de exito en categoria", "7", new string[0])]
         public async global::System.Threading.Tasks.Task PW_CAT_02_ActualizarCategoriaConCombinacionesPairwise(string testID, string nuevoNombre, string nuevaDescripcion, string resultado, string @__pickleIndex, string[] exampleTags)
         {
             string[] @__tags = new string[] {
@@ -326,14 +324,14 @@ await this.FeatureBackgroundAsync();
             await this.ScenarioCleanupAsync();
         }
         
-        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-CAT-02 - Crear categoria con nombre de 50 caracteres (maximo valido)")]
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-CAT-02 - Crear categoria con nombre largo (Excede limite)")]
         [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Categorias - UI Testing con Pairwise")]
-        [global::Xunit.TraitAttribute("Description", "BVA-CAT-02 - Crear categoria con nombre de 50 caracteres (maximo valido)")]
+        [global::Xunit.TraitAttribute("Description", "BVA-CAT-02 - Crear categoria con nombre largo (Excede limite)")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "category")]
         [global::Xunit.TraitAttribute("Category", "bva")]
         [global::Xunit.TraitAttribute("Category", "bva-cat-02")]
-        public async global::System.Threading.Tasks.Task BVA_CAT_02_CrearCategoriaConNombreDe50CaracteresMaximoValido()
+        public async global::System.Threading.Tasks.Task BVA_CAT_02_CrearCategoriaConNombreLargoExcedeLimite()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
@@ -342,7 +340,7 @@ await this.FeatureBackgroundAsync();
                     "bva-cat-02"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "9";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-CAT-02 - Crear categoria con nombre de 50 caracteres (maximo valido)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-CAT-02 - Crear categoria con nombre largo (Excede limite)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 47
@@ -363,13 +361,13 @@ await this.FeatureBackgroundAsync();
 #line hidden
 #line 49
   await testRunner.AndAsync("lleno el formulario de categoria con nombre \"CategoriaConNombreDeCincuentaCaracte" +
-                        "resExac\" y descripcion \"Nombre al limite maximo\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "resExac\" y descripcion \"Test de longitud\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 50
   await testRunner.AndAsync("hago clic en guardar categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 51
-  await testRunner.ThenAsync("debo ver mensaje de exito en categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+  await testRunner.ThenAsync("la creacion debe fallar", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -465,7 +463,7 @@ await this.FeatureBackgroundAsync();
   await testRunner.AndAsync("hago clic en guardar categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 65
-  await testRunner.ThenAsync("debo ver mensaje de exito en categoria", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+  await testRunner.ThenAsync("la creacion debe fallar", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
