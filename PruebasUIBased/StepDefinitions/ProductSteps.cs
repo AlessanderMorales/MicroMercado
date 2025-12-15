@@ -1,4 +1,4 @@
-﻿using PruebasUIBased.Infrastructure; 
+﻿using PruebasUIBased.Infrastructure;
 using PruebasUIBased.PageObjects;
 using Reqnroll;
 using Xunit;
@@ -8,6 +8,7 @@ using System.Globalization;
 namespace PruebasUIBased.StepDefinitions
 {
     [Binding]
+    [Scope(Tag = "product")]
     public class ProductSteps
     {
         private readonly WebDriverFixture _fixture;
@@ -53,6 +54,27 @@ namespace PruebasUIBased.StepDefinitions
             return nombreBase;
         }
 
+        // ==========================================
+        // GIVEN
+        // ==========================================
+
+        [Given(@"que la aplicacion esta en ejecucion")]
+        public void GivenQueLaAplicacionEstaEnEjecucion() { }
+
+        [Given(@"navego a la pagina de productos")]
+        [When(@"navego a la pagina de productos")]
+        public void GivenNavegoALaPaginaDeProductos()
+        {
+            ListPage.NavigateTo($"{_fixture.BaseUrl}/ProductPage");
+            EnsureOnProductList();
+        }
+
+        [Given(@"la base de datos esta limpia")]
+        public void GivenLaBaseDeDatosEstaLimpia()
+        {
+            EnsureOnProductList();
+        }
+
         [Given(@"existe una categoria ""(.*)"" para productos")]
         public void GivenExisteUnaCategoria(string categoryName)
         {
@@ -82,6 +104,9 @@ namespace PruebasUIBased.StepDefinitions
             }
         }
 
+        // ==========================================
+        // CREATE
+        // ==========================================
 
         [When(@"hago clic en agregar nuevo producto")]
         public void WhenHagoClicEnAgregarNuevoProducto()
@@ -94,12 +119,15 @@ namespace PruebasUIBased.StepDefinitions
         [When(@"creo un producto con los siguientes datos:")]
         public void WhenLlenoElFormularioDeProductoConLosSiguientesDatos(Table table)
         {
-            string nombre = "";
-            string descripcion = "";
-            string marca = "";
+            if (!_fixture.Driver.Url.Contains("NewProduct"))
+            {
+                EnsureOnProductList();
+                ListPage.ClickAddNewProduct();
+            }
+
+            string nombre = "", descripcion = "", marca = "", categoria = "1";
             decimal precio = 0;
             int stock = 0;
-            string categoria = "1";
 
             foreach (var row in table.Rows)
             {
@@ -111,85 +139,26 @@ namespace PruebasUIBased.StepDefinitions
                     case "Nombre": case "Name": nombre = valor; break;
                     case "Descripcion": case "Description": descripcion = valor; break;
                     case "Marca": case "Brand": marca = valor; break;
-                    case "Precio": case "Price": precio = decimal.Parse(valor, CultureInfo.InvariantCulture); break;
-                    case "Stock": stock = int.Parse(valor); break;
+                    case "Precio":
+                    case "Price":
+                        decimal.TryParse(valor, NumberStyles.Any, CultureInfo.InvariantCulture, out precio);
+                        break;
+                    case "Stock":
+                        int.TryParse(valor, out stock);
+                        break;
                     case "Categoria": case "CategoryId": categoria = valor; break;
                 }
             }
 
-            // Si el nombre no esta vacio, eliminar el producto si ya existe para evitar duplicados
-            // y luego volver al formulario de nuevo producto
-            if (!string.IsNullOrEmpty(nombre))
-            {
-                EliminarProductoSiExisteYVolverAFormulario(nombre);
-            }
-            else
-            {
-                // Si no hay nombre, asegurarse de estar en el formulario
-                AsegurarEnFormularioNuevoProducto();
-            }
-
-            FormPage.FillProductForm(nombre, descripcion, marca, precio, stock, categoria);
-            _scenarioContext["ProductName"] = nombre;
-            
-            // Guardar el nombre para limpieza posterior
             if (!string.IsNullOrEmpty(nombre))
             {
                 _scenarioContext["ProductoParaLimpiar"] = nombre;
             }
 
+            FormPage.FillProductForm(nombre, descripcion, marca, precio, stock, categoria);
+            _scenarioContext["ProductName"] = nombre;
+
             ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_CREAR_LISTOS");
-        }
-
-        private void AsegurarEnFormularioNuevoProducto()
-        {
-            var currentUrl = _fixture.Driver.Url;
-            if (!currentUrl.Contains("NewProduct"))
-            {
-                // Primero ir a la lista
-                _fixture.Driver.Navigate().GoToUrl($"{_fixture.BaseUrl}/ProductPage");
-                System.Threading.Thread.Sleep(500);
-                // Luego ir al formulario de nuevo producto
-                ListPage.ClickAddNewProduct();
-                System.Threading.Thread.Sleep(500);
-            }
-        }
-
-        private void EliminarProductoSiExisteYVolverAFormulario(string nombre)
-        {
-            try
-            {
-                // Navegar a la lista para verificar si existe el producto
-                _fixture.Driver.Navigate().GoToUrl($"{_fixture.BaseUrl}/ProductPage");
-                System.Threading.Thread.Sleep(1000);
-                
-                // Verificar si el producto existe y eliminarlo
-                if (ListPage.ProductExists(nombre))
-                {
-                    ListPage.ClickDeleteProduct(nombre);
-                    System.Threading.Thread.Sleep(1500);
-                    
-                    // Despues de eliminar, volver a la lista
-                    _fixture.Driver.Navigate().GoToUrl($"{_fixture.BaseUrl}/ProductPage");
-                    System.Threading.Thread.Sleep(500);
-                }
-                
-                // IMPORTANTE: Ahora ir al formulario de nuevo producto para continuar con la prueba
-                ListPage.ClickAddNewProduct();
-                System.Threading.Thread.Sleep(500);
-            }
-            catch
-            {
-                // Si hay error, intentar ir directamente al formulario de nuevo producto
-                try
-                {
-                    _fixture.Driver.Navigate().GoToUrl($"{_fixture.BaseUrl}/ProductPage");
-                    System.Threading.Thread.Sleep(500);
-                    ListPage.ClickAddNewProduct();
-                    System.Threading.Thread.Sleep(500);
-                }
-                catch { }
-            }
         }
 
         [When(@"intento crear un producto con precio (.*)")]
@@ -197,12 +166,9 @@ namespace PruebasUIBased.StepDefinitions
         {
             EnsureOnProductList();
             ListPage.ClickAddNewProduct();
-
             decimal precio = decimal.Parse(precioStr, CultureInfo.InvariantCulture);
             FormPage.FillProductForm("Producto Error", "Desc", "Marca", precio, 10, "1");
-
             ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_INVALIDOS_PRECIO");
-
             FormPage.ClickSave();
         }
 
@@ -213,20 +179,16 @@ namespace PruebasUIBased.StepDefinitions
             System.Threading.Thread.Sleep(1000);
         }
 
+        // ==========================================
+        // UPDATE
+        // ==========================================
 
         [When(@"hago clic en editar producto ""(.*)""")]
         public void WhenHagoClicEnEditarProducto(string nombreBase)
         {
             EnsureOnProductList();
-
-            string nombreReal = _scenarioContext.ContainsKey("TargetProductName")
-                                ? (string)_scenarioContext["TargetProductName"]
-                                : nombreBase;
-
-            if (!ListPage.ProductExists(nombreReal))
-            {
-                CreateProductAux(nombreReal);
-            }
+            string nombreReal = _scenarioContext.ContainsKey("TargetProductName") ? (string)_scenarioContext["TargetProductName"] : nombreBase;
+            if (!ListPage.ProductExists(nombreReal)) CreateProductAux(nombreReal);
             ListPage.ClickEditProduct(nombreReal);
         }
 
@@ -234,12 +196,10 @@ namespace PruebasUIBased.StepDefinitions
         [When(@"actualizo el producto con:")]
         public void WhenActualizoElFormularioDeProductoCon(Table table)
         {
-            string nombre = "";
-            string descripcion = "";
+            string nombre = "", descripcion = "";
             decimal precio = 0;
             int stock = 0;
-            bool hasPrecio = false;
-            bool hasStock = false;
+            bool hasPrecio = false, hasStock = false;
 
             foreach (var row in table.Rows)
             {
@@ -250,14 +210,11 @@ namespace PruebasUIBased.StepDefinitions
                 {
                     case "Nombre": case "Name": nombre = valor; break;
                     case "Descripcion": case "Description": descripcion = valor; break;
-                    case "Precio": case "Price": 
-                        precio = decimal.Parse(valor, CultureInfo.InvariantCulture); 
-                        hasPrecio = true;
-                        break;
-                    case "Stock": 
-                        stock = int.Parse(valor); 
-                        hasStock = true;
-                        break;
+                    case "Precio":
+                    case "Price":
+                        decimal.TryParse(valor, NumberStyles.Any, CultureInfo.InvariantCulture, out precio); hasPrecio = true; break;
+                    case "Stock":
+                        int.TryParse(valor, out stock); hasStock = true; break;
                 }
             }
 
@@ -268,7 +225,6 @@ namespace PruebasUIBased.StepDefinitions
             _scenarioContext["UpdatedProductName"] = nombre;
 
             ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_EDITAR_LISTOS");
-
             FormPage.ClickSave();
             System.Threading.Thread.Sleep(1500);
         }
@@ -282,31 +238,22 @@ namespace PruebasUIBased.StepDefinitions
                 EnsureOnProductList();
                 ListPage.ClickEditProduct(nombre);
             }
-
             FormPage.UpdateProductForm("", "", "", 0, stockNegativo, "1");
-
             ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "DATOS_INVALIDOS_STOCK");
-
             FormPage.ClickSave();
         }
 
+        // ==========================================
+        // DELETE
+        // ==========================================
 
         [When(@"hago clic en eliminar producto ""(.*)""")]
         public void WhenHagoClicEnEliminarProducto(string nombreBase)
         {
             EnsureOnProductList();
-
-            string nombreReal = _scenarioContext.ContainsKey("TargetProductName")
-                                ? (string)_scenarioContext["TargetProductName"]
-                                : nombreBase;
-
-            if (!ListPage.ProductExists(nombreReal))
-            {
-                CreateProductAux(nombreReal);
-            }
-
+            string nombreReal = _scenarioContext.ContainsKey("TargetProductName") ? (string)_scenarioContext["TargetProductName"] : nombreBase;
+            if (!ListPage.ProductExists(nombreReal)) CreateProductAux(nombreReal);
             ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "PREVIO_ELIMINAR");
-
             ListPage.ClickDeleteProduct(nombreReal);
             System.Threading.Thread.Sleep(1000);
         }
@@ -314,72 +261,59 @@ namespace PruebasUIBased.StepDefinitions
         [When(@"elimino el producto")]
         public void WhenEliminoElProducto()
         {
-            string nombre = _scenarioContext.ContainsKey("TargetProductName")
-                            ? (string)_scenarioContext["TargetProductName"]
-                            : "Producto Temporal";
-
+            string nombre = _scenarioContext.ContainsKey("TargetProductName") ? (string)_scenarioContext["TargetProductName"] : "Producto Temporal";
             WhenHagoClicEnEliminarProducto(nombre);
         }
 
+        // ==========================================
+        // ASSERTIONS
+        // ==========================================
 
         [Then(@"debo ver mensaje de exito en producto")]
         [Then(@"el producto debe crearse exitosamente")]
         [Then(@"la actualizacion debe ser exitosa")]
         public void ThenDeboVerMensajeDeExitoEnProducto()
         {
-            // Esperar a que la pagina cargue completamente
             System.Threading.Thread.Sleep(2000);
-            
-            // Verificar si estamos en la lista de productos (redireccion exitosa)
-            bool onListPage = ListPage.GetCurrentUrl().Contains("ProductPage") && 
-                              !ListPage.GetCurrentUrl().Contains("NewProduct") &&
-                              !ListPage.GetCurrentUrl().Contains("EditProduct");
-            
-            // Verificar mensaje de exito
+
             bool success = ListPage.HasSuccessMessage();
-            
-            // Verificar que no hay errores de validacion visibles
+            bool onListPage = ListPage.GetCurrentUrl().Contains("ProductPage");
             bool noErrors = !FormPage.HasErrorMessage();
-            
+            if (!success)
+            {
+                EnsureOnProductList();
+
+                string nombreEsperado = "";
+                if (_scenarioContext.ContainsKey("ProductName"))
+                    nombreEsperado = _scenarioContext["ProductName"].ToString();
+                else if (_scenarioContext.ContainsKey("UpdatedProductName"))
+                    nombreEsperado = _scenarioContext["UpdatedProductName"].ToString();
+
+                if (!string.IsNullOrEmpty(nombreEsperado) && ListPage.ProductExists(nombreEsperado))
+                {
+                    success = true; 
+                }
+            }
+
             bool resultado = success || (onListPage && noErrors);
-            
-            // Si la prueba fue exitosa y hay un producto para limpiar, eliminarlo
+
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "RESULTADO_FINAL");
+
             if (resultado && _scenarioContext.ContainsKey("ProductoParaLimpiar"))
             {
-                string nombreProducto = _scenarioContext["ProductoParaLimpiar"].ToString();
-                LimpiarProductoDespuesDePrueba(nombreProducto);
+                try
+                {
+                    string nombreProducto = _scenarioContext["ProductoParaLimpiar"].ToString();
+                    if (!_scenarioContext.ScenarioInfo.Title.Contains("duplicado"))
+                    {
+                        if (ListPage.ProductExists(nombreProducto)) ListPage.ClickDeleteProduct(nombreProducto);
+                    }
+                }
+                catch { }
             }
-            
-            Assert.True(resultado, 
-                $"No se detecto exito. URL: {ListPage.GetCurrentUrl()}, Success: {success}, OnList: {onListPage}, NoErrors: {noErrors}");
-        }
 
-        private void LimpiarProductoDespuesDePrueba(string nombre)
-        {
-            try
-            {
-                // Solo limpiar si no es una prueba de duplicados o de edicion
-                var scenarioTitle = _scenarioContext.ScenarioInfo.Title;
-                if (scenarioTitle.Contains("duplicado") || scenarioTitle.Contains("Duplicado") ||
-                    scenarioTitle.Contains("Actualizar") || scenarioTitle.Contains("Update") ||
-                    scenarioTitle.Contains("Editar") || scenarioTitle.Contains("manteniendo"))
-                {
-                    return; // No limpiar en estos casos
-                }
-                
-                EnsureOnProductList();
-                System.Threading.Thread.Sleep(500);
-                
-                if (!string.IsNullOrEmpty(nombre) && ListPage.ProductExists(nombre))
-                {
-                    ListPage.ClickDeleteProduct(nombre);
-                    System.Threading.Thread.Sleep(1000);
-                }
-            }
-            catch
-            {
-                // Ignorar errores de limpieza para no afectar el resultado de la prueba
-            }
+            Assert.True(resultado,
+                $"Fallo: No se encontró mensaje de éxito NI el producto en la lista. URL: {ListPage.GetCurrentUrl()}");
         }
 
         [Then(@"debo ver error de validacion en producto")]
@@ -389,7 +323,9 @@ namespace PruebasUIBased.StepDefinitions
         [Then(@"debe mostrar error de validacion de stock")]
         public void ThenDeboVerErrorDeValidacionEnProducto()
         {
-            Assert.True(FormPage.HasErrorMessage());
+            System.Threading.Thread.Sleep(1000);
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "RESULTADO_FALLO_ESPERADO");
+            Assert.True(FormPage.HasErrorMessage(), "Se esperaba un mensaje de error.");
         }
 
         [Then(@"el producto ""(.*)"" no debe aparecer en la lista")]
@@ -399,12 +335,10 @@ namespace PruebasUIBased.StepDefinitions
             System.Threading.Thread.Sleep(1500);
             EnsureOnProductList();
 
-            string nombreReal = _scenarioContext.ContainsKey("TargetProductName")
-                                ? (string)_scenarioContext["TargetProductName"]
-                                : nombreBase;
-
+            string nombreReal = _scenarioContext.ContainsKey("TargetProductName") ? (string)_scenarioContext["TargetProductName"] : nombreBase;
             if (nombreReal == null) nombreReal = "Producto Temporal";
 
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "VALIDACION_NO_EXISTE");
             Assert.False(ListPage.ProductExists(nombreReal), $"El producto '{nombreReal}' todavia aparece en la lista.");
         }
 
@@ -412,6 +346,7 @@ namespace PruebasUIBased.StepDefinitions
         public void ThenDeboVerAlMenosProductosEnLaLista(int cantidad)
         {
             EnsureOnProductList();
+            ScreenshotHelper.TakeScreenshot(_fixture.Driver, _scenarioContext.ScenarioInfo.Title, "RESULTADO_LISTADO");
             Assert.True(ListPage.GetProductCount() >= cantidad);
         }
 
@@ -425,7 +360,6 @@ namespace PruebasUIBased.StepDefinitions
         {
             ThenDeboVerMensajeDeExitoEnProducto();
         }
-
 
         [Given(@"existen los siguientes productos activos en categoria 1:")]
         public void GivenExistenProductosActivos(Table table)

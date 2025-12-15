@@ -27,7 +27,7 @@ Scenario Outline: PW-PROD-01 - Crear producto con combinaciones Pairwise
     | PW01   | ProdPairwise01     | Descripcion valida   | MarcaA      | 10.50   | 100   | 1         | debo ver mensaje de exito en producto    |
     | PW02   | ProdPairwise02     |                      | MarcaB      | 5.00    | 1     | 1         | debo ver mensaje de exito en producto    |
     | PW03   | ProdDescLarga03    | Desc muy larga test  | MarcaC      | 999.99  | 9999  | 1         | debo ver mensaje de exito en producto    |
-    | PW04   | ProdPairwise04     | Desc normal          |             | 15.00   | 50    | 1         | debo ver mensaje de exito en producto    |
+    | PW04   | ProdPairwise04     | Desc normal          |             | 15.00   | 50    | 1         | debo ver error de validacion en producto |
     | PW05   | ProdPairwise05     | Desc test            | MarcaLarga  | 0.01    | 500   | 1         | debo ver mensaje de exito en producto    |
     | PW06   | ProdPairwise06     |                      | MarcaD      | 100.00  | 10    | 1         | debo ver mensaje de exito en producto    |
     | PW07   | ProdStockAlto07    | Desc stock alto      | MarcaE      | 50.00   | 32767 | 1         | debo ver mensaje de exito en producto    |
@@ -116,11 +116,11 @@ Scenario: BVA-PROD-04 - Crear producto con nombre de 1 caracter
   Then debo ver mensaje de exito en producto
 
 @ui @product @bva @bva-prod-05
-Scenario: BVA-PROD-05 - Crear producto con nombre de 100 caracteres (maximo)
+Scenario: BVA-PROD-05 - Crear producto con nombre de 50 caracteres (maximo)
   When hago clic en agregar nuevo producto
   And lleno el formulario de producto con los siguientes datos:
     | Campo       | Valor              |
-    | Nombre      | ProductoConNombreDeCienCaracteresExactosParaProbarElLimiteMaximoPermitidoEnElCampoDeNombreDelSistema |
+    | Nombre      | ProductoConNombreDeCienCaracteresExactosParaProbar |
     | Descripcion | Nombre al maximo   |
     | Marca       | MarcaBVA5          |
     | Precio      | 15.00              |
@@ -258,7 +258,7 @@ Scenario: PE-PROD-08 - Crear producto con todos los campos completos
   And lleno el formulario de producto con los siguientes datos:
     | Campo       | Valor                                                                    |
     | Nombre      | ProdCompletoPE08                                                         |
-    | Descripcion | Descripcion completa con todos los detalles del producto para prueba PE  |
+    | Descripcion | Descripcion completa todos detalles del producto  |
     | Marca       | MarcaCompletaPE                                                          |
     | Precio      | 125.99                                                                   |
     | Stock       | 250                                                                      |

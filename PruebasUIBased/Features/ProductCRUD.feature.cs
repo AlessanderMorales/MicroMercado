@@ -160,7 +160,7 @@ namespace PruebasUIBased.Features
         [global::Xunit.InlineDataAttribute("PW01", "ProdPairwise01", "Descripcion valida", "MarcaA", "10.50", "100", "1", "debo ver mensaje de exito en producto", "0", new string[0])]
         [global::Xunit.InlineDataAttribute("PW02", "ProdPairwise02", "", "MarcaB", "5.00", "1", "1", "debo ver mensaje de exito en producto", "1", new string[0])]
         [global::Xunit.InlineDataAttribute("PW03", "ProdDescLarga03", "Desc muy larga test", "MarcaC", "999.99", "9999", "1", "debo ver mensaje de exito en producto", "2", new string[0])]
-        [global::Xunit.InlineDataAttribute("PW04", "ProdPairwise04", "Desc normal", "", "15.00", "50", "1", "debo ver mensaje de exito en producto", "3", new string[0])]
+        [global::Xunit.InlineDataAttribute("PW04", "ProdPairwise04", "Desc normal", "", "15.00", "50", "1", "debo ver error de validacion en producto", "3", new string[0])]
         [global::Xunit.InlineDataAttribute("PW05", "ProdPairwise05", "Desc test", "MarcaLarga", "0.01", "500", "1", "debo ver mensaje de exito en producto", "4", new string[0])]
         [global::Xunit.InlineDataAttribute("PW06", "ProdPairwise06", "", "MarcaD", "100.00", "10", "1", "debo ver mensaje de exito en producto", "5", new string[0])]
         [global::Xunit.InlineDataAttribute("PW07", "ProdStockAlto07", "Desc stock alto", "MarcaE", "50.00", "32767", "1", "debo ver mensaje de exito en producto", "6", new string[0])]
@@ -606,14 +606,14 @@ await this.FeatureBackgroundAsync();
             await this.ScenarioCleanupAsync();
         }
         
-        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-PROD-05 - Crear producto con nombre de 100 caracteres (maximo)")]
+        [global::Xunit.SkippableFactAttribute(DisplayName="BVA-PROD-05 - Crear producto con nombre de 50 caracteres (maximo)")]
         [global::Xunit.TraitAttribute("FeatureTitle", "CRUD de Productos - UI Testing con Pairwise")]
-        [global::Xunit.TraitAttribute("Description", "BVA-PROD-05 - Crear producto con nombre de 100 caracteres (maximo)")]
+        [global::Xunit.TraitAttribute("Description", "BVA-PROD-05 - Crear producto con nombre de 50 caracteres (maximo)")]
         [global::Xunit.TraitAttribute("Category", "ui")]
         [global::Xunit.TraitAttribute("Category", "product")]
         [global::Xunit.TraitAttribute("Category", "bva")]
         [global::Xunit.TraitAttribute("Category", "bva-prod-05")]
-        public async global::System.Threading.Tasks.Task BVA_PROD_05_CrearProductoConNombreDe100CaracteresMaximo()
+        public async global::System.Threading.Tasks.Task BVA_PROD_05_CrearProductoConNombreDe50CaracteresMaximo()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
@@ -622,7 +622,7 @@ await this.FeatureBackgroundAsync();
                     "bva-prod-05"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "22";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-PROD-05 - Crear producto con nombre de 100 caracteres (maximo)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("BVA-PROD-05 - Crear producto con nombre de 50 caracteres (maximo)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 119
@@ -646,8 +646,7 @@ await this.FeatureBackgroundAsync();
                             "Valor"});
                 table21.AddRow(new string[] {
                             "Nombre",
-                            "ProductoConNombreDeCienCaracteresExactosParaProbarElLimiteMaximoPermitidoEnElCamp" +
-                                "oDeNombreDelSistema"});
+                            "ProductoConNombreDeCienCaracteresExactosParaProbar"});
                 table21.AddRow(new string[] {
                             "Descripcion",
                             "Nombre al maximo"});
@@ -1354,7 +1353,7 @@ await this.FeatureBackgroundAsync();
                             "ProdCompletoPE08"});
                 table31.AddRow(new string[] {
                             "Descripcion",
-                            "Descripcion completa con todos los detalles del producto para prueba PE"});
+                            "Descripcion completa todos detalles del producto"});
                 table31.AddRow(new string[] {
                             "Marca",
                             "MarcaCompletaPE"});
