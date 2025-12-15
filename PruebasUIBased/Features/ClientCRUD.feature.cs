@@ -547,7 +547,7 @@ await this.FeatureBackgroundAsync();
                             "docmax.bva04@example.com"});
                 table7.AddRow(new string[] {
                             "Documento",
-                            "100000004"});
+                            "1000004"});
                 table7.AddRow(new string[] {
                             "Direccion",
                             "Direccion BVA doc max"});

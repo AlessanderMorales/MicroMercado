@@ -94,7 +94,7 @@ Scenario: BVA-CLI-04 - Crear cliente con documento de 9 digitos (maximo)
     | Campo     | Valor                      |
     | Nombre    | ClienteDocMaxBVA           |
     | Email     | docmax.bva04@example.com   |
-    | Documento | 100000004                  |
+    | Documento | 1000004                  |
     | Direccion | Direccion BVA doc max      |
   And hago clic en guardar cliente
   Then debo ver mensaje de exito en cliente

@@ -8,7 +8,7 @@ using System.Linq;
 namespace PruebasUIBased.StepDefinitions
 {
     [Binding]
-    [Scope(Tag = "category")]
+        
     public class CategorySteps
     {
         private readonly WebDriverFixture _fixture;
